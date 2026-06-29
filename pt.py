@@ -15,7 +15,7 @@ st.set_page_config(
 
 
 st.markdown("""
-    <meta name="google-site-verification" content="TBLIHmsGDkdlbD"  # ✅ YEH SAHI HAI />
+    <meta name="google-site-verification"  content="TBLIHmsGDkdlbD"  # ✅ YEH SAHI HAI />
 """, unsafe_allow_html=True)
 
 
