@@ -10,9 +10,8 @@ st.set_page_config(
     page_title="Faizan | Portfolio",
     page_icon="👨‍💻",
     layout="wide",
-    initial_sidebar_state="collapsed"  # ✅ YEH SAHI HAI
+    initial_sidebar_state="collapsed"
 )
-
 
 # Google Search Console Verification
 st.markdown('<meta name="google-site-verification" content="TBLIhmsG0kd1b0" />', unsafe_allow_html=True)
