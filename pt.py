@@ -18,11 +18,6 @@ st.markdown('<meta name="google-site-verification" content="TBLIhmsG0kd1b0" />',
 
 
 # Custom CSS for stunning design
-st.markdown(""")
-    <style>
-# Custom CSS for stunning design
-st.markdown("""
-# Custom CSS for stunning design
 st.markdown("""
 <style>
 /* Global Styles */
