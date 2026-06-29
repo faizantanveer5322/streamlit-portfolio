@@ -14,8 +14,8 @@ st.set_page_config(
 )
 
 
-st.markdown("""
-    <meta name="google-site-verification"  content="TBLIHmsGDkdlbD"  # ✅ YEH SAHI HAI />
+st.markdown(""" 
+    <meta name="google-site-verification" content="TBLIhmsG0kd1b0" />
 """, unsafe_allow_html=True)
 
 
