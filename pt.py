@@ -13,6 +13,15 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+
+st.markdown("""
+    <meta name="google-site-verification" content="TBLIHmsGDkdlbD" />
+""", unsafe_allow_html=True)
+
+
+# Custom CSS for stunning design
+st.markdown("""
+    <style>
 # Custom CSS for stunning design
 st.markdown("""
     <style>
