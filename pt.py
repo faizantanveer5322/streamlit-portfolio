@@ -31,10 +31,15 @@ USERS_FILE = "users.json"
 PROFILE_IMAGE_PATH = "images/profile_image.png"
 PROFILE_IMAGE_PATH_JPG = "images/profile_image.jpg"
 
-# ============ EMAIL SETUP ============
-# Replace with your email details
+# ============ EMAIL SETUP - FIXED ============
+# IMPORTANT: You MUST use an App Password for Gmail
+# 1. Go to https://myaccount.google.com/apppasswords
+# 2. Enable 2-Step Verification first
+# 3. Generate App Password for "Mail" and "Other"
+# 4. Copy the 16-character password and paste below
+
 EMAIL_SENDER = "faizantanveer532@gmail.com"
-EMAIL_PASSWORD = "YOUR_APP_PASSWORD_HERE"  # MUST be an App Password
+EMAIL_PASSWORD = "YOUR_APP_PASSWORD_HERE"  # Replace with your App Password
 EMAIL_RECEIVER = "faizantanveer532@gmail.com"
 # ============ END EMAIL SETUP ============
 
@@ -77,14 +82,16 @@ def change_password(username, old_password, new_password):
         return True
     return False
 
-# Email sending function
+# Email sending function - FIXED
 def send_email(name, email, subject, message):
     try:
+        # Create message
         msg = MIMEMultipart()
         msg['From'] = EMAIL_SENDER
         msg['To'] = EMAIL_RECEIVER
         msg['Subject'] = f"Portfolio Contact: {subject}"
 
+        # Email body
         body = f"""
 📬 New Message from Portfolio Contact Form
 
@@ -104,6 +111,7 @@ Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
         
         msg.attach(MIMEText(body, 'plain'))
 
+        # Send email using Gmail SMTP
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.set_debuglevel(0)
         server.ehlo()
@@ -116,7 +124,17 @@ Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
         return True, "✅ Message sent successfully! I'll get back to you soon."
         
     except smtplib.SMTPAuthenticationError as e:
-        return False, f"❌ Authentication Error: Please check your email credentials"
+        return False, """❌ Authentication Error: Please check your email credentials.
+        
+💡 Solution:
+1. Go to https://myaccount.google.com/apppasswords
+2. Enable 2-Step Verification first
+3. Generate an App Password for "Mail" and "Other"
+4. Copy the 16-character password
+5. Replace EMAIL_PASSWORD in the code with this password"""
+        
+    except smtplib.SMTPException as e:
+        return False, f"❌ SMTP Error: {str(e)}"
     except Exception as e:
         return False, f"❌ Failed to send message. Error: {str(e)}"
 
@@ -132,7 +150,7 @@ if 'page' not in st.session_state:
 if 'copied_text' not in st.session_state:
     st.session_state.copied_text = ""
 
-# Custom CSS with emoji support and animations
+# Custom CSS with emoji support
 st.markdown("""
     <style>
     /* Global Styles */
@@ -142,7 +160,12 @@ st.markdown("""
     
     /* Fix emoji display */
     .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
-    .stMarkdown span, .stMarkdown div {
+    .stMarkdown span, .stMarkdown div, .stMarkdown li, .stMarkdown a {
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Helvetica Neue', sans-serif !important;
+    }
+    
+    /* Ensure emojis show in buttons */
+    .stButton button, button, .st-emotion-cache-1y4p8pa {
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
     }
     
@@ -196,14 +219,8 @@ st.markdown("""
     }
     
     @keyframes avatarPulse {
-        0%, 100% { 
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
-            transform: scale(1);
-        }
-        50% { 
-            box-shadow: 0 0 60px rgba(255, 215, 0, 0.5);
-            transform: scale(1.05);
-        }
+        0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); transform: scale(1); }
+        50% { box-shadow: 0 0 60px rgba(255, 215, 0, 0.5); transform: scale(1.05); }
     }
     
     .sidebar-user .avatar img {
@@ -484,16 +501,6 @@ st.markdown("""
         box-shadow: 0 4px 25px rgba(245, 87, 108, 0.5);
     }
     
-    .skill-tag:nth-child(2n) {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    }
-    
-    .skill-tag:nth-child(3n) {
-        background: linear-gradient(135deg, #f093fb 0%, #4facfe 100%);
-        box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
-    }
-    
     /* What I Do Cards */
     .what-i-do-item {
         text-align: center;
@@ -732,6 +739,7 @@ st.markdown("""
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.05);
         animation: float 3s ease-in-out infinite;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .profile-social-icons a:hover {
@@ -1146,6 +1154,101 @@ st.markdown("""
         margin-top: 0.3rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
+    
+    /* Experience Timeline */
+    .timeline-item {
+        border-left: 3px solid #ffd700;
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        animation: slideInRight 0.6s ease;
+    }
+    
+    .timeline-item::before {
+        content: "●";
+        position: absolute;
+        left: -0.7rem;
+        color: #ffd700;
+        font-size: 1.2rem;
+        animation: pulse 2s infinite;
+    }
+    
+    .timeline-title {
+        font-weight: 600;
+        color: #ffd700 !important;
+        font-size: 1.1rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .timeline-subtitle {
+        color: #f093fb !important;
+        font-weight: 500;
+        margin: 0.2rem 0;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .timeline-date {
+        color: rgba(255,255,255,0.5) !important;
+        font-size: 0.9rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .timeline-item div {
+        color: rgba(255,255,255,0.8) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    /* Project Cards */
+    .project-card {
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        transition: all 0.4s ease;
+        height: 100%;
+        border: 1px solid rgba(255,255,255,0.06);
+        animation: slideInUp 0.6s ease;
+    }
+    
+    .project-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        border-color: rgba(255,215,0,0.2);
+    }
+    
+    .project-content {
+        padding: 1.5rem;
+    }
+    
+    .project-title {
+        font-weight: 600;
+        color: #ffd700 !important;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .project-description {
+        color: rgba(255,255,255,0.7) !important;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .project-tech {
+        margin-top: 1rem;
+    }
+    
+    .project-content a {
+        color: #f093fb !important;
+        transition: color 0.3s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .project-content a:hover {
+        color: #ffd700 !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -1156,7 +1259,7 @@ PERSONAL_INFO = {
     "email": "faizan75601@email.com",
     "phone": "+92 300 4023123",
     "location": "Pakistan",
-    "bio": """👋 Hi, I'm Faizan Tanveer! I'm a passionate student currently in Class 10 at Sheikh Zayed Public School. 
+    "bio": """👋 Hi, I'm Faizan Tanveer! I'm a passionate student currently in Class 10 at Sheikh Zayed Public School.
 
 🚀 I'm fascinated by technology, especially Artificial Intelligence and programming. I love learning new things and building projects that can make a difference.
 
@@ -1189,24 +1292,24 @@ EXPERIENCE = [
         "company": "Sheikh Zayed Public School",
         "period": "2024 - Present",
         "description": """
-        • Learning full-stack development and AI technologies
-        • Building personal projects using Python and Streamlit
-        • Participating in school coding competitions and hackathons
-        • Contributing to open-source projects
-        • Learning about AI and machine learning concepts
-        """
+• Learning full-stack development and AI technologies
+• Building personal projects using Python and Streamlit
+• Participating in school coding competitions and hackathons
+• Contributing to open-source projects
+• Learning about AI and machine learning concepts
+"""
     },
     {
         "title": "Project Enthusiast",
         "company": "Self-Learning Journey",
         "period": "2023 - Present",
         "description": """
-        • Building web applications with Streamlit
-        • Learning Python programming and web development
-        • Exploring AI technologies and their applications
-        • Working on personal portfolio projects
-        • Developing problem-solving skills through coding
-        """
+• Building web applications with Streamlit
+• Learning Python programming and web development
+• Exploring AI technologies and their applications
+• Working on personal portfolio projects
+• Developing problem-solving skills through coding
+"""
     }
 ]
 
@@ -1554,22 +1657,22 @@ def show_sidebar():
 # ============ PAGE FUNCTIONS ============
 
 def show_home_page():
-    """Display Home page with all sections combined"""
+    """Display Home page with About Me and Profile side by side"""
     
-    # About Me Section
-    st.markdown(f"""
-        <div class="card">
-            <div class="card-title">📖 About Me</div>
-            <div class="about-text">
-                {PERSONAL_INFO['bio']}
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    # Profile and What I Do
+    # About Me and Profile side by side
     col1, col2 = st.columns([2, 1])
     
     with col1:
+        st.markdown(f"""
+            <div class="card">
+                <div class="card-title">📖 About Me</div>
+                <div class="about-text">
+                    {PERSONAL_INFO['bio']}
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # What I Do section
         st.markdown("""
             <div class="card">
                 <div class="card-title">💡 What I Do</div>
@@ -1922,6 +2025,10 @@ def show_contact_page():
                             """, unsafe_allow_html=True)
                 else:
                     st.error("❌ Please fill in all required fields (*)")
+
+    if st.session_state.copied_text:
+        st.success(st.session_state.copied_text)
+        st.session_state.copied_text = ""
 
 # ============ MAIN APP ============
 
