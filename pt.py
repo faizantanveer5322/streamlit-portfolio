@@ -1257,7 +1257,7 @@ PERSONAL_INFO = {
     "name": "Faizan Tanveer",
     "title": "Student | AI Enthusiast",
     "email": "faizan75601@email.com",
-    "phone": "+92 300 4023123",
+    "phone": "+92 300 1234567",
     "location": "Pakistan",
     "bio": """👋 Hi, I'm Faizan Tanveer! I'm a passionate student currently in Class 10 at Sheikh Zayed Public School.
 
