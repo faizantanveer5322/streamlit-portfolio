@@ -20,29 +20,29 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Create images folder if it doesn't exist (auto-created)
+# Create images folder if it doesn't exist
 if not os.path.exists("images"):
     os.makedirs("images")
 
-# Create users file if it doesn't exist (auto-created)
+# Create users file if it doesn't exist
 USERS_FILE = "users.json"
 
-# Get the path for profile image - support both jpg and png
+# Get the path for profile image
 PROFILE_IMAGE_PATH = "images/profile_image.png"
 PROFILE_IMAGE_PATH_JPG = "images/profile_image.jpg"
 
-# Email configuration - REPLACE WITH YOUR EMAIL DETAILS
-EMAIL_SENDER = "your_email@gmail.com"  # Replace with your email
-EMAIL_PASSWORD = "your_app_password"    # Replace with your app password
-EMAIL_RECEIVER = "faizan75601@email.com"  # Where you want to receive messages
+# ============ EMAIL SETUP ============
+# Replace with your email details
+EMAIL_SENDER = "faizantanveer532@gmail.com"
+EMAIL_PASSWORD = "YOUR_APP_PASSWORD_HERE"  # MUST be an App Password
+EMAIL_RECEIVER = "faizantanveer532@gmail.com"
+# ============ END EMAIL SETUP ============
 
 # User authentication functions
 def hash_password(password):
-    """Hash a password using SHA-256"""
     return hashlib.sha256(password.encode()).hexdigest()
 
 def load_users():
-    """Load users from JSON file"""
     if os.path.exists(USERS_FILE):
         try:
             with open(USERS_FILE, 'r') as f:
@@ -52,19 +52,16 @@ def load_users():
     return {}
 
 def save_users(users):
-    """Save users to JSON file"""
     with open(USERS_FILE, 'w') as f:
         json.dump(users, f, indent=4)
 
 def authenticate_user(username, password):
-    """Authenticate a user"""
     users = load_users()
     if username in users:
         return users[username] == hash_password(password)
     return False
 
 def register_user(username, password):
-    """Register a new user"""
     users = load_users()
     if username in users:
         return False
@@ -73,7 +70,6 @@ def register_user(username, password):
     return True
 
 def change_password(username, old_password, new_password):
-    """Change user password"""
     users = load_users()
     if username in users and users[username] == hash_password(old_password):
         users[username] = hash_password(new_password)
@@ -83,40 +79,44 @@ def change_password(username, old_password, new_password):
 
 # Email sending function
 def send_email(name, email, subject, message):
-    """Send email using SMTP"""
     try:
-        # Create message
         msg = MIMEMultipart()
         msg['From'] = EMAIL_SENDER
         msg['To'] = EMAIL_RECEIVER
         msg['Subject'] = f"Portfolio Contact: {subject}"
 
-        # Email body
         body = f"""
-        You have received a new message from your portfolio contact form:
+📬 New Message from Portfolio Contact Form
 
-        Name: {name}
-        Email: {email}
-        Subject: {subject}
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+👤 Name: {name}
+📧 Email: {email}
+📝 Subject: {subject}
+━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-        Message:
-        {message}
+💬 Message:
+{message}
 
-        --------------------
-        Sent from: Faizan Tanveer's Portfolio
-        Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-        """
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+Sent from: Faizan Tanveer's Portfolio
+Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+"""
         
         msg.attach(MIMEText(body, 'plain'))
 
-        # Send email
         server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.set_debuglevel(0)
+        server.ehlo()
         server.starttls()
+        server.ehlo()
         server.login(EMAIL_SENDER, EMAIL_PASSWORD)
         server.send_message(msg)
         server.quit()
         
         return True, "✅ Message sent successfully! I'll get back to you soon."
+        
+    except smtplib.SMTPAuthenticationError as e:
+        return False, f"❌ Authentication Error: Please check your email credentials"
     except Exception as e:
         return False, f"❌ Failed to send message. Error: {str(e)}"
 
@@ -128,19 +128,25 @@ if 'username' not in st.session_state:
 if 'show_register' not in st.session_state:
     st.session_state.show_register = False
 if 'page' not in st.session_state:
-    st.session_state.page = "about"
+    st.session_state.page = "home"
 if 'copied_text' not in st.session_state:
     st.session_state.copied_text = ""
 
-# Custom CSS for stunning design
+# Custom CSS with emoji support and animations
 st.markdown("""
     <style>
-    /* Global Styles - New Dashboard Color Combination */
+    /* Global Styles */
     .main {
         background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     }
     
-    /* Sidebar Styling - Premium Gradient with Animations */
+    /* Fix emoji display */
+    .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
+    .stMarkdown span, .stMarkdown div {
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
+    }
+    
+    /* Sidebar Styling */
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #1a0533 100%) !important;
         padding: 1rem 0.5rem;
@@ -158,19 +164,7 @@ st.markdown("""
         color: white !important;
     }
     
-    section[data-testid="stSidebar"] h1, 
-    section[data-testid="stSidebar"] h2, 
-    section[data-testid="stSidebar"] h3,
-    section[data-testid="stSidebar"] p,
-    section[data-testid="stSidebar"] label {
-        color: white !important;
-    }
-    
-    section[data-testid="stSidebar"] hr {
-        border-color: rgba(255,255,255,0.1) !important;
-    }
-    
-    /* Sidebar user info with pulse animation */
+    /* Sidebar user info */
     .sidebar-user {
         text-align: center;
         padding: 0.5rem 0;
@@ -178,14 +172,8 @@ st.markdown("""
     }
     
     @keyframes userSlideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
     .sidebar-user .avatar {
@@ -194,22 +182,28 @@ st.markdown("""
         border-radius: 50%;
         margin: 0 auto;
         overflow: hidden;
-        border: 3px solid rgba(200, 100, 255, 0.6);
-        box-shadow: 0 0 40px rgba(200, 100, 255, 0.3);
+        border: 3px solid rgba(255, 215, 0, 0.6);
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
         background: rgba(255,255,255,0.1);
-        animation: avatarGlow 3s ease-in-out infinite;
-        transition: all 0.3s ease;
+        animation: avatarPulse 3s ease-in-out infinite;
+        transition: all 0.4s ease;
     }
     
     .sidebar-user .avatar:hover {
-        transform: scale(1.1) rotate(5deg);
+        transform: scale(1.15) rotate(10deg);
         border-color: #ffd700;
-        box-shadow: 0 0 60px rgba(255, 215, 0, 0.4);
+        box-shadow: 0 0 60px rgba(255, 215, 0, 0.6);
     }
     
-    @keyframes avatarGlow {
-        0%, 100% { box-shadow: 0 0 30px rgba(200, 100, 255, 0.2); }
-        50% { box-shadow: 0 0 60px rgba(200, 100, 255, 0.5); }
+    @keyframes avatarPulse {
+        0%, 100% { 
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+            transform: scale(1);
+        }
+        50% { 
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.5);
+            transform: scale(1.05);
+        }
     }
     
     .sidebar-user .avatar img {
@@ -243,7 +237,7 @@ st.markdown("""
         animation: fadeInUp 0.8s ease;
     }
     
-    /* Sidebar navigation buttons with slide and bounce animations */
+    /* Sidebar navigation */
     .sidebar-nav .stButton button {
         width: 100%;
         background: rgba(255,255,255,0.05) !important;
@@ -259,6 +253,7 @@ st.markdown("""
         animation: slideInLeft 0.5s ease both;
         position: relative;
         overflow: hidden;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .sidebar-nav .stButton button::before {
@@ -288,7 +283,23 @@ st.markdown("""
         transform: scale(0.95);
     }
     
-    /* Sidebar logout button animation */
+    .sidebar-nav .stButton button:nth-child(1) { animation-delay: 0.05s; }
+    .sidebar-nav .stButton button:nth-child(2) { animation-delay: 0.1s; }
+    .sidebar-nav .stButton button:nth-child(3) { animation-delay: 0.15s; }
+    .sidebar-nav .stButton button:nth-child(4) { animation-delay: 0.2s; }
+    .sidebar-nav .stButton button:nth-child(5) { animation-delay: 0.25s; }
+    .sidebar-nav .stButton button:nth-child(6) { animation-delay: 0.3s; }
+    .sidebar-nav .stButton button:nth-child(7) { animation-delay: 0.35s; }
+    .sidebar-nav .stButton button:nth-child(8) { animation-delay: 0.4s; }
+    .sidebar-nav .stButton button:nth-child(9) { animation-delay: 0.45s; }
+    .sidebar-nav .stButton button:nth-child(10) { animation-delay: 0.5s; }
+    
+    @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    /* Sidebar logout */
     .sidebar-logout .stButton button {
         width: 100%;
         background: rgba(255,50,50,0.15) !important;
@@ -299,7 +310,7 @@ st.markdown("""
         font-weight: 500 !important;
         transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
         backdrop-filter: blur(10px);
-        animation: slideInLeft 0.6s ease 0.6s both;
+        animation: slideInLeft 0.6s ease 0.55s both;
     }
     
     .sidebar-logout .stButton button:hover {
@@ -309,7 +320,7 @@ st.markdown("""
         border-color: rgba(255,50,50,0.4) !important;
     }
     
-    /* Hero Section - New Vibrant Gradient */
+    /* Hero Section */
     .hero-section {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 55%, #f5576c 80%, #ffd700 100%);
         padding: 3rem 2rem;
@@ -343,14 +354,8 @@ st.markdown("""
     }
     
     @keyframes heroFadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
     @keyframes rotateGradient {
@@ -373,6 +378,7 @@ st.markdown("""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .hero-subtitle {
@@ -380,68 +386,39 @@ st.markdown("""
         opacity: 0.95;
         font-weight: 300;
         animation: fadeInUp 1s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .hero-email {
         font-size: 1.1rem;
         opacity: 0.9;
         margin-top: 0.5rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     @keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(-30px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
     @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
     @keyframes pulse {
-        0% { transform: scale(1); }
+        0%, 100% { transform: scale(1); }
         50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-    }
-    
-    @keyframes slideInLeft {
-        from {
-            opacity: 0;
-            transform: translateX(-30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
     }
     
     @keyframes slideInRight {
-        from {
-            opacity: 0;
-            transform: translateX(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
     }
     
     @keyframes float {
-        0% { transform: translateY(0px); }
+        0%, 100% { transform: translateY(0px); }
         50% { transform: translateY(-10px); }
-        100% { transform: translateY(0px); }
     }
     
     @keyframes bounceIn {
@@ -451,7 +428,7 @@ st.markdown("""
         100% { transform: scale(1); }
     }
     
-    /* Cards - New Style */
+    /* Cards */
     .card {
         background: rgba(255,255,255,0.08);
         backdrop-filter: blur(20px);
@@ -477,10 +454,12 @@ st.markdown("""
         margin-bottom: 1rem;
         border-bottom: 2px solid rgba(255,215,0,0.2);
         padding-bottom: 0.5rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .card p, .card div, .card span, .card h4, .card h3 {
         color: rgba(255,255,255,0.9) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     /* Skill Tags */
@@ -497,6 +476,7 @@ st.markdown("""
         animation: pulse 2s infinite;
         box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
         cursor: pointer;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .skill-tag:hover {
@@ -514,7 +494,7 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
     }
     
-    /* What I Do Cards - Clickable */
+    /* What I Do Cards */
     .what-i-do-item {
         text-align: center;
         padding: 1.5rem;
@@ -527,6 +507,7 @@ st.markdown("""
         cursor: pointer;
         position: relative;
         overflow: hidden;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .what-i-do-item::before {
@@ -562,6 +543,7 @@ st.markdown("""
         animation: float 3s ease-in-out infinite;
         position: relative;
         z-index: 1;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .what-i-do-item .label {
@@ -571,6 +553,7 @@ st.markdown("""
         position: relative;
         z-index: 1;
         font-size: 1rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .what-i-do-item .description {
@@ -579,166 +562,15 @@ st.markdown("""
         margin-top: 0.3rem;
         position: relative;
         z-index: 1;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     @keyframes slideInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
-    /* Experience Timeline */
-    .timeline-item {
-        border-left: 3px solid #ffd700;
-        padding-left: 1.5rem;
-        margin-bottom: 1.5rem;
-        position: relative;
-        animation: slideInRight 0.6s ease;
-    }
-    
-    .timeline-item::before {
-        content: "●";
-        position: absolute;
-        left: -0.7rem;
-        color: #ffd700;
-        font-size: 1.2rem;
-        animation: pulse 2s infinite;
-    }
-    
-    .timeline-title {
-        font-weight: 600;
-        color: #ffd700 !important;
-        font-size: 1.1rem;
-    }
-    
-    .timeline-subtitle {
-        color: #f093fb !important;
-        font-weight: 500;
-        margin: 0.2rem 0;
-    }
-    
-    .timeline-date {
-        color: rgba(255,255,255,0.5) !important;
-        font-size: 0.9rem;
-    }
-    
-    .timeline-item div {
-        color: rgba(255,255,255,0.8) !important;
-    }
-    
-    /* Project Cards */
-    .project-card {
-        background: rgba(255,255,255,0.06);
-        backdrop-filter: blur(20px);
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        transition: all 0.4s ease;
-        height: 100%;
-        border: 1px solid rgba(255,255,255,0.06);
-        animation: slideInUp 0.6s ease;
-    }
-    
-    .project-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 0 15px 50px rgba(0,0,0,0.3);
-        border-color: rgba(255,215,0,0.2);
-    }
-    
-    .project-content {
-        padding: 1.5rem;
-    }
-    
-    .project-title {
-        font-weight: 600;
-        color: #ffd700 !important;
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .project-description {
-        color: rgba(255,255,255,0.7) !important;
-        font-size: 0.95rem;
-        line-height: 1.5;
-    }
-    
-    .project-tech {
-        margin-top: 1rem;
-    }
-    
-    .project-content a {
-        color: #f093fb !important;
-        transition: color 0.3s ease;
-    }
-    
-    .project-content a:hover {
-        color: #ffd700 !important;
-    }
-    
-    /* Social Links */
-    .social-link {
-        display: inline-block;
-        color: white;
-        background: rgba(255,255,255,0.1);
-        padding: 0.5rem 1.2rem;
-        border-radius: 25px;
-        margin: 0.3rem;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-        animation: float 3s ease-in-out infinite;
-        border: 1px solid rgba(255,255,255,0.05);
-    }
-    
-    .social-link:hover {
-        background: rgba(255,215,0,0.2);
-        transform: scale(1.1) translateY(-3px);
-        color: #ffd700;
-        border-color: rgba(255,215,0,0.3);
-        box-shadow: 0 0 30px rgba(255,215,0,0.1);
-    }
-    
-    /* Stats */
-    .stat-box {
-        text-align: center;
-        padding: 1.5rem;
-        background: rgba(255,255,255,0.06);
-        backdrop-filter: blur(20px);
-        border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        border: 1px solid rgba(255,255,255,0.06);
-        transition: all 0.3s ease;
-        animation: slideInUp 0.6s ease;
-    }
-    
-    .stat-box:hover {
-        transform: scale(1.05) translateY(-5px);
-        border-color: rgba(255,215,0,0.2);
-        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-    }
-    
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #ffd700, #f093fb);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        animation: pulse 2s infinite;
-    }
-    
-    .stat-label {
-        color: rgba(255,255,255,0.6) !important;
-        font-size: 0.9rem;
-        margin-top: 0.3rem;
-    }
-    
-    /* Profile Image */
+    /* Profile Image - Enhanced Animation */
     .profile-image-container {
         width: 150px;
         height: 150px;
@@ -748,14 +580,46 @@ st.markdown("""
         border: 4px solid rgba(255,215,0,0.4);
         box-shadow: 0 0 40px rgba(255,215,0,0.2);
         background: rgba(255,255,255,0.1);
-        animation: float 3s ease-in-out infinite;
-        transition: all 0.3s ease;
+        animation: profileFloat 3s ease-in-out infinite, profileGlow 4s ease-in-out infinite;
+        transition: all 0.5s ease;
+        position: relative;
+    }
+    
+    .profile-image-container::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #ffd700, #f093fb, #667eea, #ffd700);
+        background-size: 400% 400%;
+        animation: borderGlow 4s linear infinite;
+        z-index: -1;
+        opacity: 0.6;
+    }
+    
+    @keyframes borderGlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
     
     .profile-image-container:hover {
-        transform: scale(1.05);
+        transform: scale(1.1) rotate(5deg);
         border-color: #ffd700;
-        box-shadow: 0 0 60px rgba(255,215,0,0.3);
+        box-shadow: 0 0 80px rgba(255,215,0,0.5);
+    }
+    
+    @keyframes profileFloat {
+        0%, 100% { transform: translateY(0px) scale(1); }
+        50% { transform: translateY(-15px) scale(1.02); }
+    }
+    
+    @keyframes profileGlow {
+        0%, 100% { box-shadow: 0 0 30px rgba(255,215,0,0.2); }
+        50% { box-shadow: 0 0 60px rgba(255,215,0,0.4); }
     }
     
     .profile-image-container img {
@@ -764,7 +628,7 @@ st.markdown("""
         object-fit: cover;
     }
     
-    /* Colorful Profile Card */
+    /* Profile Card */
     .profile-card {
         text-align: center;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%) !important;
@@ -793,6 +657,7 @@ st.markdown("""
     .profile-card * {
         position: relative;
         z-index: 1;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .profile-card .card-title {
@@ -846,7 +711,7 @@ st.markdown("""
         display: none !important;
     }
     
-    /* Social Icons inside profile card */
+    /* Social Icons */
     .profile-social-icons {
         display: flex;
         justify-content: center;
@@ -859,7 +724,7 @@ st.markdown("""
         color: white !important;
         font-size: 1.5rem;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: all 0.4s ease;
         display: inline-block;
         background: rgba(255,255,255,0.1);
         padding: 0.3rem 0.6rem;
@@ -870,28 +735,18 @@ st.markdown("""
     }
     
     .profile-social-icons a:hover {
-        transform: scale(1.2) rotate(-5deg) translateY(-3px);
-        background: rgba(255,255,255,0.25);
-        box-shadow: 0 0 30px rgba(255,255,255,0.1);
+        transform: scale(1.3) rotate(-10deg) translateY(-5px);
+        background: rgba(255,215,0,0.25);
+        box-shadow: 0 0 40px rgba(255,215,0,0.2);
+        border-color: rgba(255,215,0,0.3);
     }
     
-    /* Copy Container */
-    .copy-container {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin: 0.3rem 0;
-    }
+    .profile-social-icons a:nth-child(1) { animation-delay: 0s; }
+    .profile-social-icons a:nth-child(2) { animation-delay: 0.5s; }
+    .profile-social-icons a:nth-child(3) { animation-delay: 1s; }
+    .profile-social-icons a:nth-child(4) { animation-delay: 1.5s; }
     
-    .copy-text {
-        flex: 1;
-        padding: 0.3rem 0.5rem;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        word-break: break-all;
-    }
-    
-    /* Download Resume Button */
+    /* Download Resume */
     .download-btn {
         display: block;
         text-align: center;
@@ -908,6 +763,7 @@ st.markdown("""
         margin-top: 0.5rem;
         animation: pulse 2s infinite;
         box-shadow: 0 4px 25px rgba(255,215,0,0.3);
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .download-btn:hover {
@@ -916,7 +772,7 @@ st.markdown("""
         color: white !important;
     }
     
-    /* Contact form styling */
+    /* Contact form */
     .contact-form-card {
         background: rgba(255,255,255,0.08);
         backdrop-filter: blur(20px);
@@ -929,6 +785,7 @@ st.markdown("""
     
     .contact-form-card h4 {
         color: #ffd700 !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .contact-form-card .stTextInput input,
@@ -938,6 +795,7 @@ st.markdown("""
         background: rgba(255,255,255,0.05) !important;
         color: white !important;
         padding: 0.6rem 1rem !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .contact-form-card .stTextInput input:focus,
@@ -954,6 +812,7 @@ st.markdown("""
     .contact-form-card .stTextInput label,
     .contact-form-card .stTextArea label {
         color: rgba(255,255,255,0.7) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .contact-form-card .stButton button {
@@ -966,6 +825,7 @@ st.markdown("""
         font-weight: 600 !important;
         transition: all 0.3s ease !important;
         box-shadow: 0 4px 25px rgba(255,215,0,0.2) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .contact-form-card .stButton button:hover {
@@ -973,77 +833,7 @@ st.markdown("""
         box-shadow: 0 8px 35px rgba(255,215,0,0.3) !important;
     }
     
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .hero-title {
-            font-size: 2.5rem;
-        }
-        .hero-subtitle {
-            font-size: 1.2rem;
-        }
-        .copy-container {
-            flex-wrap: wrap;
-        }
-        .what-i-do-item {
-            padding: 1rem;
-        }
-    }
-    
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-        background: #1a1a2e;
-        border-radius: 10px;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #ffd700, #f093fb);
-        border-radius: 10px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #f093fb, #ffd700);
-    }
-    
-    /* About Me text styling */
-    .about-text {
-        font-size: 1.05rem;
-        line-height: 1.8;
-        color: rgba(255,255,255,0.85) !important;
-        white-space: pre-wrap;
-    }
-    
-    /* Success Message */
-    .success-message {
-        background: rgba(46, 213, 115, 0.2);
-        backdrop-filter: blur(20px);
-        color: #2ed573;
-        padding: 1rem;
-        border-radius: 15px;
-        border: 1px solid rgba(46, 213, 115, 0.2);
-        margin-top: 1rem;
-        text-align: center;
-        animation: fadeInUp 0.5s ease;
-    }
-    
-    /* Error Message */
-    .error-message {
-        background: rgba(255, 50, 50, 0.2);
-        backdrop-filter: blur(20px);
-        color: #ff6b6b;
-        padding: 1rem;
-        border-radius: 15px;
-        border: 1px solid rgba(255, 50, 50, 0.2);
-        margin-top: 1rem;
-        text-align: center;
-        animation: fadeInUp 0.5s ease;
-    }
-    
-    /* Auth Container Animations */
+    /* Auth Container */
     .auth-container {
         max-width: 420px;
         margin: 50px auto;
@@ -1062,6 +852,7 @@ st.markdown("""
         margin-bottom: 0.5rem;
         font-size: 2rem;
         animation: fadeInDown 0.8s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .auth-container .subtitle {
@@ -1070,6 +861,7 @@ st.markdown("""
         margin-bottom: 1.5rem;
         font-size: 0.9rem;
         animation: fadeInUp 0.8s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .auth-container .stButton button {
@@ -1083,6 +875,7 @@ st.markdown("""
         transition: all 0.3s ease;
         animation: pulse 2s infinite;
         box-shadow: 0 4px 25px rgba(255,215,0,0.2);
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .auth-container .stButton button:hover {
@@ -1097,6 +890,7 @@ st.markdown("""
         background: rgba(255,255,255,0.05);
         color: white;
         transition: all 0.3s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .auth-container .stTextInput input:focus {
@@ -1110,6 +904,7 @@ st.markdown("""
     
     .auth-container .stTextInput label {
         color: rgba(255,255,255,0.7) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .auth-switch {
@@ -1117,6 +912,7 @@ st.markdown("""
         margin-top: 1.2rem;
         color: rgba(255,255,255,0.6);
         animation: fadeInUp 0.8s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .auth-switch a {
@@ -1132,7 +928,6 @@ st.markdown("""
         text-decoration: underline;
     }
     
-    /* Auth icon animation */
     .auth-icon {
         text-align: center;
         font-size: 4rem;
@@ -1140,7 +935,7 @@ st.markdown("""
         animation: float 3s ease-in-out infinite;
     }
     
-    /* Settings page styles */
+    /* Settings */
     .settings-card {
         background: rgba(255,255,255,0.05);
         backdrop-filter: blur(30px);
@@ -1156,10 +951,12 @@ st.markdown("""
     .settings-card h2 {
         color: #ffd700 !important;
         text-align: center;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .settings-card h3 {
         color: rgba(255,255,255,0.9) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .settings-card .stButton button {
@@ -1172,6 +969,7 @@ st.markdown("""
         font-weight: 600;
         transition: all 0.3s ease;
         box-shadow: 0 4px 25px rgba(255,215,0,0.2);
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .settings-card .stButton button:hover {
@@ -1186,6 +984,7 @@ st.markdown("""
         background: rgba(255,255,255,0.05);
         color: white;
         transition: all 0.3s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .settings-card .stTextInput input:focus {
@@ -1199,6 +998,7 @@ st.markdown("""
     
     .settings-card .stTextInput label {
         color: rgba(255,255,255,0.7) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .settings-card hr {
@@ -1207,10 +1007,59 @@ st.markdown("""
     
     .settings-card p {
         color: rgba(255,255,255,0.6) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .settings-card strong {
         color: #ffd700 !important;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-title { font-size: 2.5rem; }
+        .hero-subtitle { font-size: 1.2rem; }
+        .copy-container { flex-wrap: wrap; }
+        .what-i-do-item { padding: 1rem; }
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #1a1a2e; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #ffd700, #f093fb); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #f093fb, #ffd700); }
+    
+    .about-text {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: rgba(255,255,255,0.85) !important;
+        white-space: pre-wrap;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .success-message {
+        background: rgba(46, 213, 115, 0.2);
+        backdrop-filter: blur(20px);
+        color: #2ed573;
+        padding: 1rem;
+        border-radius: 15px;
+        border: 1px solid rgba(46, 213, 115, 0.2);
+        margin-top: 1rem;
+        text-align: center;
+        animation: fadeInUp 0.5s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .error-message {
+        background: rgba(255, 50, 50, 0.2);
+        backdrop-filter: blur(20px);
+        color: #ff6b6b;
+        padding: 1rem;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 50, 50, 0.2);
+        margin-top: 1rem;
+        text-align: center;
+        animation: fadeInUp 0.5s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .stAlert {
@@ -1220,6 +1069,82 @@ st.markdown("""
     
     .stAlert .stMarkdown {
         color: white !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .copy-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.3rem 0;
+    }
+    
+    .copy-text {
+        flex: 1;
+        padding: 0.3rem 0.5rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        word-break: break-all;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .social-link {
+        display: inline-block;
+        color: white;
+        background: rgba(255,255,255,0.1);
+        padding: 0.5rem 1.2rem;
+        border-radius: 25px;
+        margin: 0.3rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        animation: float 3s ease-in-out infinite;
+        border: 1px solid rgba(255,255,255,0.05);
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .social-link:hover {
+        background: rgba(255,215,0,0.2);
+        transform: scale(1.1) translateY(-3px);
+        color: #ffd700;
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
+    }
+    
+    .stat-box {
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.06);
+        transition: all 0.3s ease;
+        animation: slideInUp 0.6s ease;
+    }
+    
+    .stat-box:hover {
+        transform: scale(1.05) translateY(-5px);
+        border-color: rgba(255,215,0,0.2);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ffd700, #f093fb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: pulse 2s infinite;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .stat-label {
+        color: rgba(255,255,255,0.6) !important;
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -1365,11 +1290,6 @@ ACHIEVEMENTS = [
     "🎤 Active participant in school tech events"
 ]
 
-# Function to check if image exists (jpg or png)
-def image_exists():
-    return os.path.exists(PROFILE_IMAGE_PATH) or os.path.exists(PROFILE_IMAGE_PATH_JPG)
-
-# Function to get image path
 def get_image_path():
     if os.path.exists(PROFILE_IMAGE_PATH):
         return PROFILE_IMAGE_PATH
@@ -1377,30 +1297,22 @@ def get_image_path():
         return PROFILE_IMAGE_PATH_JPG
     return None
 
-# Function to save uploaded image (supports jpg and png)
 def save_uploaded_image(uploaded_file):
     if uploaded_file is not None:
         try:
-            # Open image
             image = Image.open(uploaded_file)
-            # Convert to RGB if necessary
             if image.mode in ('RGBA', 'LA', 'P'):
                 image = image.convert('RGB')
-            # Resize image to 500x500 for consistency
             image = image.resize((500, 500))
             
-            # Get file extension
             file_extension = uploaded_file.name.split('.')[-1].lower()
             
-            # Save based on extension
             if file_extension in ['jpg', 'jpeg']:
-                # Delete png if exists
                 if os.path.exists(PROFILE_IMAGE_PATH):
                     os.remove(PROFILE_IMAGE_PATH)
                 image.save(PROFILE_IMAGE_PATH_JPG, 'JPEG', quality=95, optimize=True)
                 return True
-            else:  # png
-                # Delete jpg if exists
+            else:
                 if os.path.exists(PROFILE_IMAGE_PATH_JPG):
                     os.remove(PROFILE_IMAGE_PATH_JPG)
                 image.save(PROFILE_IMAGE_PATH, 'PNG', optimize=True)
@@ -1410,7 +1322,6 @@ def save_uploaded_image(uploaded_file):
             return False
     return False
 
-# Function to get profile image as base64
 def get_profile_image_base64():
     img_path = get_image_path()
     if img_path:
@@ -1422,7 +1333,6 @@ def get_profile_image_base64():
             return None
     return None
 
-# Function to create download button for resume
 def create_download_resume():
     resume_content = f"""
 FAIZAN TANVEER
@@ -1455,10 +1365,9 @@ ACHIEVEMENTS
     href = f'<a href="data:text/plain;base64,{b64}" download="Faizan_Tanveer_Resume.txt" class="download-btn">📄 Download Resume</a>'
     return href
 
-# ============ AUTHENTICATION SECTION ============
+# ============ AUTHENTICATION ============
 
 def show_login_page():
-    """Display login page with animations"""
     st.markdown("""
         <div class="auth-container">
             <div class="auth-icon">🔐</div>
@@ -1476,7 +1385,7 @@ def show_login_page():
                 if authenticate_user(username, password):
                     st.session_state.authenticated = True
                     st.session_state.username = username
-                    st.session_state.page = "about"
+                    st.session_state.page = "home"
                     st.success("✅ Login successful!")
                     time.sleep(0.5)
                     st.rerun()
@@ -1492,13 +1401,11 @@ def show_login_page():
         </div>
     """, unsafe_allow_html=True)
     
-    # Register button (hidden, triggered by link)
     if st.button("Register", key="goto_register", use_container_width=True, type="secondary"):
         st.session_state.show_register = True
         st.rerun()
 
 def show_register_page():
-    """Display registration page with animations"""
     st.markdown("""
         <div class="auth-container">
             <div class="auth-icon">📝</div>
@@ -1538,15 +1445,13 @@ def show_register_page():
         </div>
     """, unsafe_allow_html=True)
     
-    # Login button (hidden, triggered by link)
     if st.button("Login", key="goto_login", use_container_width=True, type="secondary"):
         st.session_state.show_register = False
         st.rerun()
 
-# ============ SETTINGS PAGE ============
+# ============ SETTINGS ============
 
 def show_settings():
-    """Display settings page with password change option"""
     st.markdown("""
         <div class="settings-card">
             <h2>⚙️ Settings</h2>
@@ -1584,13 +1489,11 @@ def show_settings():
 # ============ SIDEBAR ============
 
 def show_sidebar():
-    """Display sidebar navigation with all portfolio buttons"""
     with st.sidebar:
         st.markdown("""
             <div class="sidebar-user">
         """, unsafe_allow_html=True)
         
-        # Display profile image in sidebar
         img_base64 = get_profile_image_base64()
         if img_base64:
             st.markdown(f"""
@@ -1613,8 +1516,9 @@ def show_sidebar():
             <div class="sidebar-nav">
         """, unsafe_allow_html=True)
         
-        # All portfolio navigation items
+        # Navigation items with Home button first
         nav_items = [
+            {"key": "home", "icon": "🏠", "label": "Home"},
             {"key": "about", "icon": "👤", "label": "About Me"},
             {"key": "skills", "icon": "🛠️", "label": "Skills"},
             {"key": "experience", "icon": "💼", "label": "Experience"},
@@ -1640,70 +1544,32 @@ def show_sidebar():
         if st.button("🚪 Logout", key="logout_sidebar", use_container_width=True):
             st.session_state.authenticated = False
             st.session_state.username = ""
-            st.session_state.page = "about"
+            st.session_state.page = "home"
             st.rerun()
         
         st.markdown("""
             </div>
         """, unsafe_allow_html=True)
 
-# ============ MAIN PORTFOLIO CONTENT ============
+# ============ PAGE FUNCTIONS ============
 
-def show_portfolio():
-    """Display the main portfolio content based on selected page"""
+def show_home_page():
+    """Display Home page with all sections combined"""
     
-    # Hero Section
+    # About Me Section
     st.markdown(f"""
-        <div class="hero-section">
-            <div class="hero-title">👋 {PERSONAL_INFO['name']}</div>
-            <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
-            <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
-            <div style="margin-top: 1.5rem;">
-                <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-link">🐙 GitHub</a>
-                <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-link">🐦 Twitter</a>
-                <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-link">📸 Instagram</a>
-                <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-link">🎵 TikTok</a>
+        <div class="card">
+            <div class="card-title">📖 About Me</div>
+            <div class="about-text">
+                {PERSONAL_INFO['bio']}
             </div>
         </div>
     """, unsafe_allow_html=True)
-
-    # Show selected page
-    page = st.session_state.page
     
-    if page == "about":
-        show_about_page()
-    elif page == "skills":
-        show_skills_page()
-    elif page == "experience":
-        show_experience_page()
-    elif page == "education":
-        show_education_page()
-    elif page == "projects":
-        show_projects_page()
-    elif page == "achievements":
-        show_achievements_page()
-    elif page == "stats":
-        show_stats_page()
-    elif page == "contact":
-        show_contact_page()
-    else:
-        show_about_page()
-
-def show_about_page():
-    """Display About Me page"""
+    # Profile and What I Do
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.markdown(f"""
-            <div class="card">
-                <div class="card-title">📖 About Me</div>
-                <div class="about-text">
-                    {PERSONAL_INFO['bio']}
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        # What I Do - Clickable Cards
         st.markdown("""
             <div class="card">
                 <div class="card-title">💡 What I Do</div>
@@ -1738,7 +1604,6 @@ def show_about_page():
                 <div class="card-title">👤 Profile</div>
         """, unsafe_allow_html=True)
         
-        # Display profile image
         img_base64 = get_profile_image_base64()
         if img_base64:
             st.markdown(f"""
@@ -1763,8 +1628,7 @@ def show_about_page():
                         <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white;">{PERSONAL_INFO['email']}</span>
         """, unsafe_allow_html=True)
         
-        # Email Copy Button
-        if st.button("📋 Copy", key="copy_email_profile", use_container_width=True):
+        if st.button("📋 Copy", key="copy_email_home", use_container_width=True):
             st.session_state.copied_text = "Email copied to clipboard!"
         
         st.markdown(f"""
@@ -1774,8 +1638,7 @@ def show_about_page():
                         <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white;">{PERSONAL_INFO['phone']}</span>
         """, unsafe_allow_html=True)
         
-        # Phone Copy Button
-        if st.button("📋 Copy", key="copy_phone_profile", use_container_width=True):
+        if st.button("📋 Copy", key="copy_phone_home", use_container_width=True):
             st.session_state.copied_text = "Phone copied to clipboard!"
         
         st.markdown(f"""
@@ -1797,16 +1660,23 @@ def show_about_page():
             </div>
         """, unsafe_allow_html=True)
         
-        # Show copy success message
         if st.session_state.copied_text:
             st.success(st.session_state.copied_text)
             st.session_state.copied_text = ""
         
-        # Download Resume Button
         st.markdown(create_download_resume(), unsafe_allow_html=True)
 
+def show_about_page():
+    st.markdown(f"""
+        <div class="card">
+            <div class="card-title">📖 About Me</div>
+            <div class="about-text">
+                {PERSONAL_INFO['bio']}
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
 def show_skills_page():
-    """Display Skills page"""
     st.markdown('<div class="card-title">🛠️ Technical Skills</div>', unsafe_allow_html=True)
     
     for category, skills in SKILLS.items():
@@ -1843,7 +1713,6 @@ def show_skills_page():
         """, unsafe_allow_html=True)
 
 def show_experience_page():
-    """Display Experience page"""
     st.markdown('<div class="card-title">💼 Experience</div>', unsafe_allow_html=True)
     
     for exp in EXPERIENCE:
@@ -1859,7 +1728,6 @@ def show_experience_page():
         """, unsafe_allow_html=True)
 
 def show_education_page():
-    """Display Education page"""
     st.markdown('<div class="card-title">🎓 Education</div>', unsafe_allow_html=True)
     
     cols = st.columns(2)
@@ -1887,7 +1755,6 @@ def show_education_page():
             """, unsafe_allow_html=True)
 
 def show_projects_page():
-    """Display Projects page"""
     st.markdown('<div class="card-title">🚀 Projects</div>', unsafe_allow_html=True)
     
     for i in range(0, len(PROJECTS), 3):
@@ -1914,7 +1781,6 @@ def show_projects_page():
                     """, unsafe_allow_html=True)
 
 def show_achievements_page():
-    """Display Achievements page"""
     st.markdown('<div class="card-title">🏆 Achievements & Recognition</div>', unsafe_allow_html=True)
     
     cols = st.columns(2)
@@ -1930,7 +1796,6 @@ def show_achievements_page():
             """, unsafe_allow_html=True)
 
 def show_stats_page():
-    """Display Stats page"""
     st.markdown('<div class="card-title">📊 Statistics</div>', unsafe_allow_html=True)
     
     col1, col2, col3, col4 = st.columns(4)
@@ -1972,7 +1837,6 @@ def show_stats_page():
         """, unsafe_allow_html=True)
 
 def show_contact_page():
-    """Display Contact page with working email form"""
     st.markdown('<div class="card-title">📬 Contact Me</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns([1, 1])
@@ -2040,7 +1904,6 @@ def show_contact_page():
             
             if submit_button:
                 if name and email and message:
-                    # Show sending message
                     with st.spinner("Sending message..."):
                         success, response = send_email(name, email, subject, message)
                         
@@ -2051,11 +1914,6 @@ def show_contact_page():
                                 </div>
                             """, unsafe_allow_html=True)
                             st.balloons()
-                            # Clear form fields
-                            st.session_state.contact_name = ""
-                            st.session_state.contact_email = ""
-                            st.session_state.contact_subject = ""
-                            st.session_state.contact_message = ""
                         else:
                             st.markdown(f"""
                                 <div class="error-message">
@@ -2065,26 +1923,54 @@ def show_contact_page():
                 else:
                     st.error("❌ Please fill in all required fields (*)")
 
-    # Show copy success message
-    if st.session_state.copied_text:
-        st.success(st.session_state.copied_text)
-        st.session_state.copied_text = ""
-
-# ============ APP ROUTING ============
+# ============ MAIN APP ============
 
 def main():
-    """Main app routing based on authentication status"""
-    
     if st.session_state.authenticated:
-        # Show sidebar
         show_sidebar()
         
         # Show page based on navigation
-        if st.session_state.page == "settings":
+        page = st.session_state.page
+        
+        # Hero Section
+        st.markdown(f"""
+            <div class="hero-section">
+                <div class="hero-title">👋 {PERSONAL_INFO['name']}</div>
+                <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
+                <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
+                <div style="margin-top: 1.5rem;">
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-link">🐙 GitHub</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-link">🐦 Twitter</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-link">📸 Instagram</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-link">🎵 TikTok</a>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # Page routing
+        if page == "home":
+            show_home_page()
+        elif page == "about":
+            show_about_page()
+        elif page == "skills":
+            show_skills_page()
+        elif page == "experience":
+            show_experience_page()
+        elif page == "education":
+            show_education_page()
+        elif page == "projects":
+            show_projects_page()
+        elif page == "achievements":
+            show_achievements_page()
+        elif page == "stats":
+            show_stats_page()
+        elif page == "contact":
+            show_contact_page()
+        elif page == "settings":
             show_settings()
         else:
-            show_portfolio()
-            
+            show_home_page()
+        
         # Footer
         st.markdown("---")
         st.markdown(f"""
@@ -2096,20 +1982,19 @@ def main():
                     Student | AI Enthusiast | Lifelong Learner
                 </p>
                 <div style="margin-top: 0.5rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-icon" title="GitHub">🐙</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-icon" title="Twitter">🐦</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-icon" title="Instagram">📸</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-icon" title="TikTok">🎵</a>
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" style="color: rgba(255,255,255,0.3); font-size: 1.5rem; margin: 0 0.5rem; text-decoration: none;">🐙</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" style="color: rgba(255,255,255,0.3); font-size: 1.5rem; margin: 0 0.5rem; text-decoration: none;">🐦</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" style="color: rgba(255,255,255,0.3); font-size: 1.5rem; margin: 0 0.5rem; text-decoration: none;">📸</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" style="color: rgba(255,255,255,0.3); font-size: 1.5rem; margin: 0 0.5rem; text-decoration: none;">🎵</a>
                 </div>
             </div>
         """, unsafe_allow_html=True)
+        
     else:
-        # Show login/register based on state
         if st.session_state.show_register:
             show_register_page()
         else:
             show_login_page()
 
-# Run the app
 if __name__ == "__main__":
     main()
