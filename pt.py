@@ -7,13 +7,14 @@ import io
 import os
 import hashlib
 import json
+import time
 
 # Page configuration
 st.set_page_config(
     page_title="Faizan Tanveer | Portfolio",
     page_icon="👨‍💻",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 # Create images folder if it doesn't exist
@@ -63,15 +64,28 @@ def register_user(username, password):
     save_users(users)
     return True
 
-# Initialize session state for authentication
+def change_password(username, old_password, new_password):
+    """Change user password"""
+    users = load_users()
+    if username in users and users[username] == hash_password(old_password):
+        users[username] = hash_password(new_password)
+        save_users(users)
+        return True
+    return False
+
+# Initialize session state
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
 if 'username' not in st.session_state:
     st.session_state.username = ""
 if 'show_register' not in st.session_state:
     st.session_state.show_register = False
+if 'page' not in st.session_state:
+    st.session_state.page = "portfolio"
+if 'auth_animation' not in st.session_state:
+    st.session_state.auth_animation = False
 
-# Custom CSS for authentication and main design
+# Custom CSS for stunning design with animations
 st.markdown("""
     <style>
     /* Global Styles */
@@ -79,70 +93,122 @@ st.markdown("""
         background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     }
     
-    /* Hide sidebar completely */
-    [data-testid="stSidebar"] {
-        display: none !important;
+    /* Sidebar Styling - Colorful Gradient */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #667eea 0%, #764ba2 40%, #f093fb 70%, #f5576c 100%) !important;
+        padding: 1rem 0.5rem;
+        border-right: none !important;
     }
     
-    [data-testid="stSidebarNav"] {
-        display: none !important;
+    section[data-testid="stSidebar"] .stMarkdown {
+        color: white !important;
     }
     
-    /* Auth Container */
-    .auth-container {
-        max-width: 400px;
-        margin: 50px auto;
-        padding: 2rem;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        border: 1px solid rgba(102, 126, 234, 0.1);
+    section[data-testid="stSidebar"] h1, 
+    section[data-testid="stSidebar"] h2, 
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] label {
+        color: white !important;
     }
     
-    .auth-container h2 {
+    section[data-testid="stSidebar"] hr {
+        border-color: rgba(255,255,255,0.3) !important;
+    }
+    
+    /* Sidebar user info */
+    .sidebar-user {
         text-align: center;
-        color: #333;
-        margin-bottom: 1.5rem;
-        font-size: 2rem;
+        padding: 0.5rem 0;
     }
     
-    .auth-container .subtitle {
-        text-align: center;
-        color: #888;
-        margin-bottom: 1.5rem;
-        font-size: 0.9rem;
+    .sidebar-user .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin: 0 auto;
+        overflow: hidden;
+        border: 3px solid rgba(255,255,255,0.8);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        background: rgba(255,255,255,0.1);
     }
     
-    .auth-container .stButton button {
+    .sidebar-user .avatar img {
         width: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        padding: 0.6rem;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .sidebar-user h3 {
+        color: white !important;
+        margin-top: 0.5rem;
+        margin-bottom: 0.2rem;
+        font-size: 1.1rem;
+    }
+    
+    .sidebar-user p {
+        color: rgba(255,255,255,0.8) !important;
+        font-size: 0.8rem;
+        margin: 0;
+    }
+    
+    /* Sidebar navigation */
+    .sidebar-nav {
+        margin: 0.5rem 0;
+    }
+    
+    .sidebar-nav .nav-item {
+        display: block;
+        padding: 0.6rem 1rem;
+        margin: 0.2rem 0;
         border-radius: 10px;
-        font-weight: 600;
-        transition: transform 0.3s ease;
-    }
-    
-    .auth-container .stButton button:hover {
-        transform: scale(1.02);
-    }
-    
-    .auth-switch {
-        text-align: center;
-        margin-top: 1rem;
-        color: #666;
-    }
-    
-    .auth-switch a {
-        color: #667eea;
-        text-decoration: none;
-        font-weight: 600;
+        color: rgba(255,255,255,0.8) !important;
+        text-decoration: none !important;
+        transition: all 0.3s ease;
         cursor: pointer;
+        font-size: 0.9rem;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.05);
     }
     
-    .auth-switch a:hover {
-        text-decoration: underline;
+    .sidebar-nav .nav-item:hover {
+        background: rgba(255,255,255,0.15);
+        color: white !important;
+        transform: translateX(5px);
+    }
+    
+    .sidebar-nav .nav-item.active {
+        background: rgba(255,255,255,0.2);
+        color: white !important;
+        border-color: rgba(255,255,255,0.2);
+    }
+    
+    .sidebar-nav .nav-item .icon {
+        margin-right: 0.5rem;
+    }
+    
+    /* Sidebar logout button */
+    .sidebar-logout {
+        margin-top: 1rem;
+        padding: 0.5rem;
+    }
+    
+    .sidebar-logout .stButton button {
+        width: 100%;
+        background: rgba(255,255,255,0.15) !important;
+        color: white !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        border-radius: 10px !important;
+        padding: 0.5rem !important;
+        font-weight: 500 !important;
+        transition: all 0.3s ease !important;
+        backdrop-filter: blur(10px);
+    }
+    
+    .sidebar-logout .stButton button:hover {
+        background: rgba(255,255,255,0.3) !important;
+        transform: scale(1.02);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
     
     /* Hero Section */
@@ -154,6 +220,7 @@ st.markdown("""
         color: white;
         text-align: center;
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        animation: fadeInDown 0.8s ease;
     }
     
     .hero-title {
@@ -180,7 +247,7 @@ st.markdown("""
     @keyframes fadeInDown {
         from {
             opacity: 0;
-            transform: translateY(-20px);
+            transform: translateY(-30px);
         }
         to {
             opacity: 1;
@@ -191,12 +258,46 @@ st.markdown("""
     @keyframes fadeInUp {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px);
         }
         to {
             opacity: 1;
             transform: translateY(0);
         }
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
     }
     
     /* Cards */
@@ -208,6 +309,7 @@ st.markdown("""
         margin-bottom: 1.5rem;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         border: 1px solid rgba(102, 126, 234, 0.1);
+        animation: slideInLeft 0.6s ease;
     }
     
     .card:hover {
@@ -235,6 +337,7 @@ st.markdown("""
         font-size: 0.9rem;
         font-weight: 500;
         transition: transform 0.2s ease;
+        animation: pulse 2s infinite;
     }
     
     .skill-tag:hover {
@@ -247,7 +350,7 @@ st.markdown("""
         padding-left: 1.5rem;
         margin-bottom: 1.5rem;
         position: relative;
-        animation: slideIn 0.5s ease;
+        animation: slideInRight 0.6s ease;
     }
     
     .timeline-item::before {
@@ -256,17 +359,7 @@ st.markdown("""
         left: -0.7rem;
         color: #667eea;
         font-size: 1.2rem;
-    }
-    
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
+        animation: pulse 2s infinite;
     }
     
     .timeline-title {
@@ -295,10 +388,11 @@ st.markdown("""
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         height: 100%;
         border: 1px solid rgba(102, 126, 234, 0.1);
+        animation: slideInUp 0.6s ease;
     }
     
     .project-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-5px) scale(1.02);
         box-shadow: 0 8px 15px rgba(0,0,0,0.1);
     }
     
@@ -334,11 +428,12 @@ st.markdown("""
         text-decoration: none;
         transition: all 0.3s ease;
         backdrop-filter: blur(10px);
+        animation: float 3s ease-in-out infinite;
     }
     
     .social-link:hover {
         background: rgba(255,255,255,0.3);
-        transform: scale(1.05);
+        transform: scale(1.05) translateY(-3px);
         color: white;
     }
     
@@ -353,7 +448,7 @@ st.markdown("""
     }
     
     .social-icon:hover {
-        transform: scale(1.2);
+        transform: scale(1.2) rotate(10deg);
         color: #667eea;
     }
     
@@ -366,10 +461,11 @@ st.markdown("""
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         border: 1px solid rgba(102, 126, 234, 0.1);
         transition: transform 0.3s ease;
+        animation: slideInUp 0.6s ease;
     }
     
     .stat-box:hover {
-        transform: scale(1.05);
+        transform: scale(1.05) translateY(-5px);
     }
     
     .stat-number {
@@ -378,6 +474,7 @@ st.markdown("""
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        animation: pulse 2s infinite;
     }
     
     .stat-label {
@@ -396,6 +493,7 @@ st.markdown("""
         border: 4px solid rgba(255,255,255,0.8);
         box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         background: rgba(255,255,255,0.1);
+        animation: float 3s ease-in-out infinite;
     }
     
     .profile-image-container img {
@@ -416,6 +514,7 @@ st.markdown("""
         transition: transform 0.3s ease, box-shadow 0.3s ease !important;
         position: relative;
         overflow: hidden;
+        animation: slideInRight 0.6s ease;
     }
     
     .profile-card::before {
@@ -510,10 +609,11 @@ st.markdown("""
         border-radius: 10px;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.1);
+        animation: float 3s ease-in-out infinite;
     }
     
     .profile-social-icons a:hover {
-        transform: scale(1.2) rotate(-5deg);
+        transform: scale(1.2) rotate(-5deg) translateY(-3px);
         background: rgba(255,255,255,0.3);
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
@@ -525,15 +625,17 @@ st.markdown("""
         background: #f8f9fa;
         border-radius: 10px;
         transition: transform 0.3s ease;
+        animation: slideInUp 0.6s ease;
     }
     
     .what-i-do-item:hover {
-        transform: scale(1.05);
+        transform: scale(1.05) translateY(-5px);
     }
     
     .what-i-do-item .icon {
         font-size: 2rem;
         display: block;
+        animation: float 3s ease-in-out infinite;
     }
     
     .what-i-do-item .label {
@@ -573,6 +675,7 @@ st.markdown("""
         cursor: pointer;
         width: 100%;
         margin-top: 0.5rem;
+        animation: pulse 2s infinite;
     }
     
     .download-btn:hover {
@@ -631,13 +734,13 @@ st.markdown("""
         border: 1px solid #c3e6cb;
         margin-top: 1rem;
         text-align: center;
-        animation: fadeIn 0.5s ease;
+        animation: fadeInUp 0.5s ease;
     }
     
-    @keyframes fadeIn {
+    @keyframes slideInUp {
         from {
             opacity: 0;
-            transform: translateY(-10px);
+            transform: translateY(30px);
         }
         to {
             opacity: 1;
@@ -645,28 +748,131 @@ st.markdown("""
         }
     }
     
-    /* Logout button */
-    .logout-btn {
-        position: fixed;
-        top: 10px;
-        right: 20px;
-        z-index: 1000;
+    /* Auth Container Animations */
+    .auth-container {
+        max-width: 420px;
+        margin: 50px auto;
+        padding: 2.5rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        animation: fadeInUp 0.8s ease;
     }
     
-    .logout-btn button {
-        background: rgba(255,255,255,0.2) !important;
-        color: white !important;
-        border: 1px solid rgba(255,255,255,0.3) !important;
-        border-radius: 20px !important;
-        padding: 0.3rem 1rem !important;
-        font-size: 0.8rem !important;
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease !important;
+    .auth-container h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-size: 2rem;
+        animation: fadeInDown 0.8s ease;
     }
     
-    .logout-btn button:hover {
-        background: rgba(255,255,255,0.3) !important;
-        transform: scale(1.05);
+    .auth-container .subtitle {
+        text-align: center;
+        color: #888;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        animation: fadeInUp 0.8s ease;
+    }
+    
+    .auth-container .stButton button {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.7rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        animation: pulse 2s infinite;
+    }
+    
+    .auth-container .stButton button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .auth-container .stTextInput input {
+        border-radius: 10px;
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        padding: 0.6rem 1rem;
+        transition: border-color 0.3s ease;
+    }
+    
+    .auth-container .stTextInput input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    }
+    
+    .auth-switch {
+        text-align: center;
+        margin-top: 1.2rem;
+        color: #666;
+        animation: fadeInUp 0.8s ease;
+    }
+    
+    .auth-switch a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+    
+    .auth-switch a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+    
+    /* Auth icon animation */
+    .auth-icon {
+        text-align: center;
+        font-size: 4rem;
+        margin-bottom: 0.5rem;
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    /* Form field animations */
+    .auth-container .stTextInput {
+        animation: slideInLeft 0.6s ease;
+    }
+    
+    .auth-container .stTextInput:nth-child(2) {
+        animation-delay: 0.1s;
+    }
+    .auth-container .stTextInput:nth-child(3) {
+        animation-delay: 0.2s;
+    }
+    .auth-container .stTextInput:nth-child(4) {
+        animation-delay: 0.3s;
+    }
+    
+    /* Settings page styles */
+    .settings-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        animation: slideInRight 0.6s ease;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .settings-card .stButton button {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.6rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+    }
+    
+    .settings-card .stButton button:hover {
+        transform: scale(1.02);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -815,6 +1021,8 @@ ACHIEVEMENTS = [
 # Initialize session state
 if 'copied_text' not in st.session_state:
     st.session_state.copied_text = ""
+if 'page' not in st.session_state:
+    st.session_state.page = "portfolio"
 
 # Function to check if image exists (jpg or png)
 def image_exists():
@@ -909,10 +1117,11 @@ ACHIEVEMENTS
 # ============ AUTHENTICATION SECTION ============
 
 def show_login_page():
-    """Display login page"""
+    """Display login page with animations"""
     st.markdown("""
         <div class="auth-container">
-            <h2>🔐 Welcome Back</h2>
+            <div class="auth-icon">🔐</div>
+            <h2>Welcome Back</h2>
             <p class="subtitle">Login to view Faizan's Portfolio</p>
     """, unsafe_allow_html=True)
     
@@ -926,7 +1135,9 @@ def show_login_page():
                 if authenticate_user(username, password):
                     st.session_state.authenticated = True
                     st.session_state.username = username
-                    st.success("✅ Login successful! Redirecting...")
+                    st.session_state.page = "portfolio"
+                    st.success("✅ Login successful!")
+                    time.sleep(0.5)
                     st.rerun()
                 else:
                     st.error("❌ Invalid username or password!")
@@ -935,21 +1146,22 @@ def show_login_page():
     
     st.markdown("""
         <div class="auth-switch">
-            Don't have an account? <a onclick="document.querySelector('[data-testid=\"stButton\"] button').click()">Register here</a>
+            Don't have an account? <a href="#" onclick="document.querySelector('[data-testid=\"stButton\"] button').click()">Register here</a>
         </div>
         </div>
     """, unsafe_allow_html=True)
     
-    # Register button
-    if st.button("Register", key="goto_register", use_container_width=True):
+    # Register button (hidden, triggered by link)
+    if st.button("Register", key="goto_register", use_container_width=True, type="secondary"):
         st.session_state.show_register = True
         st.rerun()
 
 def show_register_page():
-    """Display registration page"""
+    """Display registration page with animations"""
     st.markdown("""
         <div class="auth-container">
-            <h2>📝 Create Account</h2>
+            <div class="auth-icon">📝</div>
+            <h2>Create Account</h2>
             <p class="subtitle">Register to access the portfolio</p>
     """, unsafe_allow_html=True)
     
@@ -970,6 +1182,7 @@ def show_register_page():
                 else:
                     if register_user(username, password):
                         st.success("✅ Registration successful! Please login.")
+                        time.sleep(0.5)
                         st.session_state.show_register = False
                         st.rerun()
                     else:
@@ -979,38 +1192,121 @@ def show_register_page():
     
     st.markdown("""
         <div class="auth-switch">
-            Already have an account? <a onclick="document.querySelector('[data-testid=\"stButton\"] button').click()">Login here</a>
+            Already have an account? <a href="#" onclick="document.querySelector('[data-testid=\"stButton\"] button').click()">Login here</a>
         </div>
         </div>
     """, unsafe_allow_html=True)
     
-    # Login button
-    if st.button("Login", key="goto_login", use_container_width=True):
+    # Login button (hidden, triggered by link)
+    if st.button("Login", key="goto_login", use_container_width=True, type="secondary"):
         st.session_state.show_register = False
         st.rerun()
+
+# ============ SETTINGS PAGE ============
+
+def show_settings():
+    """Display settings page with password change option"""
+    st.markdown("""
+        <div class="settings-card">
+            <h2 style="text-align: center; color: #333; margin-bottom: 1.5rem;">⚙️ Settings</h2>
+            <h3 style="color: #333; margin-bottom: 1rem;">🔑 Change Password</h3>
+    """, unsafe_allow_html=True)
+    
+    with st.form("change_password_form"):
+        old_password = st.text_input("Current Password", type="password", placeholder="Enter current password")
+        new_password = st.text_input("New Password", type="password", placeholder="Enter new password")
+        confirm_new_password = st.text_input("Confirm New Password", type="password", placeholder="Confirm new password")
+        
+        submit = st.form_submit_button("🔄 Update Password", use_container_width=True)
+        
+        if submit:
+            if old_password and new_password and confirm_new_password:
+                if len(new_password) < 4:
+                    st.warning("⚠️ New password must be at least 4 characters!")
+                elif new_password != confirm_new_password:
+                    st.error("❌ New passwords do not match!")
+                elif change_password(st.session_state.username, old_password, new_password):
+                    st.success("✅ Password changed successfully!")
+                else:
+                    st.error("❌ Current password is incorrect!")
+            else:
+                st.warning("⚠️ Please fill in all fields!")
+    
+    st.markdown("""
+            <hr style="margin: 1.5rem 0;">
+            <div style="text-align: center; color: #888; font-size: 0.9rem;">
+                <p>👤 Logged in as: <strong>{username}</strong></p>
+            </div>
+        </div>
+    """.format(username=st.session_state.username), unsafe_allow_html=True)
+
+# ============ SIDEBAR ============
+
+def show_sidebar():
+    """Display sidebar navigation"""
+    with st.sidebar:
+        st.markdown("""
+            <div class="sidebar-user">
+        """, unsafe_allow_html=True)
+        
+        # Display profile image in sidebar
+        img_base64 = get_profile_image_base64()
+        if img_base64:
+            st.markdown(f"""
+                <div class="avatar">
+                    <img src="data:image/png;base64,{img_base64}" alt="Profile Photo">
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+                <div class="avatar">
+                    <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=80&background=fff&color=667eea&bold=true" alt="Profile Photo">
+                </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown(f"""
+                <h3>{PERSONAL_INFO['name']}</h3>
+                <p>{PERSONAL_INFO['title']}</p>
+            </div>
+            <hr>
+            <div class="sidebar-nav">
+        """, unsafe_allow_html=True)
+        
+        # Navigation items
+        nav_items = [
+            {"key": "portfolio", "icon": "🏠", "label": "Portfolio"},
+            {"key": "settings", "icon": "⚙️", "label": "Settings"}
+        ]
+        
+        for item in nav_items:
+            is_active = st.session_state.page == item["key"]
+            active_class = "active" if is_active else ""
+            
+            # Use markdown for navigation items with click handling
+            if st.button(f"{item['icon']} {item['label']}", key=f"nav_{item['key']}", use_container_width=True):
+                st.session_state.page = item["key"]
+                st.rerun()
+        
+        st.markdown("""
+            </div>
+            <hr>
+            <div class="sidebar-logout">
+        """, unsafe_allow_html=True)
+        
+        if st.button("🚪 Logout", key="logout_sidebar", use_container_width=True):
+            st.session_state.authenticated = False
+            st.session_state.username = ""
+            st.session_state.page = "portfolio"
+            st.rerun()
+        
+        st.markdown("""
+            </div>
+        """, unsafe_allow_html=True)
 
 # ============ MAIN PORTFOLIO CONTENT ============
 
 def show_portfolio():
     """Display the main portfolio content"""
-    
-    # Logout button at top right
-    st.markdown(f"""
-        <div class="logout-btn">
-            <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.1); padding: 0.3rem 0.8rem; border-radius: 20px; backdrop-filter: blur(10px);">
-                <span style="color: white; font-size: 0.85rem;">👤 {st.session_state.username}</span>
-                <span style="color: rgba(255,255,255,0.3);">|</span>
-    """, unsafe_allow_html=True)
-    
-    if st.button("🚪 Logout", key="logout_btn"):
-        st.session_state.authenticated = False
-        st.session_state.username = ""
-        st.rerun()
-    
-    st.markdown("""
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
     
     # Hero Section
     st.markdown(f"""
@@ -1424,8 +1720,14 @@ def main():
     """Main app routing based on authentication status"""
     
     if st.session_state.authenticated:
-        # Show portfolio
-        show_portfolio()
+        # Show sidebar
+        show_sidebar()
+        
+        # Show page based on navigation
+        if st.session_state.page == "settings":
+            show_settings()
+        else:
+            show_portfolio()
     else:
         # Show login/register based on state
         if st.session_state.show_register:
