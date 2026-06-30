@@ -81,23 +81,24 @@ if 'username' not in st.session_state:
 if 'show_register' not in st.session_state:
     st.session_state.show_register = False
 if 'page' not in st.session_state:
-    st.session_state.page = "portfolio"
+    st.session_state.page = "about"
 if 'auth_animation' not in st.session_state:
     st.session_state.auth_animation = False
 
-# Custom CSS for stunning design with animations
+# Custom CSS for stunning design with new colors and animations
 st.markdown("""
     <style>
     /* Global Styles */
     .main {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     }
     
-    /* Sidebar Styling - Colorful Gradient */
+    /* Sidebar Styling - New Color Combination */
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #667eea 0%, #764ba2 40%, #f093fb 70%, #f5576c 100%) !important;
+        background: linear-gradient(180deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #1a1a2e 100%) !important;
         padding: 1rem 0.5rem;
         border-right: none !important;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.3);
     }
     
     section[data-testid="stSidebar"] .stMarkdown {
@@ -113,7 +114,7 @@ st.markdown("""
     }
     
     section[data-testid="stSidebar"] hr {
-        border-color: rgba(255,255,255,0.3) !important;
+        border-color: rgba(255,255,255,0.15) !important;
     }
     
     /* Sidebar user info */
@@ -128,9 +129,15 @@ st.markdown("""
         border-radius: 50%;
         margin: 0 auto;
         overflow: hidden;
-        border: 3px solid rgba(255,255,255,0.8);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        border: 3px solid rgba(255,215,0,0.6);
+        box-shadow: 0 0 30px rgba(255,215,0,0.2);
         background: rgba(255,255,255,0.1);
+        animation: glowPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes glowPulse {
+        0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.2); }
+        50% { box-shadow: 0 0 40px rgba(255,215,0,0.4); }
     }
     
     .sidebar-user .avatar img {
@@ -140,95 +147,126 @@ st.markdown("""
     }
     
     .sidebar-user h3 {
-        color: white !important;
+        color: #ffd700 !important;
         margin-top: 0.5rem;
         margin-bottom: 0.2rem;
         font-size: 1.1rem;
+        text-shadow: 0 0 20px rgba(255,215,0,0.2);
+        animation: textGlow 3s ease-in-out infinite;
+    }
+    
+    @keyframes textGlow {
+        0%, 100% { text-shadow: 0 0 20px rgba(255,215,0,0.2); }
+        50% { text-shadow: 0 0 40px rgba(255,215,0,0.4); }
     }
     
     .sidebar-user p {
-        color: rgba(255,255,255,0.8) !important;
+        color: rgba(255,255,255,0.7) !important;
         font-size: 0.8rem;
         margin: 0;
     }
     
-    /* Sidebar navigation */
-    .sidebar-nav {
-        margin: 0.5rem 0;
-    }
-    
-    .sidebar-nav .nav-item {
-        display: block;
-        padding: 0.6rem 1rem;
-        margin: 0.2rem 0;
-        border-radius: 10px;
+    /* Sidebar navigation buttons */
+    .sidebar-nav .stButton button {
+        width: 100%;
+        background: rgba(255,255,255,0.05) !important;
         color: rgba(255,255,255,0.8) !important;
-        text-decoration: none !important;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        font-size: 0.9rem;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 12px !important;
+        padding: 0.6rem 1rem !important;
+        margin: 0.15rem 0 !important;
+        text-align: left !important;
+        font-weight: 500 !important;
+        transition: all 0.3s ease !important;
+        backdrop-filter: blur(10px);
+        animation: slideInLeft 0.5s ease;
     }
     
-    .sidebar-nav .nav-item:hover {
-        background: rgba(255,255,255,0.15);
-        color: white !important;
-        transform: translateX(5px);
+    .sidebar-nav .stButton button:hover {
+        background: rgba(255,215,0,0.15) !important;
+        color: #ffd700 !important;
+        transform: translateX(8px) scale(1.02);
+        border-color: rgba(255,215,0,0.3) !important;
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
     }
     
-    .sidebar-nav .nav-item.active {
-        background: rgba(255,255,255,0.2);
-        color: white !important;
-        border-color: rgba(255,255,255,0.2);
+    .sidebar-nav .stButton button:active {
+        background: rgba(255,215,0,0.25) !important;
     }
     
-    .sidebar-nav .nav-item .icon {
-        margin-right: 0.5rem;
+    /* Sidebar active state */
+    .sidebar-nav .stButton button.active {
+        background: rgba(255,215,0,0.15) !important;
+        color: #ffd700 !important;
+        border-color: rgba(255,215,0,0.3) !important;
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
     }
     
     /* Sidebar logout button */
-    .sidebar-logout {
-        margin-top: 1rem;
-        padding: 0.5rem;
-    }
-    
     .sidebar-logout .stButton button {
         width: 100%;
-        background: rgba(255,255,255,0.15) !important;
-        color: white !important;
-        border: 1px solid rgba(255,255,255,0.2) !important;
-        border-radius: 10px !important;
-        padding: 0.5rem !important;
+        background: rgba(255,50,50,0.15) !important;
+        color: #ff6b6b !important;
+        border: 1px solid rgba(255,50,50,0.2) !important;
+        border-radius: 12px !important;
+        padding: 0.6rem !important;
         font-weight: 500 !important;
         transition: all 0.3s ease !important;
         backdrop-filter: blur(10px);
     }
     
     .sidebar-logout .stButton button:hover {
-        background: rgba(255,255,255,0.3) !important;
+        background: rgba(255,50,50,0.25) !important;
         transform: scale(1.02);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        box-shadow: 0 0 30px rgba(255,50,50,0.2);
+        border-color: rgba(255,50,50,0.4) !important;
     }
     
-    /* Hero Section */
+    /* Hero Section - New Gradient */
     .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%);
         padding: 3rem 2rem;
         border-radius: 20px;
         margin-bottom: 2rem;
         color: white;
         text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         animation: fadeInDown 0.8s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotateGradient 20s linear infinite;
+    }
+    
+    @keyframes rotateGradient {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .hero-section * {
+        position: relative;
+        z-index: 1;
     }
     
     .hero-title {
         font-size: 4rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        text-shadow: 0 0 40px rgba(0,0,0,0.3);
         animation: fadeInDown 1s ease;
+        background: linear-gradient(to right, #fff, #ffd700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
     
     .hero-subtitle {
@@ -300,53 +338,83 @@ st.markdown("""
         100% { transform: translateY(0px); }
     }
     
-    /* Cards */
+    @keyframes shimmer {
+        0% { background-position: -200% center; }
+        100% { background-position: 200% center; }
+    }
+    
+    @keyframes bounceIn {
+        0% { opacity: 0; transform: scale(0.3); }
+        50% { opacity: 1; transform: scale(1.05); }
+        70% { transform: scale(0.9); }
+        100% { transform: scale(1); }
+    }
+    
+    /* Cards - New Style */
     .card {
-        background: white;
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(20px);
         padding: 1.5rem;
-        border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         margin-bottom: 1.5rem;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 1px solid rgba(102, 126, 234, 0.1);
+        transition: all 0.4s ease;
+        border: 1px solid rgba(255,255,255,0.08);
         animation: slideInLeft 0.6s ease;
     }
     
     .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        transform: translateY(-8px) scale(1.01);
+        box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        border-color: rgba(255,215,0,0.2);
     }
     
     .card-title {
         font-size: 1.3rem;
         font-weight: 600;
-        color: #333;
+        color: #ffd700;
         margin-bottom: 1rem;
-        border-bottom: 3px solid #667eea;
+        border-bottom: 2px solid rgba(255,215,0,0.2);
         padding-bottom: 0.5rem;
     }
     
-    /* Skill Tags */
+    .card p, .card div, .card span, .card h4, .card h3 {
+        color: rgba(255,255,255,0.9) !important;
+    }
+    
+    /* Skill Tags - New Colors */
     .skill-tag {
         display: inline-block;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         color: white;
         padding: 0.3rem 1rem;
         border-radius: 20px;
         margin: 0.2rem;
         font-size: 0.9rem;
         font-weight: 500;
-        transition: transform 0.2s ease;
+        transition: all 0.3s ease;
         animation: pulse 2s infinite;
+        box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
     }
     
     .skill-tag:hover {
-        transform: scale(1.05);
+        transform: scale(1.1) rotate(-2deg);
+        box-shadow: 0 4px 25px rgba(245, 87, 108, 0.5);
+    }
+    
+    .skill-tag:nth-child(2n) {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .skill-tag:nth-child(3n) {
+        background: linear-gradient(135deg, #f093fb 0%, #4facfe 100%);
+        box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
     }
     
     /* Experience Timeline */
     .timeline-item {
-        border-left: 3px solid #667eea;
+        border-left: 3px solid #ffd700;
         padding-left: 1.5rem;
         margin-bottom: 1.5rem;
         position: relative;
@@ -357,43 +425,49 @@ st.markdown("""
         content: "●";
         position: absolute;
         left: -0.7rem;
-        color: #667eea;
+        color: #ffd700;
         font-size: 1.2rem;
         animation: pulse 2s infinite;
     }
     
     .timeline-title {
         font-weight: 600;
-        color: #333;
+        color: #ffd700 !important;
         font-size: 1.1rem;
     }
     
     .timeline-subtitle {
-        color: #667eea;
+        color: #f093fb !important;
         font-weight: 500;
         margin: 0.2rem 0;
     }
     
     .timeline-date {
-        color: #888;
+        color: rgba(255,255,255,0.5) !important;
         font-size: 0.9rem;
+    }
+    
+    .timeline-item div {
+        color: rgba(255,255,255,0.8) !important;
     }
     
     /* Project Cards */
     .project-card {
-        background: white;
-        border-radius: 15px;
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.07);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        transition: all 0.4s ease;
         height: 100%;
-        border: 1px solid rgba(102, 126, 234, 0.1);
+        border: 1px solid rgba(255,255,255,0.06);
         animation: slideInUp 0.6s ease;
     }
     
     .project-card:hover {
-        transform: translateY(-5px) scale(1.02);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        border-color: rgba(255,215,0,0.2);
     }
     
     .project-content {
@@ -402,13 +476,13 @@ st.markdown("""
     
     .project-title {
         font-weight: 600;
-        color: #333;
+        color: #ffd700 !important;
         font-size: 1.2rem;
         margin-bottom: 0.5rem;
     }
     
     .project-description {
-        color: #666;
+        color: rgba(255,255,255,0.7) !important;
         font-size: 0.95rem;
         line-height: 1.5;
     }
@@ -417,11 +491,20 @@ st.markdown("""
         margin-top: 1rem;
     }
     
+    .project-content a {
+        color: #f093fb !important;
+        transition: color 0.3s ease;
+    }
+    
+    .project-content a:hover {
+        color: #ffd700 !important;
+    }
+    
     /* Social Links */
     .social-link {
         display: inline-block;
         color: white;
-        background: rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.1);
         padding: 0.5rem 1.2rem;
         border-radius: 25px;
         margin: 0.3rem;
@@ -429,56 +512,48 @@ st.markdown("""
         transition: all 0.3s ease;
         backdrop-filter: blur(10px);
         animation: float 3s ease-in-out infinite;
+        border: 1px solid rgba(255,255,255,0.05);
     }
     
     .social-link:hover {
-        background: rgba(255,255,255,0.3);
-        transform: scale(1.05) translateY(-3px);
-        color: white;
-    }
-    
-    /* Social icons in footer */
-    .social-icon {
-        display: inline-block;
-        margin: 0 0.5rem;
-        font-size: 1.5rem;
-        color: #888;
-        text-decoration: none;
-        transition: transform 0.3s ease, color 0.3s ease;
-    }
-    
-    .social-icon:hover {
-        transform: scale(1.2) rotate(10deg);
-        color: #667eea;
+        background: rgba(255,215,0,0.2);
+        transform: scale(1.1) translateY(-3px);
+        color: #ffd700;
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
     }
     
     /* Stats */
     .stat-box {
         text-align: center;
         padding: 1.5rem;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        border: 1px solid rgba(102, 126, 234, 0.1);
-        transition: transform 0.3s ease;
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.06);
+        transition: all 0.3s ease;
         animation: slideInUp 0.6s ease;
     }
     
     .stat-box:hover {
         transform: scale(1.05) translateY(-5px);
+        border-color: rgba(255,215,0,0.2);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
     }
     
     .stat-number {
         font-size: 2.5rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #ffd700, #f093fb);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        background-clip: text;
         animation: pulse 2s infinite;
     }
     
     .stat-label {
-        color: #666;
+        color: rgba(255,255,255,0.6) !important;
         font-size: 0.9rem;
         margin-top: 0.3rem;
     }
@@ -490,10 +565,17 @@ st.markdown("""
         border-radius: 50%;
         margin: 0 auto;
         overflow: hidden;
-        border: 4px solid rgba(255,255,255,0.8);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        border: 4px solid rgba(255,215,0,0.4);
+        box-shadow: 0 0 40px rgba(255,215,0,0.2);
         background: rgba(255,255,255,0.1);
         animation: float 3s ease-in-out infinite;
+        transition: all 0.3s ease;
+    }
+    
+    .profile-image-container:hover {
+        transform: scale(1.05);
+        border-color: #ffd700;
+        box-shadow: 0 0 60px rgba(255,215,0,0.3);
     }
     
     .profile-image-container img {
@@ -510,8 +592,8 @@ st.markdown("""
         border-radius: 20px !important;
         color: white !important;
         border: none !important;
-        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4) !important;
-        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.3) !important;
+        transition: all 0.3s ease !important;
         position: relative;
         overflow: hidden;
         animation: slideInRight 0.6s ease;
@@ -528,11 +610,6 @@ st.markdown("""
         animation: rotateGradient 15s linear infinite;
     }
     
-    @keyframes rotateGradient {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
     .profile-card * {
         position: relative;
         z-index: 1;
@@ -540,7 +617,7 @@ st.markdown("""
     
     .profile-card .card-title {
         color: white !important;
-        border-bottom-color: rgba(255,255,255,0.3) !important;
+        border-bottom-color: rgba(255,255,255,0.2) !important;
     }
     
     .profile-card h3 {
@@ -548,12 +625,12 @@ st.markdown("""
     }
     
     .profile-card p {
-        color: rgba(255,255,255,0.95) !important;
+        color: rgba(255,255,255,0.9) !important;
     }
     
     .profile-card .profile-image-container {
-        border-color: rgba(255,255,255,0.8) !important;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
+        border-color: rgba(255,255,255,0.6) !important;
+        box-shadow: 0 0 40px rgba(255,255,255,0.1) !important;
     }
     
     .profile-card .copy-text {
@@ -567,7 +644,7 @@ st.markdown("""
         background: rgba(255,255,255,0.2) !important;
         color: white !important;
         border: 1px solid rgba(255,255,255,0.2) !important;
-        border-radius: 5px !important;
+        border-radius: 10px !important;
         padding: 0.3rem 0.8rem !important;
         font-size: 0.8rem !important;
         font-weight: 500 !important;
@@ -578,7 +655,7 @@ st.markdown("""
     .profile-card .stButton button:hover {
         background: rgba(255,255,255,0.35) !important;
         transform: scale(1.05);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        box-shadow: 0 0 30px rgba(255,255,255,0.1);
     }
     
     .profile-card strong {
@@ -604,32 +681,36 @@ st.markdown("""
         text-decoration: none;
         transition: all 0.3s ease;
         display: inline-block;
-        background: rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.1);
         padding: 0.3rem 0.6rem;
         border-radius: 10px;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.05);
         animation: float 3s ease-in-out infinite;
     }
     
     .profile-social-icons a:hover {
         transform: scale(1.2) rotate(-5deg) translateY(-3px);
-        background: rgba(255,255,255,0.3);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        background: rgba(255,255,255,0.25);
+        box-shadow: 0 0 30px rgba(255,255,255,0.1);
     }
     
     /* What I Do Cards */
     .what-i-do-item {
         text-align: center;
         padding: 1rem;
-        background: #f8f9fa;
-        border-radius: 10px;
-        transition: transform 0.3s ease;
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: all 0.3s ease;
         animation: slideInUp 0.6s ease;
     }
     
     .what-i-do-item:hover {
         transform: scale(1.05) translateY(-5px);
+        border-color: rgba(255,215,0,0.2);
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
     }
     
     .what-i-do-item .icon {
@@ -641,7 +722,7 @@ st.markdown("""
     .what-i-do-item .label {
         margin-top: 0.5rem;
         font-weight: 500;
-        color: #333 !important;
+        color: rgba(255,255,255,0.9) !important;
     }
     
     /* Copy Container */
@@ -655,7 +736,7 @@ st.markdown("""
     .copy-text {
         flex: 1;
         padding: 0.3rem 0.5rem;
-        border-radius: 5px;
+        border-radius: 8px;
         font-size: 0.9rem;
         word-break: break-all;
     }
@@ -665,22 +746,23 @@ st.markdown("""
         display: block;
         text-align: center;
         padding: 0.8rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #ffd700, #f093fb);
         color: white !important;
         border-radius: 25px;
         text-decoration: none;
-        font-weight: 500;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        font-weight: 600;
+        transition: all 0.3s ease;
         border: none;
         cursor: pointer;
         width: 100%;
         margin-top: 0.5rem;
         animation: pulse 2s infinite;
+        box-shadow: 0 4px 25px rgba(255,215,0,0.3);
     }
     
     .download-btn:hover {
         transform: scale(1.05);
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 8px 40px rgba(255,215,0,0.4);
         color: white !important;
     }
     
@@ -704,48 +786,38 @@ st.markdown("""
     }
     
     ::-webkit-scrollbar-track {
-        background: #f1f1f1;
+        background: #1a1a2e;
         border-radius: 10px;
     }
     
     ::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #ffd700, #f093fb);
         border-radius: 10px;
     }
     
     ::-webkit-scrollbar-thumb:hover {
-        background: #764ba2;
+        background: linear-gradient(135deg, #f093fb, #ffd700);
     }
     
     /* About Me text styling */
     .about-text {
         font-size: 1.05rem;
         line-height: 1.8;
-        color: #444;
+        color: rgba(255,255,255,0.85) !important;
         white-space: pre-wrap;
     }
     
     /* Success Message */
     .success-message {
-        background: #d4edda;
-        color: #155724;
+        background: rgba(46, 213, 115, 0.2);
+        backdrop-filter: blur(20px);
+        color: #2ed573;
         padding: 1rem;
-        border-radius: 10px;
-        border: 1px solid #c3e6cb;
+        border-radius: 15px;
+        border: 1px solid rgba(46, 213, 115, 0.2);
         margin-top: 1rem;
         text-align: center;
         animation: fadeInUp 0.5s ease;
-    }
-    
-    @keyframes slideInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
     }
     
     /* Auth Container Animations */
@@ -753,16 +825,17 @@ st.markdown("""
         max-width: 420px;
         margin: 50px auto;
         padding: 2.5rem;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-        border: 1px solid rgba(102, 126, 234, 0.1);
-        animation: fadeInUp 0.8s ease;
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(30px);
+        border-radius: 30px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.06);
+        animation: bounceIn 0.8s ease;
     }
     
     .auth-container h2 {
         text-align: center;
-        color: #333;
+        color: #ffd700;
         margin-bottom: 0.5rem;
         font-size: 2rem;
         animation: fadeInDown 0.8s ease;
@@ -770,7 +843,7 @@ st.markdown("""
     
     .auth-container .subtitle {
         text-align: center;
-        color: #888;
+        color: rgba(255,255,255,0.6);
         margin-bottom: 1.5rem;
         font-size: 0.9rem;
         animation: fadeInUp 0.8s ease;
@@ -778,42 +851,53 @@ st.markdown("""
     
     .auth-container .stButton button {
         width: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #ffd700, #f093fb);
         color: white;
         border: none;
         padding: 0.7rem;
-        border-radius: 10px;
+        border-radius: 15px;
         font-weight: 600;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: all 0.3s ease;
         animation: pulse 2s infinite;
+        box-shadow: 0 4px 25px rgba(255,215,0,0.2);
     }
     
     .auth-container .stButton button:hover {
         transform: scale(1.02);
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 8px 35px rgba(255,215,0,0.3);
     }
     
     .auth-container .stTextInput input {
-        border-radius: 10px;
-        border: 1px solid rgba(102, 126, 234, 0.2);
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.1);
         padding: 0.6rem 1rem;
-        transition: border-color 0.3s ease;
+        background: rgba(255,255,255,0.05);
+        color: white;
+        transition: all 0.3s ease;
     }
     
     .auth-container .stTextInput input:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        border-color: #ffd700;
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
+    }
+    
+    .auth-container .stTextInput input::placeholder {
+        color: rgba(255,255,255,0.3);
+    }
+    
+    .auth-container .stTextInput label {
+        color: rgba(255,255,255,0.7) !important;
     }
     
     .auth-switch {
         text-align: center;
         margin-top: 1.2rem;
-        color: #666;
+        color: rgba(255,255,255,0.6);
         animation: fadeInUp 0.8s ease;
     }
     
     .auth-switch a {
-        color: #667eea;
+        color: #ffd700;
         text-decoration: none;
         font-weight: 600;
         cursor: pointer;
@@ -821,7 +905,7 @@ st.markdown("""
     }
     
     .auth-switch a:hover {
-        color: #764ba2;
+        color: #f093fb;
         text-decoration: underline;
     }
     
@@ -833,46 +917,87 @@ st.markdown("""
         animation: float 3s ease-in-out infinite;
     }
     
-    /* Form field animations */
-    .auth-container .stTextInput {
-        animation: slideInLeft 0.6s ease;
-    }
-    
-    .auth-container .stTextInput:nth-child(2) {
-        animation-delay: 0.1s;
-    }
-    .auth-container .stTextInput:nth-child(3) {
-        animation-delay: 0.2s;
-    }
-    .auth-container .stTextInput:nth-child(4) {
-        animation-delay: 0.3s;
-    }
-    
     /* Settings page styles */
     .settings-card {
-        background: white;
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(30px);
         padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.07);
-        border: 1px solid rgba(102, 126, 234, 0.1);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.06);
         animation: slideInRight 0.6s ease;
         max-width: 600px;
         margin: 0 auto;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    
+    .settings-card h2 {
+        color: #ffd700 !important;
+        text-align: center;
+    }
+    
+    .settings-card h3 {
+        color: rgba(255,255,255,0.9) !important;
     }
     
     .settings-card .stButton button {
         width: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #ffd700, #f093fb);
         color: white;
         border: none;
         padding: 0.6rem;
-        border-radius: 10px;
+        border-radius: 15px;
         font-weight: 600;
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 25px rgba(255,215,0,0.2);
     }
     
     .settings-card .stButton button:hover {
         transform: scale(1.02);
+        box-shadow: 0 8px 35px rgba(255,215,0,0.3);
+    }
+    
+    .settings-card .stTextInput input {
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.6rem 1rem;
+        background: rgba(255,255,255,0.05);
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .settings-card .stTextInput input:focus {
+        border-color: #ffd700;
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
+    }
+    
+    .settings-card .stTextInput input::placeholder {
+        color: rgba(255,255,255,0.3);
+    }
+    
+    .settings-card .stTextInput label {
+        color: rgba(255,255,255,0.7) !important;
+    }
+    
+    .settings-card hr {
+        border-color: rgba(255,255,255,0.1);
+    }
+    
+    .settings-card p {
+        color: rgba(255,255,255,0.6) !important;
+    }
+    
+    .settings-card strong {
+        color: #ffd700 !important;
+    }
+    
+    /* Error/Warning/Success messages */
+    .stAlert {
+        border-radius: 15px !important;
+        backdrop-filter: blur(20px) !important;
+    }
+    
+    .stAlert .stMarkdown {
+        color: white !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -1022,7 +1147,7 @@ ACHIEVEMENTS = [
 if 'copied_text' not in st.session_state:
     st.session_state.copied_text = ""
 if 'page' not in st.session_state:
-    st.session_state.page = "portfolio"
+    st.session_state.page = "about"
 
 # Function to check if image exists (jpg or png)
 def image_exists():
@@ -1135,7 +1260,7 @@ def show_login_page():
                 if authenticate_user(username, password):
                     st.session_state.authenticated = True
                     st.session_state.username = username
-                    st.session_state.page = "portfolio"
+                    st.session_state.page = "about"
                     st.success("✅ Login successful!")
                     time.sleep(0.5)
                     st.rerun()
@@ -1208,8 +1333,8 @@ def show_settings():
     """Display settings page with password change option"""
     st.markdown("""
         <div class="settings-card">
-            <h2 style="text-align: center; color: #333; margin-bottom: 1.5rem;">⚙️ Settings</h2>
-            <h3 style="color: #333; margin-bottom: 1rem;">🔑 Change Password</h3>
+            <h2>⚙️ Settings</h2>
+            <h3>🔑 Change Password</h3>
     """, unsafe_allow_html=True)
     
     with st.form("change_password_form"):
@@ -1233,9 +1358,9 @@ def show_settings():
                 st.warning("⚠️ Please fill in all fields!")
     
     st.markdown("""
-            <hr style="margin: 1.5rem 0;">
-            <div style="text-align: center; color: #888; font-size: 0.9rem;">
-                <p>👤 Logged in as: <strong>{username}</strong></p>
+            <hr>
+            <div style="text-align: center; color: rgba(255,255,255,0.6); font-size: 0.9rem;">
+                <p>👤 Logged in as: <strong style="color: #ffd700;">{username}</strong></p>
             </div>
         </div>
     """.format(username=st.session_state.username), unsafe_allow_html=True)
@@ -1243,7 +1368,7 @@ def show_settings():
 # ============ SIDEBAR ============
 
 def show_sidebar():
-    """Display sidebar navigation"""
+    """Display sidebar navigation with all portfolio buttons"""
     with st.sidebar:
         st.markdown("""
             <div class="sidebar-user">
@@ -1260,7 +1385,7 @@ def show_sidebar():
         else:
             st.markdown("""
                 <div class="avatar">
-                    <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=80&background=fff&color=667eea&bold=true" alt="Profile Photo">
+                    <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=80&background=ffd700&color=1a1a2e&bold=true" alt="Profile Photo">
                 </div>
             """, unsafe_allow_html=True)
         
@@ -1272,16 +1397,21 @@ def show_sidebar():
             <div class="sidebar-nav">
         """, unsafe_allow_html=True)
         
-        # Navigation items
+        # All portfolio navigation items
         nav_items = [
-            {"key": "portfolio", "icon": "🏠", "label": "Portfolio"},
+            {"key": "about", "icon": "👤", "label": "About Me"},
+            {"key": "skills", "icon": "🛠️", "label": "Skills"},
+            {"key": "experience", "icon": "💼", "label": "Experience"},
+            {"key": "education", "icon": "🎓", "label": "Education"},
+            {"key": "projects", "icon": "🚀", "label": "Projects"},
+            {"key": "achievements", "icon": "🏆", "label": "Achievements"},
+            {"key": "stats", "icon": "📊", "label": "Stats"},
+            {"key": "contact", "icon": "📬", "label": "Contact"},
             {"key": "settings", "icon": "⚙️", "label": "Settings"}
         ]
         
         for item in nav_items:
             is_active = st.session_state.page == item["key"]
-            active_class = "active" if is_active else ""
-            
             # Use markdown for navigation items with click handling
             if st.button(f"{item['icon']} {item['label']}", key=f"nav_{item['key']}", use_container_width=True):
                 st.session_state.page = item["key"]
@@ -1296,7 +1426,7 @@ def show_sidebar():
         if st.button("🚪 Logout", key="logout_sidebar", use_container_width=True):
             st.session_state.authenticated = False
             st.session_state.username = ""
-            st.session_state.page = "portfolio"
+            st.session_state.page = "about"
             st.rerun()
         
         st.markdown("""
@@ -1306,7 +1436,7 @@ def show_sidebar():
 # ============ MAIN PORTFOLIO CONTENT ============
 
 def show_portfolio():
-    """Display the main portfolio content"""
+    """Display the main portfolio content based on selected page"""
     
     # Hero Section
     st.markdown(f"""
@@ -1323,396 +1453,386 @@ def show_portfolio():
         </div>
     """, unsafe_allow_html=True)
 
-    # Navigation with icons
+    # Show selected page
+    page = st.session_state.page
+    
+    if page == "about":
+        show_about_page()
+    elif page == "skills":
+        show_skills_page()
+    elif page == "experience":
+        show_experience_page()
+    elif page == "education":
+        show_education_page()
+    elif page == "projects":
+        show_projects_page()
+    elif page == "achievements":
+        show_achievements_page()
+    elif page == "stats":
+        show_stats_page()
+    elif page == "contact":
+        show_contact_page()
+    else:
+        show_about_page()
+
+def show_about_page():
+    """Display About Me page"""
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        st.markdown(f"""
+            <div class="card">
+                <div class="card-title">📖 About Me</div>
+                <div class="about-text">
+                    {PERSONAL_INFO['bio']}
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+            <div class="card">
+                <div class="card-title">💡 What I Do</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="what-i-do-item">
+                        <span class="icon">💻</span>
+                        <p class="label">Coding</p>
+                    </div>
+                    <div class="what-i-do-item">
+                        <span class="icon">🤖</span>
+                        <p class="label">AI Enthusiast</p>
+                    </div>
+                    <div class="what-i-do-item">
+                        <span class="icon">📚</span>
+                        <p class="label">Student</p>
+                    </div>
+                    <div class="what-i-do-item">
+                        <span class="icon">🎯</span>
+                        <p class="label">Lifelong Learner</p>
+                    </div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+            <div class="card profile-card">
+                <div class="card-title">👤 Profile</div>
+        """, unsafe_allow_html=True)
+        
+        # Display profile image
+        img_base64 = get_profile_image_base64()
+        if img_base64:
+            st.markdown(f"""
+                <div class="profile-image-container">
+                    <img src="data:image/png;base64,{img_base64}" alt="Profile Photo">
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+                <div class="profile-image-container">
+                    <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=150&background=fff&color=667eea&bold=true" alt="Profile Photo">
+                </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown(f"""
+                <h3 style="margin-top: 1rem;">{PERSONAL_INFO['name']}</h3>
+                <p style="opacity: 0.9;">{PERSONAL_INFO['title']}</p>
+                
+                <div style="text-align: left; margin-top: 0.5rem;">
+                    <p><strong>📧 Email</strong></p>
+                    <div class="copy-container">
+                        <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white;">{PERSONAL_INFO['email']}</span>
+        """, unsafe_allow_html=True)
+        
+        # Email Copy Button
+        if st.button("📋 Copy", key="copy_email_profile", use_container_width=True):
+            st.session_state.copied_text = "Email copied to clipboard!"
+        
+        st.markdown(f"""
+                    </div>
+                    <p><strong>📱 Phone</strong></p>
+                    <div class="copy-container">
+                        <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white;">{PERSONAL_INFO['phone']}</span>
+        """, unsafe_allow_html=True)
+        
+        # Phone Copy Button
+        if st.button("📋 Copy", key="copy_phone_profile", use_container_width=True):
+            st.session_state.copied_text = "Phone copied to clipboard!"
+        
+        st.markdown(f"""
+                    </div>
+                    <p><strong>📍 Location</strong></p>
+                    <p style="margin: 0.2rem 0 0.5rem 0;">{PERSONAL_INFO['location']}</p>
+                    <p><strong>🏫 School</strong></p>
+                    <p style="margin: 0.2rem 0 0.5rem 0;">Sheikh Zayed Public School</p>
+                    <p><strong>📚 Class</strong></p>
+                    <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
+                </div>
+                
+                <div class="profile-social-icons" style="margin-top: 0.5rem;">
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub">🐙</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter">🐦</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram">📸</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" title="TikTok">🎵</a>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # Show copy success message
+        if st.session_state.copied_text:
+            st.success(st.session_state.copied_text)
+            st.session_state.copied_text = ""
+        
+        # Download Resume Button
+        st.markdown(create_download_resume(), unsafe_allow_html=True)
+
+def show_skills_page():
+    """Display Skills page"""
+    st.markdown('<div class="card-title">🛠️ Technical Skills</div>', unsafe_allow_html=True)
+    
+    for category, skills in SKILLS.items():
+        with st.expander(f"**{category}**", expanded=True):
+            st.markdown(f"""
+                <div style="padding: 0.5rem 0;">
+                    {''.join(f'<span class="skill-tag">{skill}</span> ' for skill in skills)}
+                </div>
+            """, unsafe_allow_html=True)
+    
     st.markdown("---")
-    tabs = st.tabs([
-        "👤 About Me", 
-        "🛠️ Skills", 
-        "💼 Experience", 
-        "🎓 Education", 
-        "🚀 Projects", 
-        "🏆 Achievements",
-        "📊 Stats", 
-        "📬 Contact"
-    ])
+    st.markdown('<div class="card-title">📊 Skill Proficiency</div>', unsafe_allow_html=True)
+    
+    skill_levels = {
+        "Python": 70,
+        "JavaScript": 60,
+        "HTML/CSS": 65,
+        "Streamlit": 75,
+        "Problem Solving": 70,
+        "AI Concepts": 60
+    }
+    
+    for skill, level in skill_levels.items():
+        st.markdown(f"""
+            <div style="margin: 0.5rem 0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+                    <span style="font-weight: 500; color: rgba(255,255,255,0.9);">{skill}</span>
+                    <span style="color: #ffd700;">{level}%</span>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); border-radius: 10px; height: 8px; overflow: hidden;">
+                    <div style="width: {level}%; height: 100%; background: linear-gradient(135deg, #ffd700, #f093fb); border-radius: 10px; transition: width 1s ease; box-shadow: 0 0 20px rgba(255,215,0,0.2);"></div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
-    # About Tab
-    with tabs[0]:
-        col1, col2 = st.columns([2, 1])
-        
-        with col1:
+def show_experience_page():
+    """Display Experience page"""
+    st.markdown('<div class="card-title">💼 Experience</div>', unsafe_allow_html=True)
+    
+    for exp in EXPERIENCE:
+        st.markdown(f"""
+            <div class="card timeline-item">
+                <div class="timeline-title">{exp['title']}</div>
+                <div class="timeline-subtitle">{exp['company']}</div>
+                <div class="timeline-date">📅 {exp['period']}</div>
+                <div style="margin-top: 0.8rem; white-space: pre-line;">
+                    {exp['description']}
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+def show_education_page():
+    """Display Education page"""
+    st.markdown('<div class="card-title">🎓 Education</div>', unsafe_allow_html=True)
+    
+    cols = st.columns(2)
+    for idx, edu in enumerate(EDUCATION):
+        with cols[idx % 2]:
             st.markdown(f"""
-                <div class="card">
-                    <div class="card-title">📖 About Me</div>
-                    <div class="about-text">
-                        {PERSONAL_INFO['bio']}
-                    </div>
+                <div class="card" style="height: 100%;">
+                    <h4 style="color: #ffd700;">{edu['degree']}</h4>
+                    <p style="color: #f093fb; font-weight: 500;">{edu['institution']}</p>
+                    <p style="color: rgba(255,255,255,0.5);">📅 {edu['year']}</p>
+                    <p style="color: rgba(255,255,255,0.7);">🎯 GPA: {edu['gpa']}</p>
                 </div>
             """, unsafe_allow_html=True)
-            
-            st.markdown("""
-                <div class="card">
-                    <div class="card-title">💡 What I Do</div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div class="what-i-do-item">
-                            <span class="icon">💻</span>
-                            <p class="label">Coding</p>
-                        </div>
-                        <div class="what-i-do-item">
-                            <span class="icon">🤖</span>
-                            <p class="label">AI Enthusiast</p>
-                        </div>
-                        <div class="what-i-do-item">
-                            <span class="icon">📚</span>
-                            <p class="label">Student</p>
-                        </div>
-                        <div class="what-i-do-item">
-                            <span class="icon">🎯</span>
-                            <p class="label">Lifelong Learner</p>
-                        </div>
-                    </div>
+    
+    st.markdown('<div class="card-title" style="margin-top: 2rem;">📜 Certifications</div>', unsafe_allow_html=True)
+    
+    cert_cols = st.columns(3)
+    for idx, cert in enumerate(CERTIFICATIONS):
+        with cert_cols[idx % 3]:
+            st.markdown(f"""
+                <div class="card" style="text-align: center; padding: 1rem;">
+                    <span style="font-size: 1.5rem;">🏆</span>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem; color: rgba(255,255,255,0.8);">{cert}</p>
                 </div>
             """, unsafe_allow_html=True)
-        
-        with col2:
-            st.markdown("""
-                <div class="card profile-card">
-                    <div class="card-title">👤 Profile</div>
-            """, unsafe_allow_html=True)
-            
-            # Display profile image
-            img_base64 = get_profile_image_base64()
-            if img_base64:
-                st.markdown(f"""
-                    <div class="profile-image-container">
-                        <img src="data:image/png;base64,{img_base64}" alt="Profile Photo">
-                    </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown("""
-                    <div class="profile-image-container">
-                        <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=150&background=fff&color=667eea&bold=true" alt="Profile Photo">
-                    </div>
-                """, unsafe_allow_html=True)
-            
-            st.markdown(f"""
-                    <h3 style="margin-top: 1rem;">{PERSONAL_INFO['name']}</h3>
-                    <p style="opacity: 0.9;">{PERSONAL_INFO['title']}</p>
+
+def show_projects_page():
+    """Display Projects page"""
+    st.markdown('<div class="card-title">🚀 Projects</div>', unsafe_allow_html=True)
+    
+    for i in range(0, len(PROJECTS), 3):
+        cols = st.columns(3)
+        for j in range(3):
+            if i + j < len(PROJECTS):
+                project = PROJECTS[i + j]
+                with cols[j]:
+                    tech_tags = ' '.join(f'<span class="skill-tag" style="font-size: 0.8rem; margin: 0.1rem;">{tech}</span>' for tech in project['tech'])
+                    demo_link = f'<a href="{project["demo"]}" target="_blank" style="color: #ffd700; text-decoration: none;">🔗 Live Demo</a>' if project['demo'] else ''
                     
-                    <div style="text-align: left; margin-top: 0.5rem;">
-                        <p><strong>📧 Email</strong></p>
-                        <div class="copy-container">
-                            <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white;">{PERSONAL_INFO['email']}</span>
-            """, unsafe_allow_html=True)
-            
-            # Email Copy Button
-            if st.button("📋 Copy", key="copy_email_profile", use_container_width=True):
-                st.session_state.copied_text = "Email copied to clipboard!"
-            
-            st.markdown(f"""
-                        </div>
-                        <p><strong>📱 Phone</strong></p>
-                        <div class="copy-container">
-                            <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white;">{PERSONAL_INFO['phone']}</span>
-            """, unsafe_allow_html=True)
-            
-            # Phone Copy Button
-            if st.button("📋 Copy", key="copy_phone_profile", use_container_width=True):
-                st.session_state.copied_text = "Phone copied to clipboard!"
-            
-            st.markdown(f"""
-                        </div>
-                        <p><strong>📍 Location</strong></p>
-                        <p style="margin: 0.2rem 0 0.5rem 0;">{PERSONAL_INFO['location']}</p>
-                        <p><strong>🏫 School</strong></p>
-                        <p style="margin: 0.2rem 0 0.5rem 0;">Sheikh Zayed Public School</p>
-                        <p><strong>📚 Class</strong></p>
-                        <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
-                    </div>
-                    
-                    <div class="profile-social-icons" style="margin-top: 0.5rem;">
-                        <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub">🐙</a>
-                        <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter">🐦</a>
-                        <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram">📸</a>
-                        <a href="{PERSONAL_INFO['tiktok']}" target="_blank" title="TikTok">🎵</a>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-            
-            # Show copy success message
-            if st.session_state.copied_text:
-                st.success(st.session_state.copied_text)
-                st.session_state.copied_text = ""
-            
-            # Download Resume Button
-            st.markdown(create_download_resume(), unsafe_allow_html=True)
-
-    # Skills Tab
-    with tabs[1]:
-        st.markdown('<div class="card-title">🛠️ Technical Skills</div>', unsafe_allow_html=True)
-        
-        for category, skills in SKILLS.items():
-            with st.expander(f"**{category}**", expanded=True):
-                st.markdown(f"""
-                    <div style="padding: 0.5rem 0;">
-                        {''.join(f'<span class="skill-tag">{skill}</span> ' for skill in skills)}
-                    </div>
-                """, unsafe_allow_html=True)
-        
-        st.markdown("---")
-        st.markdown('<div class="card-title">📊 Skill Proficiency</div>', unsafe_allow_html=True)
-        
-        skill_levels = {
-            "Python": 70,
-            "JavaScript": 60,
-            "HTML/CSS": 65,
-            "Streamlit": 75,
-            "Problem Solving": 70,
-            "AI Concepts": 60
-        }
-        
-        for skill, level in skill_levels.items():
-            st.markdown(f"""
-                <div style="margin: 0.5rem 0;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
-                        <span style="font-weight: 500;">{skill}</span>
-                        <span style="color: #667eea;">{level}%</span>
-                    </div>
-                    <div style="background: #e0e0e0; border-radius: 10px; height: 8px; overflow: hidden;">
-                        <div style="width: {level}%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; transition: width 1s ease;"></div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-
-    # Experience Tab
-    with tabs[2]:
-        st.markdown('<div class="card-title">💼 Experience</div>', unsafe_allow_html=True)
-        
-        for exp in EXPERIENCE:
-            st.markdown(f"""
-                <div class="card timeline-item">
-                    <div class="timeline-title">{exp['title']}</div>
-                    <div class="timeline-subtitle">{exp['company']}</div>
-                    <div class="timeline-date">📅 {exp['period']}</div>
-                    <div style="margin-top: 0.8rem; white-space: pre-line; color: #555;">
-                        {exp['description']}
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-
-    # Education Tab
-    with tabs[3]:
-        st.markdown('<div class="card-title">🎓 Education</div>', unsafe_allow_html=True)
-        
-        cols = st.columns(2)
-        for idx, edu in enumerate(EDUCATION):
-            with cols[idx % 2]:
-                st.markdown(f"""
-                    <div class="card" style="height: 100%;">
-                        <h4 style="color: #333;">{edu['degree']}</h4>
-                        <p style="color: #667eea; font-weight: 500;">{edu['institution']}</p>
-                        <p style="color: #888;">📅 {edu['year']}</p>
-                        <p style="color: #555;">🎯 GPA: {edu['gpa']}</p>
-                    </div>
-                """, unsafe_allow_html=True)
-        
-        st.markdown('<div class="card-title" style="margin-top: 2rem;">📜 Certifications</div>', unsafe_allow_html=True)
-        
-        cert_cols = st.columns(3)
-        for idx, cert in enumerate(CERTIFICATIONS):
-            with cert_cols[idx % 3]:
-                st.markdown(f"""
-                    <div class="card" style="text-align: center; padding: 1rem;">
-                        <span style="font-size: 1.5rem;">🏆</span>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem; color: #333;">{cert}</p>
-                    </div>
-                """, unsafe_allow_html=True)
-
-    # Projects Tab
-    with tabs[4]:
-        st.markdown('<div class="card-title">🚀 Projects</div>', unsafe_allow_html=True)
-        
-        for i in range(0, len(PROJECTS), 3):
-            cols = st.columns(3)
-            for j in range(3):
-                if i + j < len(PROJECTS):
-                    project = PROJECTS[i + j]
-                    with cols[j]:
-                        tech_tags = ' '.join(f'<span class="skill-tag" style="font-size: 0.8rem; margin: 0.1rem;">{tech}</span>' for tech in project['tech'])
-                        demo_link = f'<a href="{project["demo"]}" target="_blank" style="color: #667eea; text-decoration: none;">🔗 Live Demo</a>' if project['demo'] else ''
-                        
-                        st.markdown(f"""
-                            <div class="project-card">
-                                <div class="project-content">
-                                    <div class="project-title">{project['title']}</div>
-                                    <div class="project-description">{project['description']}</div>
-                                    <div class="project-tech">{tech_tags}</div>
-                                    <div style="margin-top: 1rem;">
-                                        <a href="{project['github']}" target="_blank" style="color: #667eea; text-decoration: none; margin-right: 1rem;">🐙 GitHub</a>
-                                        {demo_link}
-                                    </div>
+                    st.markdown(f"""
+                        <div class="project-card">
+                            <div class="project-content">
+                                <div class="project-title">{project['title']}</div>
+                                <div class="project-description">{project['description']}</div>
+                                <div class="project-tech">{tech_tags}</div>
+                                <div style="margin-top: 1rem;">
+                                    <a href="{project['github']}" target="_blank" style="color: #f093fb; text-decoration: none; margin-right: 1rem;">🐙 GitHub</a>
+                                    {demo_link}
                                 </div>
                             </div>
-                        """, unsafe_allow_html=True)
-
-    # Achievements Tab
-    with tabs[5]:
-        st.markdown('<div class="card-title">🏆 Achievements & Recognition</div>', unsafe_allow_html=True)
-        
-        cols = st.columns(2)
-        for idx, achievement in enumerate(ACHIEVEMENTS):
-            with cols[idx % 2]:
-                st.markdown(f"""
-                    <div class="card" style="padding: 1rem; display: flex; align-items: center;">
-                        <span style="font-size: 2rem; margin-right: 1rem;">🏅</span>
-                        <div>
-                            <p style="margin: 0; color: #333; font-weight: 500;">{achievement}</p>
                         </div>
-                    </div>
-                """, unsafe_allow_html=True)
+                    """, unsafe_allow_html=True)
 
-    # Stats Tab
-    with tabs[6]:
-        st.markdown('<div class="card-title">📊 Statistics</div>', unsafe_allow_html=True)
-        
-        col1, col2, col3, col4 = st.columns(4)
-        
-        stats_data = [
-            ("10+", "Projects Built"),
-            ("15+", "Courses Completed"),
-            ("5+", "Certifications"),
-            ("20+", "Learning Hours/Week")
-        ]
-        
-        cols = [col1, col2, col3, col4]
-        for idx, (number, label) in enumerate(stats_data):
-            with cols[idx]:
-                st.markdown(f"""
-                    <div class="stat-box">
-                        <div class="stat-number">{number}</div>
-                        <div class="stat-label">{label}</div>
-                    </div>
-                """, unsafe_allow_html=True)
-        
-        st.markdown("---")
-        st.markdown("### 💪 Key Highlights")
-        
-        highlights = [
-            "🏆 Actively learning new technologies every day",
-            "📚 Balancing school studies with tech learning",
-            "🎯 Building projects to apply what I learn",
-            "🤖 Passionate about AI and its applications",
-            "💡 Participating in coding challenges and competitions"
-        ]
-        
-        for highlight in highlights:
+def show_achievements_page():
+    """Display Achievements page"""
+    st.markdown('<div class="card-title">🏆 Achievements & Recognition</div>', unsafe_allow_html=True)
+    
+    cols = st.columns(2)
+    for idx, achievement in enumerate(ACHIEVEMENTS):
+        with cols[idx % 2]:
             st.markdown(f"""
-                <div style="padding: 0.5rem 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
-                    <span style="margin-right: 0.5rem;">✨</span>
-                    <span>{highlight}</span>
+                <div class="card" style="padding: 1rem; display: flex; align-items: center;">
+                    <span style="font-size: 2rem; margin-right: 1rem;">🏅</span>
+                    <div>
+                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-weight: 500;">{achievement}</p>
+                    </div>
                 </div>
             """, unsafe_allow_html=True)
 
-    # Contact Tab
-    with tabs[7]:
-        st.markdown('<div class="card-title">📬 Contact Me</div>', unsafe_allow_html=True)
-        
-        col1, col2 = st.columns([1, 1])
-        
-        with col1:
+def show_stats_page():
+    """Display Stats page"""
+    st.markdown('<div class="card-title">📊 Statistics</div>', unsafe_allow_html=True)
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    stats_data = [
+        ("10+", "Projects Built"),
+        ("15+", "Courses Completed"),
+        ("5+", "Certifications"),
+        ("20+", "Learning Hours/Week")
+    ]
+    
+    cols = [col1, col2, col3, col4]
+    for idx, (number, label) in enumerate(stats_data):
+        with cols[idx]:
             st.markdown(f"""
-                <div class="card">
-                    <h4 style="color: #333;">Get in Touch</h4>
-                    <p style="color: #666;">
-                        I'm always open to learning opportunities, collaborations, or just a friendly chat. 
-                        Feel free to reach out through any of the following channels:
-                    </p>
-                    <div style="margin-top: 0.5rem;">
-                        <p><strong>📧 Email:</strong></p>
-                        <div class="copy-container">
-                            <span class="copy-text">{PERSONAL_INFO['email']}</span>
-            """, unsafe_allow_html=True)
-            
-            if st.button("📋 Copy", key="copy_email_contact", use_container_width=True):
-                st.session_state.copied_text = "Email copied to clipboard!"
-            
-            st.markdown(f"""
-                        </div>
-                        <p><strong>📱 Phone:</strong></p>
-                        <div class="copy-container">
-                            <span class="copy-text">{PERSONAL_INFO['phone']}</span>
-            """, unsafe_allow_html=True)
-            
-            if st.button("📋 Copy", key="copy_phone_contact", use_container_width=True):
-                st.session_state.copied_text = "Phone copied to clipboard!"
-            
-            st.markdown(f"""
-                        </div>
-                        <p><strong>📍 Location:</strong></p>
-                        <p style="margin: 0.2rem 0 0.5rem 0;">{PERSONAL_INFO['location']}</p>
-                    </div>
-                    <div style="margin-top: 1rem;">
-                        <a href="{PERSONAL_INFO['github']}" target="_blank" style="margin-right: 1rem; color: #333; text-decoration: none;">🐙 GitHub</a>
-                        <a href="{PERSONAL_INFO['twitter']}" target="_blank" style="margin-right: 1rem; color: #333; text-decoration: none;">🐦 Twitter</a>
-                        <a href="{PERSONAL_INFO['instagram']}" target="_blank" style="margin-right: 1rem; color: #333; text-decoration: none;">📸 Instagram</a>
-                        <a href="{PERSONAL_INFO['tiktok']}" target="_blank" style="color: #333; text-decoration: none;">🎵 TikTok</a>
-                    </div>
-                    <hr style="margin: 1rem 0;">
-                    <div style="text-align: center;">
-                        <p style="color: #888; font-size: 0.9rem;">🕐 Always open to learn and collaborate</p>
-                    </div>
+                <div class="stat-box">
+                    <div class="stat-number">{number}</div>
+                    <div class="stat-label">{label}</div>
                 </div>
             """, unsafe_allow_html=True)
-        
-        with col2:
-            st.markdown("""
-                <div class="card">
-                    <h4 style="color: #333;">📝 Send a Message</h4>
-                </div>
-            """, unsafe_allow_html=True)
-            
-            with st.form(key="contact_form", clear_on_submit=True):
-                name = st.text_input("Your Name *", placeholder="Enter your full name")
-                email = st.text_input("Your Email *", placeholder="Enter your email address")
-                subject = st.text_input("Subject", placeholder="What's this about?")
-                message = st.text_area("Message *", placeholder="Write your message here...", height=150)
-                
-                submit_button = st.form_submit_button("📨 Send Message", type="primary", use_container_width=True)
-                
-                if submit_button:
-                    if name and email and message:
-                        st.markdown("""
-                            <div class="success-message">
-                                ✅ Thank you for your message! I'll get back to you soon.
-                            </div>
-                        """, unsafe_allow_html=True)
-                        st.balloons()
-                    else:
-                        st.error("❌ Please fill in all required fields (*)")
+    
+    st.markdown("---")
+    st.markdown('<h3 style="color: #ffd700;">💪 Key Highlights</h3>', unsafe_allow_html=True)
+    
+    highlights = [
+        "🏆 Actively learning new technologies every day",
+        "📚 Balancing school studies with tech learning",
+        "🎯 Building projects to apply what I learn",
+        "🤖 Passionate about AI and its applications",
+        "💡 Participating in coding challenges and competitions"
+    ]
+    
+    for highlight in highlights:
+        st.markdown(f"""
+            <div style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center;">
+                <span style="margin-right: 0.5rem;">✨</span>
+                <span style="color: rgba(255,255,255,0.8);">{highlight}</span>
+            </div>
+        """, unsafe_allow_html=True)
 
-    # Show copy success message (global)
+def show_contact_page():
+    """Display Contact page"""
+    st.markdown('<div class="card-title">📬 Contact Me</div>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        st.markdown(f"""
+            <div class="card">
+                <h4 style="color: #ffd700;">Get in Touch</h4>
+                <p style="color: rgba(255,255,255,0.7);">
+                    I'm always open to learning opportunities, collaborations, or just a friendly chat. 
+                    Feel free to reach out through any of the following channels:
+                </p>
+                <div style="margin-top: 0.5rem;">
+                    <p><strong style="color: rgba(255,255,255,0.8);">📧 Email:</strong></p>
+                    <div class="copy-container">
+                        <span class="copy-text" style="background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8);">{PERSONAL_INFO['email']}</span>
+        """, unsafe_allow_html=True)
+        
+        if st.button("📋 Copy", key="copy_email_contact", use_container_width=True):
+            st.session_state.copied_text = "Email copied to clipboard!"
+        
+        st.markdown(f"""
+                    </div>
+                    <p><strong style="color: rgba(255,255,255,0.8);">📱 Phone:</strong></p>
+                    <div class="copy-container">
+                        <span class="copy-text" style="background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8);">{PERSONAL_INFO['phone']}</span>
+        """, unsafe_allow_html=True)
+        
+        if st.button("📋 Copy", key="copy_phone_contact", use_container_width=True):
+            st.session_state.copied_text = "Phone copied to clipboard!"
+        
+        st.markdown(f"""
+                    </div>
+                    <p><strong style="color: rgba(255,255,255,0.8);">📍 Location:</strong></p>
+                    <p style="margin: 0.2rem 0 0.5rem 0; color: rgba(255,255,255,0.7);">{PERSONAL_INFO['location']}</p>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" style="margin-right: 1rem; color: #f093fb; text-decoration: none;">🐙 GitHub</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" style="margin-right: 1rem; color: #f093fb; text-decoration: none;">🐦 Twitter</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" style="margin-right: 1rem; color: #f093fb; text-decoration: none;">📸 Instagram</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" style="color: #f093fb; text-decoration: none;">🎵 TikTok</a>
+                </div>
+                <hr style="margin: 1rem 0; border-color: rgba(255,255,255,0.1);">
+                <div style="text-align: center;">
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem;">🕐 Always open to learn and collaborate</p>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+            <div class="card">
+                <h4 style="color: #ffd700;">📝 Send a Message</h4>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        with st.form(key="contact_form", clear_on_submit=True):
+            name = st.text_input("Your Name *", placeholder="Enter your full name")
+            email = st.text_input("Your Email *", placeholder="Enter your email address")
+            subject = st.text_input("Subject", placeholder="What's this about?")
+            message = st.text_area("Message *", placeholder="Write your message here...", height=150)
+            
+            submit_button = st.form_submit_button("📨 Send Message", type="primary", use_container_width=True)
+            
+            if submit_button:
+                if name and email and message:
+                    st.markdown("""
+                        <div class="success-message">
+                            ✅ Thank you for your message! I'll get back to you soon.
+                        </div>
+                    """, unsafe_allow_html=True)
+                    st.balloons()
+                else:
+                    st.error("❌ Please fill in all required fields (*)")
+
+    # Show copy success message
     if st.session_state.copied_text:
         st.success(st.session_state.copied_text)
         st.session_state.copied_text = ""
-
-    # Footer
-    st.markdown("---")
-    st.markdown(f"""
-        <div style="text-align: center; color: #888; padding: 2rem 0;">
-            <p style="font-size: 0.9rem;">
-                © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ using Streamlit
-            </p>
-            <p style="font-size: 0.8rem; opacity: 0.7;">
-                Student | AI Enthusiast | Lifelong Learner
-            </p>
-            <div style="margin-top: 1rem;">
-                <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-icon" title="GitHub">🐙</a>
-                <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-icon" title="Twitter">🐦</a>
-                <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-icon" title="Instagram">📸</a>
-                <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-icon" title="TikTok">🎵</a>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
 
 # ============ APP ROUTING ============
 
@@ -1728,6 +1848,25 @@ def main():
             show_settings()
         else:
             show_portfolio()
+            
+        # Footer
+        st.markdown("---")
+        st.markdown(f"""
+            <div style="text-align: center; color: rgba(255,255,255,0.3); padding: 2rem 0;">
+                <p style="font-size: 0.9rem;">
+                    © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ using Streamlit
+                </p>
+                <p style="font-size: 0.8rem; opacity: 0.7;">
+                    Student | AI Enthusiast | Lifelong Learner
+                </p>
+                <div style="margin-top: 0.5rem;">
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-icon" title="GitHub">🐙</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-icon" title="Twitter">🐦</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-icon" title="Instagram">📸</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-icon" title="TikTok">🎵</a>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
     else:
         # Show login/register based on state
         if st.session_state.show_register:
