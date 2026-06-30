@@ -6,6 +6,10 @@ from PIL import Image
 import io
 import os
 
+# ============================================
+# 🚀 PWA CONFIGURATION - YEH CODE COPY KAREIN
+# ============================================
+
 # Page configuration
 st.set_page_config(
     page_title="Faizan Tanveer | Portfolio",
@@ -13,6 +17,39 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+# PWA Meta Tags aur Service Worker
+st.markdown("""
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                .then(function(registration) {
+                    console.log('✅ Service Worker registered successfully!');
+                })
+                .catch(function(error) {
+                    console.log('❌ Service Worker registration failed:', error);
+                });
+            });
+        }
+    </script>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Faizan Portfolio">
+    <link rel="apple-touch-icon" href="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=192&background=667eea&color=fff&bold=true">
+    
+    <!-- App Description for PWA -->
+    <meta name="description" content="Faizan Tanveer - Student Portfolio | AI Enthusiast | Python Developer">
+""", unsafe_allow_html=True)
+
+
 
 # Create images folder if it doesn't exist
 if not os.path.exists("images"):
