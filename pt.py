@@ -1568,8 +1568,6 @@ def show_about_page():
                     <p><strong>📚 Class</strong></p>
                     <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
                
-                
-
           
         """, unsafe_allow_html=True)
         
