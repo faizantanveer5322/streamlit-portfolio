@@ -1560,22 +1560,17 @@ def show_about_page():
             st.session_state.copied_text = "Phone copied to clipboard!"
         
         st.markdown(f"""
-                    </div>
+                  
                     <p><strong>📍 Location</strong></p>
                     <p style="margin: 0.2rem 0 0.5rem 0;">{PERSONAL_INFO['location']}</p>
                     <p><strong>🏫 School</strong></p>
                     <p style="margin: 0.2rem 0 0.5rem 0;">Sheikh Zayed Public School</p>
                     <p><strong>📚 Class</strong></p>
                     <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
-                </div>
+               
                 
-                <div class="profile-social-icons" style="margin-top: 0.5rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub">🐙</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter">🐦</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram">📸</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" title="TikTok">🎵</a>
-                </div>
-            </div>
+
+          
         """, unsafe_allow_html=True)
         
         # Show copy success message
