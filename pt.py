@@ -5,6 +5,7 @@ import base64
 from PIL import Image
 import io
 import os
+import pyperclip
 
 # Page configuration
 st.set_page_config(
@@ -384,6 +385,34 @@ st.markdown("""
         color: rgba(255,255,255,0.9) !important;
     }
     
+    /* Social Icons inside profile card */
+    .profile-social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .profile-social-icons a {
+        color: white !important;
+        font-size: 1.5rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+        background: rgba(255,255,255,0.15);
+        padding: 0.3rem 0.6rem;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .profile-social-icons a:hover {
+        transform: scale(1.2) rotate(-5deg);
+        background: rgba(255,255,255,0.3);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
     /* What I Do Cards */
     .what-i-do-item {
         text-align: center;
@@ -511,55 +540,9 @@ st.markdown("""
         }
     }
     
-    /* Image Upload Section */
+    /* Hide file uploader */
     .upload-section {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.07);
-        margin-top: 1rem;
-        border: 1px solid rgba(102, 126, 234, 0.1);
-    }
-    
-    .upload-section h4 {
-        color: #333;
-        margin-bottom: 0.5rem;
-    }
-    
-    /* Social Links in Profile Card */
-    .profile-social {
-        display: flex;
-        justify-content: center;
-        gap: 0.8rem;
-        margin-top: 0.5rem;
-        flex-wrap: wrap;
-    }
-    
-    .profile-social a {
-        color: white !important;
-        font-size: 1.5rem;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        display: inline-block;
-        background: rgba(255,255,255,0.15);
-        padding: 0.3rem 0.6rem;
-        border-radius: 10px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.1);
-    }
-    
-    .profile-social a:hover {
-        transform: scale(1.2) rotate(-5deg);
-        background: rgba(255,255,255,0.3);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    
-    /* Success flash for copy */
-    .stSuccess {
-        background: rgba(40, 167, 69, 0.9) !important;
-        color: white !important;
-        border-radius: 5px !important;
-        padding: 0.5rem !important;
+        display: none !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -925,7 +908,7 @@ with tabs[0]:
                 
                 <hr>
                 
-                <div class="profile-social">
+                <div class="profile-social-icons">
                     <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub">🐙</a>
                     <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter">🐦</a>
                     <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram">📸</a>
@@ -936,20 +919,6 @@ with tabs[0]:
         
         # Download Resume Button
         st.markdown(create_download_resume(), unsafe_allow_html=True)
-        
-        # Image Upload Section
-        st.markdown("""
-            <div class="upload-section">
-                <h4>📸 Upload Profile Image</h4>
-                <p style="color: #888; font-size: 0.9rem;">Supports JPG, JPEG, PNG formats</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        uploaded_file_main = st.file_uploader("Choose a profile image...", type=['jpg', 'jpeg', 'png'], key="main_uploader")
-        if uploaded_file_main is not None:
-            if save_uploaded_image(uploaded_file_main):
-                st.success("✅ Image uploaded successfully!")
-                st.rerun()
 
 # Skills Tab
 with tabs[1]:
