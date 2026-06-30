@@ -34,6 +34,7 @@ st.markdown("""
     [data-testid="stSidebar"] {
         display: none !important;
     }
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     
     [data-testid="stSidebarNav"] {
         display: none !important;
@@ -41,7 +42,6 @@ st.markdown("""
     
     /* Hero Section */
     .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 3rem 2rem;
         border-radius: 20px;
         margin-bottom: 2rem;
@@ -1195,6 +1195,32 @@ with tabs[7]:
                     st.balloons()
                 else:
                     st.error("❌ Please fill in all required fields (*)")
+
+
+# ===== PWA FIX CODE =====
+st.markdown("""
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+                console.log('Service Worker registered');
+            })
+            .catch(function(error) {
+                console.log('Service Worker registration failed');
+            });
+        }
+    </script>
+    
+    <!-- App Description -->
+    <meta name="description" content="Faizan Tanveer - Student Portfolio | AI Enthusiast | Python Developer">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+""", unsafe_allow_html=True)
 
 # Footer
 st.markdown("---")
