@@ -17,11 +17,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Create images folder if it doesn't exist
+# Create images folder if it doesn't exist (auto-created)
 if not os.path.exists("images"):
     os.makedirs("images")
 
-# Create users file if it doesn't exist
+# Create users file if it doesn't exist (auto-created)
 USERS_FILE = "users.json"
 
 # Get the path for profile image - support both jpg and png
@@ -82,23 +82,29 @@ if 'show_register' not in st.session_state:
     st.session_state.show_register = False
 if 'page' not in st.session_state:
     st.session_state.page = "about"
-if 'auth_animation' not in st.session_state:
-    st.session_state.auth_animation = False
+if 'copied_text' not in st.session_state:
+    st.session_state.copied_text = ""
 
-# Custom CSS for stunning design with new colors and animations
+# Custom CSS for stunning design with new color combination and sidebar animations
 st.markdown("""
     <style>
-    /* Global Styles */
+    /* Global Styles - New Dashboard Color Combination */
     .main {
         background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     }
     
-    /* Sidebar Styling - New Color Combination */
+    /* Sidebar Styling - Premium Gradient with Animations */
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #1a1a2e 100%) !important;
+        background: linear-gradient(180deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #1a0533 100%) !important;
         padding: 1rem 0.5rem;
         border-right: none !important;
-        box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+        box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3);
+        animation: sidebarGlow 4s ease-in-out infinite;
+    }
+    
+    @keyframes sidebarGlow {
+        0%, 100% { box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3); }
+        50% { box-shadow: 4px 0 50px rgba(200, 100, 255, 0.5); }
     }
     
     section[data-testid="stSidebar"] .stMarkdown {
@@ -114,13 +120,25 @@ st.markdown("""
     }
     
     section[data-testid="stSidebar"] hr {
-        border-color: rgba(255,255,255,0.15) !important;
+        border-color: rgba(255,255,255,0.1) !important;
     }
     
-    /* Sidebar user info */
+    /* Sidebar user info with pulse animation */
     .sidebar-user {
         text-align: center;
         padding: 0.5rem 0;
+        animation: userSlideIn 0.8s ease;
+    }
+    
+    @keyframes userSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
     
     .sidebar-user .avatar {
@@ -129,15 +147,22 @@ st.markdown("""
         border-radius: 50%;
         margin: 0 auto;
         overflow: hidden;
-        border: 3px solid rgba(255,215,0,0.6);
-        box-shadow: 0 0 30px rgba(255,215,0,0.2);
+        border: 3px solid rgba(200, 100, 255, 0.6);
+        box-shadow: 0 0 40px rgba(200, 100, 255, 0.3);
         background: rgba(255,255,255,0.1);
-        animation: glowPulse 2s ease-in-out infinite;
+        animation: avatarGlow 3s ease-in-out infinite;
+        transition: all 0.3s ease;
     }
     
-    @keyframes glowPulse {
-        0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.2); }
-        50% { box-shadow: 0 0 40px rgba(255,215,0,0.4); }
+    .sidebar-user .avatar:hover {
+        transform: scale(1.1) rotate(5deg);
+        border-color: #ffd700;
+        box-shadow: 0 0 60px rgba(255, 215, 0, 0.4);
+    }
+    
+    @keyframes avatarGlow {
+        0%, 100% { box-shadow: 0 0 30px rgba(200, 100, 255, 0.2); }
+        50% { box-shadow: 0 0 60px rgba(200, 100, 255, 0.5); }
     }
     
     .sidebar-user .avatar img {
@@ -151,22 +176,27 @@ st.markdown("""
         margin-top: 0.5rem;
         margin-bottom: 0.2rem;
         font-size: 1.1rem;
-        text-shadow: 0 0 20px rgba(255,215,0,0.2);
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
         animation: textGlow 3s ease-in-out infinite;
+        background: linear-gradient(to right, #ffd700, #f093fb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
     
     @keyframes textGlow {
         0%, 100% { text-shadow: 0 0 20px rgba(255,215,0,0.2); }
-        50% { text-shadow: 0 0 40px rgba(255,215,0,0.4); }
+        50% { text-shadow: 0 0 50px rgba(255,215,0,0.5); }
     }
     
     .sidebar-user p {
         color: rgba(255,255,255,0.7) !important;
         font-size: 0.8rem;
         margin: 0;
+        animation: fadeInUp 0.8s ease;
     }
     
-    /* Sidebar navigation buttons */
+    /* Sidebar navigation buttons with slide and bounce animations */
     .sidebar-nav .stButton button {
         width: 100%;
         background: rgba(255,255,255,0.05) !important;
@@ -177,32 +207,41 @@ st.markdown("""
         margin: 0.15rem 0 !important;
         text-align: left !important;
         font-weight: 500 !important;
-        transition: all 0.3s ease !important;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
         backdrop-filter: blur(10px);
-        animation: slideInLeft 0.5s ease;
+        animation: slideInLeft 0.5s ease both;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .sidebar-nav .stButton button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent);
+        transition: left 0.6s ease;
+    }
+    
+    .sidebar-nav .stButton button:hover::before {
+        left: 100%;
     }
     
     .sidebar-nav .stButton button:hover {
         background: rgba(255,215,0,0.15) !important;
         color: #ffd700 !important;
-        transform: translateX(8px) scale(1.02);
+        transform: translateX(10px) scale(1.03);
         border-color: rgba(255,215,0,0.3) !important;
-        box-shadow: 0 0 30px rgba(255,215,0,0.1);
+        box-shadow: 0 0 40px rgba(255,215,0,0.15);
     }
     
     .sidebar-nav .stButton button:active {
-        background: rgba(255,215,0,0.25) !important;
+        transform: scale(0.95);
     }
     
-    /* Sidebar active state */
-    .sidebar-nav .stButton button.active {
-        background: rgba(255,215,0,0.15) !important;
-        color: #ffd700 !important;
-        border-color: rgba(255,215,0,0.3) !important;
-        box-shadow: 0 0 30px rgba(255,215,0,0.1);
-    }
-    
-    /* Sidebar logout button */
+    /* Sidebar logout button animation */
     .sidebar-logout .stButton button {
         width: 100%;
         background: rgba(255,50,50,0.15) !important;
@@ -211,29 +250,38 @@ st.markdown("""
         border-radius: 12px !important;
         padding: 0.6rem !important;
         font-weight: 500 !important;
-        transition: all 0.3s ease !important;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
         backdrop-filter: blur(10px);
+        animation: slideInLeft 0.6s ease 0.6s both;
     }
     
     .sidebar-logout .stButton button:hover {
         background: rgba(255,50,50,0.25) !important;
-        transform: scale(1.02);
-        box-shadow: 0 0 30px rgba(255,50,50,0.2);
+        transform: scale(1.05) translateX(5px);
+        box-shadow: 0 0 40px rgba(255,50,50,0.3);
         border-color: rgba(255,50,50,0.4) !important;
     }
     
-    /* Hero Section - New Gradient */
+    /* Hero Section - New Vibrant Gradient */
     .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 55%, #f5576c 80%, #ffd700 100%);
         padding: 3rem 2rem;
         border-radius: 20px;
         margin-bottom: 2rem;
         color: white;
         text-align: center;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        animation: fadeInDown 0.8s ease;
+        box-shadow: 0 10px 50px rgba(0,0,0,0.4);
+        animation: heroFadeIn 0.8s ease;
         position: relative;
         overflow: hidden;
+        background-size: 300% 300%;
+        animation: gradientShift 6s ease infinite;
+    }
+    
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
     
     .hero-section::before {
@@ -245,6 +293,17 @@ st.markdown("""
         height: 200%;
         background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
         animation: rotateGradient 20s linear infinite;
+    }
+    
+    @keyframes heroFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
     
     @keyframes rotateGradient {
@@ -338,11 +397,6 @@ st.markdown("""
         100% { transform: translateY(0px); }
     }
     
-    @keyframes shimmer {
-        0% { background-position: -200% center; }
-        100% { background-position: 200% center; }
-    }
-    
     @keyframes bounceIn {
         0% { opacity: 0; transform: scale(0.3); }
         50% { opacity: 1; transform: scale(1.05); }
@@ -395,6 +449,7 @@ st.markdown("""
         transition: all 0.3s ease;
         animation: pulse 2s infinite;
         box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+        cursor: pointer;
     }
     
     .skill-tag:hover {
@@ -410,6 +465,84 @@ st.markdown("""
     .skill-tag:nth-child(3n) {
         background: linear-gradient(135deg, #f093fb 0%, #4facfe 100%);
         box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+    }
+    
+    /* What I Do Cards - Clickable */
+    .what-i-do-item {
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        animation: slideInUp 0.6s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .what-i-do-item::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.6s ease;
+    }
+    
+    .what-i-do-item:hover::before {
+        opacity: 1;
+    }
+    
+    .what-i-do-item:hover {
+        transform: translateY(-10px) scale(1.05);
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 10px 40px rgba(255,215,0,0.15);
+        background: rgba(255,215,0,0.08);
+    }
+    
+    .what-i-do-item:active {
+        transform: scale(0.95);
+    }
+    
+    .what-i-do-item .icon {
+        font-size: 2.5rem;
+        display: block;
+        animation: float 3s ease-in-out infinite;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .what-i-do-item .label {
+        margin-top: 0.5rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.9) !important;
+        position: relative;
+        z-index: 1;
+        font-size: 1rem;
+    }
+    
+    .what-i-do-item .description {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.5) !important;
+        margin-top: 0.3rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
     
     /* Experience Timeline */
@@ -695,36 +828,6 @@ st.markdown("""
         box-shadow: 0 0 30px rgba(255,255,255,0.1);
     }
     
-    /* What I Do Cards */
-    .what-i-do-item {
-        text-align: center;
-        padding: 1rem;
-        background: rgba(255,255,255,0.05);
-        backdrop-filter: blur(10px);
-        border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.05);
-        transition: all 0.3s ease;
-        animation: slideInUp 0.6s ease;
-    }
-    
-    .what-i-do-item:hover {
-        transform: scale(1.05) translateY(-5px);
-        border-color: rgba(255,215,0,0.2);
-        box-shadow: 0 0 30px rgba(255,215,0,0.1);
-    }
-    
-    .what-i-do-item .icon {
-        font-size: 2rem;
-        display: block;
-        animation: float 3s ease-in-out infinite;
-    }
-    
-    .what-i-do-item .label {
-        margin-top: 0.5rem;
-        font-weight: 500;
-        color: rgba(255,255,255,0.9) !important;
-    }
-    
     /* Copy Container */
     .copy-container {
         display: flex;
@@ -776,6 +879,9 @@ st.markdown("""
         }
         .copy-container {
             flex-wrap: wrap;
+        }
+        .what-i-do-item {
+            padding: 1rem;
         }
     }
     
@@ -990,7 +1096,6 @@ st.markdown("""
         color: #ffd700 !important;
     }
     
-    /* Error/Warning/Success messages */
     .stAlert {
         border-radius: 15px !important;
         backdrop-filter: blur(20px) !important;
@@ -1142,12 +1247,6 @@ ACHIEVEMENTS = [
     "💡 Developed AI and ML projects for learning",
     "🎤 Active participant in school tech events"
 ]
-
-# Initialize session state
-if 'copied_text' not in st.session_state:
-    st.session_state.copied_text = ""
-if 'page' not in st.session_state:
-    st.session_state.page = "about"
 
 # Function to check if image exists (jpg or png)
 def image_exists():
@@ -1411,8 +1510,6 @@ def show_sidebar():
         ]
         
         for item in nav_items:
-            is_active = st.session_state.page == item["key"]
-            # Use markdown for navigation items with click handling
             if st.button(f"{item['icon']} {item['label']}", key=f"nav_{item['key']}", use_container_width=True):
                 st.session_state.page = item["key"]
                 st.rerun()
@@ -1489,25 +1586,30 @@ def show_about_page():
             </div>
         """, unsafe_allow_html=True)
         
+        # What I Do - Clickable Cards
         st.markdown("""
             <div class="card">
                 <div class="card-title">💡 What I Do</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="what-i-do-item">
+                    <div class="what-i-do-item" onclick="window.location.href='?page=skills'">
                         <span class="icon">💻</span>
                         <p class="label">Coding</p>
+                        <p class="description">Building amazing applications</p>
                     </div>
-                    <div class="what-i-do-item">
+                    <div class="what-i-do-item" onclick="window.location.href='?page=projects'">
                         <span class="icon">🤖</span>
                         <p class="label">AI Enthusiast</p>
+                        <p class="description">Exploring Artificial Intelligence</p>
                     </div>
-                    <div class="what-i-do-item">
+                    <div class="what-i-do-item" onclick="window.location.href='?page=education'">
                         <span class="icon">📚</span>
                         <p class="label">Student</p>
+                        <p class="description">Learning new technologies</p>
                     </div>
-                    <div class="what-i-do-item">
+                    <div class="what-i-do-item" onclick="window.location.href='?page=achievements'">
                         <span class="icon">🎯</span>
                         <p class="label">Lifelong Learner</p>
+                        <p class="description">Continuous improvement</p>
                     </div>
                 </div>
             </div>
@@ -1560,15 +1662,22 @@ def show_about_page():
             st.session_state.copied_text = "Phone copied to clipboard!"
         
         st.markdown(f"""
-                  
+                    </div>
                     <p><strong>📍 Location</strong></p>
                     <p style="margin: 0.2rem 0 0.5rem 0;">{PERSONAL_INFO['location']}</p>
                     <p><strong>🏫 School</strong></p>
                     <p style="margin: 0.2rem 0 0.5rem 0;">Sheikh Zayed Public School</p>
                     <p><strong>📚 Class</strong></p>
                     <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
-               
-          
+                </div>
+                
+                <div class="profile-social-icons" style="margin-top: 0.5rem;">
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub">🐙</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter">🐦</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram">📸</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" title="TikTok">🎵</a>
+                </div>
+            </div>
         """, unsafe_allow_html=True)
         
         # Show copy success message
