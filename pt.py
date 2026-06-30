@@ -6,7 +6,6 @@ from PIL import Image
 import io
 import os
 
-
 # Page configuration
 st.set_page_config(
     page_title="Faizan Tanveer | Portfolio",
