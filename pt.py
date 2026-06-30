@@ -1749,8 +1749,6 @@ def show_home_page():
                     <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
                 </div>
                 
-
-            </div>
         """, unsafe_allow_html=True)
         
         if st.session_state.copied_text:
