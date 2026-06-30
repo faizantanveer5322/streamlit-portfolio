@@ -143,10 +143,7 @@ if 'copied_text' not in st.session_state:
 # Custom CSS with emoji support
 st.markdown("""
     <style>
-    /* Global Styles */
-    .main {
-        background: linear-gradient( 134deg)
-    }
+
     
     /* Fix emoji display */
     .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
