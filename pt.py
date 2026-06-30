@@ -8,11 +8,14 @@ import os
 import hashlib
 import json
 import time
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # Page configuration
 st.set_page_config(
-    page_title="Faizan Tanveer ",
-    page_icon="💻",
+    page_title="Faizan Tanveer | Portfolio",
+    page_icon="👨‍💻",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -27,6 +30,11 @@ USERS_FILE = "users.json"
 # Get the path for profile image - support both jpg and png
 PROFILE_IMAGE_PATH = "images/profile_image.png"
 PROFILE_IMAGE_PATH_JPG = "images/profile_image.jpg"
+
+# Email configuration - REPLACE WITH YOUR EMAIL DETAILS
+EMAIL_SENDER = "your_email@gmail.com"  # Replace with your email
+EMAIL_PASSWORD = "your_app_password"    # Replace with your app password
+EMAIL_RECEIVER = "faizan75601@email.com"  # Where you want to receive messages
 
 # User authentication functions
 def hash_password(password):
@@ -73,6 +81,45 @@ def change_password(username, old_password, new_password):
         return True
     return False
 
+# Email sending function
+def send_email(name, email, subject, message):
+    """Send email using SMTP"""
+    try:
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_SENDER
+        msg['To'] = EMAIL_RECEIVER
+        msg['Subject'] = f"Portfolio Contact: {subject}"
+
+        # Email body
+        body = f"""
+        You have received a new message from your portfolio contact form:
+
+        Name: {name}
+        Email: {email}
+        Subject: {subject}
+
+        Message:
+        {message}
+
+        --------------------
+        Sent from: Faizan Tanveer's Portfolio
+        Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        """
+        
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Send email
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        
+        return True, "✅ Message sent successfully! I'll get back to you soon."
+    except Exception as e:
+        return False, f"❌ Failed to send message. Error: {str(e)}"
+
 # Initialize session state
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
@@ -85,7 +132,7 @@ if 'page' not in st.session_state:
 if 'copied_text' not in st.session_state:
     st.session_state.copied_text = ""
 
-# Custom CSS for stunning design with new color combination and sidebar animations
+# Custom CSS for stunning design
 st.markdown("""
     <style>
     /* Global Styles - New Dashboard Color Combination */
@@ -436,7 +483,7 @@ st.markdown("""
         color: rgba(255,255,255,0.9) !important;
     }
     
-    /* Skill Tags - New Colors */
+    /* Skill Tags */
     .skill-tag {
         display: inline-block;
         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -869,6 +916,63 @@ st.markdown("""
         color: white !important;
     }
     
+    /* Contact form styling */
+    .contact-form-card {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(20px);
+        padding: 1.5rem;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.08);
+        animation: slideInRight 0.6s ease;
+    }
+    
+    .contact-form-card h4 {
+        color: #ffd700 !important;
+    }
+    
+    .contact-form-card .stTextInput input,
+    .contact-form-card .stTextArea textarea {
+        border-radius: 12px !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        background: rgba(255,255,255,0.05) !important;
+        color: white !important;
+        padding: 0.6rem 1rem !important;
+    }
+    
+    .contact-form-card .stTextInput input:focus,
+    .contact-form-card .stTextArea textarea:focus {
+        border-color: #ffd700 !important;
+        box-shadow: 0 0 30px rgba(255,215,0,0.1) !important;
+    }
+    
+    .contact-form-card .stTextInput input::placeholder,
+    .contact-form-card .stTextArea textarea::placeholder {
+        color: rgba(255,255,255,0.3) !important;
+    }
+    
+    .contact-form-card .stTextInput label,
+    .contact-form-card .stTextArea label {
+        color: rgba(255,255,255,0.7) !important;
+    }
+    
+    .contact-form-card .stButton button {
+        width: 100%;
+        background: linear-gradient(135deg, #ffd700, #f093fb) !important;
+        color: white !important;
+        border: none !important;
+        padding: 0.7rem !important;
+        border-radius: 15px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 25px rgba(255,215,0,0.2) !important;
+    }
+    
+    .contact-form-card .stButton button:hover {
+        transform: scale(1.02) !important;
+        box-shadow: 0 8px 35px rgba(255,215,0,0.3) !important;
+    }
+    
     /* Responsive adjustments */
     @media (max-width: 768px) {
         .hero-title {
@@ -921,6 +1025,19 @@ st.markdown("""
         padding: 1rem;
         border-radius: 15px;
         border: 1px solid rgba(46, 213, 115, 0.2);
+        margin-top: 1rem;
+        text-align: center;
+        animation: fadeInUp 0.5s ease;
+    }
+    
+    /* Error Message */
+    .error-message {
+        background: rgba(255, 50, 50, 0.2);
+        backdrop-filter: blur(20px);
+        color: #ff6b6b;
+        padding: 1rem;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 50, 50, 0.2);
         margin-top: 1rem;
         text-align: center;
         animation: fadeInUp 0.5s ease;
@@ -1855,7 +1972,7 @@ def show_stats_page():
         """, unsafe_allow_html=True)
 
 def show_contact_page():
-    """Display Contact page"""
+    """Display Contact page with working email form"""
     st.markdown('<div class="card-title">📬 Contact Me</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns([1, 1])
@@ -1907,12 +2024,13 @@ def show_contact_page():
     
     with col2:
         st.markdown("""
-            <div class="card">
+            <div class="contact-form-card">
                 <h4 style="color: #ffd700;">📝 Send a Message</h4>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">I'll get back to you within 24 hours</p>
             </div>
         """, unsafe_allow_html=True)
         
-        with st.form(key="contact_form", clear_on_submit=True):
+        with st.form(key="contact_form", clear_on_submit=False):
             name = st.text_input("Your Name *", placeholder="Enter your full name")
             email = st.text_input("Your Email *", placeholder="Enter your email address")
             subject = st.text_input("Subject", placeholder="What's this about?")
@@ -1922,12 +2040,28 @@ def show_contact_page():
             
             if submit_button:
                 if name and email and message:
-                    st.markdown("""
-                        <div class="success-message">
-                            ✅ Thank you for your message! I'll get back to you soon.
-                        </div>
-                    """, unsafe_allow_html=True)
-                    st.balloons()
+                    # Show sending message
+                    with st.spinner("Sending message..."):
+                        success, response = send_email(name, email, subject, message)
+                        
+                        if success:
+                            st.markdown(f"""
+                                <div class="success-message">
+                                    ✅ {response}
+                                </div>
+                            """, unsafe_allow_html=True)
+                            st.balloons()
+                            # Clear form fields
+                            st.session_state.contact_name = ""
+                            st.session_state.contact_email = ""
+                            st.session_state.contact_subject = ""
+                            st.session_state.contact_message = ""
+                        else:
+                            st.markdown(f"""
+                                <div class="error-message">
+                                    ❌ {response}
+                                </div>
+                            """, unsafe_allow_html=True)
                 else:
                     st.error("❌ Please fill in all required fields (*)")
 
