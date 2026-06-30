@@ -5,7 +5,6 @@ import base64
 from PIL import Image
 import io
 import os
-import pyperclip
 
 # Page configuration
 st.set_page_config(
