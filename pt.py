@@ -5,6 +5,8 @@ import base64
 from PIL import Image
 import io
 import os
+import hashlib
+import json
 
 # Page configuration
 st.set_page_config(
@@ -18,11 +20,58 @@ st.set_page_config(
 if not os.path.exists("images"):
     os.makedirs("images")
 
+# Create users file if it doesn't exist
+USERS_FILE = "users.json"
+
 # Get the path for profile image - support both jpg and png
 PROFILE_IMAGE_PATH = "images/profile_image.png"
 PROFILE_IMAGE_PATH_JPG = "images/profile_image.jpg"
 
-# Custom CSS for stunning design
+# User authentication functions
+def hash_password(password):
+    """Hash a password using SHA-256"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def load_users():
+    """Load users from JSON file"""
+    if os.path.exists(USERS_FILE):
+        try:
+            with open(USERS_FILE, 'r') as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
+
+def save_users(users):
+    """Save users to JSON file"""
+    with open(USERS_FILE, 'w') as f:
+        json.dump(users, f, indent=4)
+
+def authenticate_user(username, password):
+    """Authenticate a user"""
+    users = load_users()
+    if username in users:
+        return users[username] == hash_password(password)
+    return False
+
+def register_user(username, password):
+    """Register a new user"""
+    users = load_users()
+    if username in users:
+        return False
+    users[username] = hash_password(password)
+    save_users(users)
+    return True
+
+# Initialize session state for authentication
+if 'authenticated' not in st.session_state:
+    st.session_state.authenticated = False
+if 'username' not in st.session_state:
+    st.session_state.username = ""
+if 'show_register' not in st.session_state:
+    st.session_state.show_register = False
+
+# Custom CSS for authentication and main design
 st.markdown("""
     <style>
     /* Global Styles */
@@ -37,6 +86,63 @@ st.markdown("""
     
     [data-testid="stSidebarNav"] {
         display: none !important;
+    }
+    
+    /* Auth Container */
+    .auth-container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+    }
+    
+    .auth-container h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 1.5rem;
+        font-size: 2rem;
+    }
+    
+    .auth-container .subtitle {
+        text-align: center;
+        color: #888;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .auth-container .stButton button {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.6rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+    }
+    
+    .auth-container .stButton button:hover {
+        transform: scale(1.02);
+    }
+    
+    .auth-switch {
+        text-align: center;
+        margin-top: 1rem;
+        color: #666;
+    }
+    
+    .auth-switch a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    
+    .auth-switch a:hover {
+        text-decoration: underline;
     }
     
     /* Hero Section */
@@ -298,7 +404,7 @@ st.markdown("""
         object-fit: cover;
     }
     
-    /* Colorful Profile Card - MULTI COLOR GRADIENT */
+    /* Colorful Profile Card */
     .profile-card {
         text-align: center;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%) !important;
@@ -378,6 +484,10 @@ st.markdown("""
     
     .profile-card strong {
         color: rgba(255,255,255,0.9) !important;
+    }
+    
+    .profile-card hr {
+        display: none !important;
     }
     
     /* Social Icons inside profile card */
@@ -535,14 +645,28 @@ st.markdown("""
         }
     }
     
-    /* Hide upload section */
-    .upload-section {
-        display: none !important;
+    /* Logout button */
+    .logout-btn {
+        position: fixed;
+        top: 10px;
+        right: 20px;
+        z-index: 1000;
     }
     
-    /* Hide HR in profile card */
-    .profile-card hr {
-        display: none !important;
+    .logout-btn button {
+        background: rgba(255,255,255,0.2) !important;
+        color: white !important;
+        border: 1px solid rgba(255,255,255,0.3) !important;
+        border-radius: 20px !important;
+        padding: 0.3rem 1rem !important;
+        font-size: 0.8rem !important;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease !important;
+    }
+    
+    .logout-btn button:hover {
+        background: rgba(255,255,255,0.3) !important;
+        transform: scale(1.05);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -688,7 +812,7 @@ ACHIEVEMENTS = [
     "🎤 Active participant in school tech events"
 ]
 
-# Initialize session state for copy
+# Initialize session state
 if 'copied_text' not in st.session_state:
     st.session_state.copied_text = ""
 
@@ -782,403 +906,533 @@ ACHIEVEMENTS
     href = f'<a href="data:text/plain;base64,{b64}" download="Faizan_Tanveer_Resume.txt" class="download-btn">📄 Download Resume</a>'
     return href
 
-# Hero Section
-st.markdown(f"""
-    <div class="hero-section">
-        <div class="hero-title">👋 {PERSONAL_INFO['name']}</div>
-        <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
-        <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
-        <div style="margin-top: 1.5rem;">
-            <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-link">🐙 GitHub</a>
-            <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-link">🐦 Twitter</a>
-            <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-link">📸 Instagram</a>
-            <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-link">🎵 TikTok</a>
+# ============ AUTHENTICATION SECTION ============
+
+def show_login_page():
+    """Display login page"""
+    st.markdown("""
+        <div class="auth-container">
+            <h2>🔐 Welcome Back</h2>
+            <p class="subtitle">Login to view Faizan's Portfolio</p>
+    """, unsafe_allow_html=True)
+    
+    with st.form("login_form"):
+        username = st.text_input("👤 Username", placeholder="Enter your username")
+        password = st.text_input("🔑 Password", type="password", placeholder="Enter your password")
+        submit = st.form_submit_button("🔓 Login", use_container_width=True)
+        
+        if submit:
+            if username and password:
+                if authenticate_user(username, password):
+                    st.session_state.authenticated = True
+                    st.session_state.username = username
+                    st.success("✅ Login successful! Redirecting...")
+                    st.rerun()
+                else:
+                    st.error("❌ Invalid username or password!")
+            else:
+                st.warning("⚠️ Please fill in all fields!")
+    
+    st.markdown("""
+        <div class="auth-switch">
+            Don't have an account? <a onclick="document.querySelector('[data-testid=\"stButton\"] button').click()">Register here</a>
         </div>
-    </div>
-""", unsafe_allow_html=True)
-
-# Navigation with icons
-st.markdown("---")
-tabs = st.tabs([
-    "👤 About Me", 
-    "🛠️ Skills", 
-    "💼 Experience", 
-    "🎓 Education", 
-    "🚀 Projects", 
-    "🏆 Achievements",
-    "📊 Stats", 
-    "📬 Contact"
-])
-
-# About Tab
-with tabs[0]:
-    col1, col2 = st.columns([2, 1])
+        </div>
+    """, unsafe_allow_html=True)
     
-    with col1:
-        st.markdown(f"""
-            <div class="card">
-                <div class="card-title">📖 About Me</div>
-                <div class="about-text">
-                    {PERSONAL_INFO['bio']}
-                </div>
+    # Register button
+    if st.button("Register", key="goto_register", use_container_width=True):
+        st.session_state.show_register = True
+        st.rerun()
+
+def show_register_page():
+    """Display registration page"""
+    st.markdown("""
+        <div class="auth-container">
+            <h2>📝 Create Account</h2>
+            <p class="subtitle">Register to access the portfolio</p>
+    """, unsafe_allow_html=True)
+    
+    with st.form("register_form"):
+        username = st.text_input("👤 Username", placeholder="Choose a username")
+        password = st.text_input("🔑 Password", type="password", placeholder="Choose a password")
+        confirm_password = st.text_input("✅ Confirm Password", type="password", placeholder="Confirm your password")
+        submit = st.form_submit_button("📝 Register", use_container_width=True)
+        
+        if submit:
+            if username and password and confirm_password:
+                if len(username) < 3:
+                    st.warning("⚠️ Username must be at least 3 characters!")
+                elif len(password) < 4:
+                    st.warning("⚠️ Password must be at least 4 characters!")
+                elif password != confirm_password:
+                    st.error("❌ Passwords do not match!")
+                else:
+                    if register_user(username, password):
+                        st.success("✅ Registration successful! Please login.")
+                        st.session_state.show_register = False
+                        st.rerun()
+                    else:
+                        st.error("❌ Username already exists! Please choose another.")
+            else:
+                st.warning("⚠️ Please fill in all fields!")
+    
+    st.markdown("""
+        <div class="auth-switch">
+            Already have an account? <a onclick="document.querySelector('[data-testid=\"stButton\"] button').click()">Login here</a>
+        </div>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Login button
+    if st.button("Login", key="goto_login", use_container_width=True):
+        st.session_state.show_register = False
+        st.rerun()
+
+# ============ MAIN PORTFOLIO CONTENT ============
+
+def show_portfolio():
+    """Display the main portfolio content"""
+    
+    # Logout button at top right
+    st.markdown(f"""
+        <div class="logout-btn">
+            <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.1); padding: 0.3rem 0.8rem; border-radius: 20px; backdrop-filter: blur(10px);">
+                <span style="color: white; font-size: 0.85rem;">👤 {st.session_state.username}</span>
+                <span style="color: rgba(255,255,255,0.3);">|</span>
+    """, unsafe_allow_html=True)
+    
+    if st.button("🚪 Logout", key="logout_btn"):
+        st.session_state.authenticated = False
+        st.session_state.username = ""
+        st.rerun()
+    
+    st.markdown("""
             </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("""
-            <div class="card">
-                <div class="card-title">💡 What I Do</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="what-i-do-item">
-                        <span class="icon">💻</span>
-                        <p class="label">Coding</p>
-                    </div>
-                    <div class="what-i-do-item">
-                        <span class="icon">🤖</span>
-                        <p class="label">AI Enthusiast</p>
-                    </div>
-                    <div class="what-i-do-item">
-                        <span class="icon">📚</span>
-                        <p class="label">Student</p>
-                    </div>
-                    <div class="what-i-do-item">
-                        <span class="icon">🎯</span>
-                        <p class="label">Lifelong Learner</p>
-                    </div>
-                </div>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Hero Section
+    st.markdown(f"""
+        <div class="hero-section">
+            <div class="hero-title">👋 {PERSONAL_INFO['name']}</div>
+            <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
+            <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
+            <div style="margin-top: 1.5rem;">
+                <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-link">🐙 GitHub</a>
+                <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-link">🐦 Twitter</a>
+                <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-link">📸 Instagram</a>
+                <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-link">🎵 TikTok</a>
             </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("""
-            <div class="card profile-card">
-                <div class="card-title">👤 Profile</div>
-        """, unsafe_allow_html=True)
-        
-        # Display profile image
-        img_base64 = get_profile_image_base64()
-        if img_base64:
-            st.markdown(f"""
-                <div class="profile-image-container">
-                    <img src="data:image/png;base64,{img_base64}" alt="Profile Photo">
-                </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown("""
-                <div class="profile-image-container">
-                    <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=150&background=fff&color=667eea&bold=true" alt="Profile Photo">
-                </div>
-            """, unsafe_allow_html=True)
-        
-        st.markdown(f"""
-                <h3 style="margin-top: 1rem;">{PERSONAL_INFO['name']}</h3>
-                <p style="opacity: 0.9;">{PERSONAL_INFO['title']}</p>
-                
-                <div style="text-align: left; margin-top: 0.5rem;">
-                    <p><strong>📧 Email</strong></p>
-                    <div class="copy-container">
-                        <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white;">{PERSONAL_INFO['email']}</span>
-        """, unsafe_allow_html=True)
-        
-        # Email Copy Button
-        if st.button("📋 Copy", key="copy_email_profile", use_container_width=True):
-            st.session_state.copied_text = "Email copied to clipboard!"
-        
-        st.markdown(f"""
-                    </div>
-                    <p><strong>📱 Phone</strong></p>
-                    <div class="copy-container">
-                        <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white;">{PERSONAL_INFO['phone']}</span>
-        """, unsafe_allow_html=True)
-        
-        # Phone Copy Button
-        if st.button("📋 Copy", key="copy_phone_profile", use_container_width=True):
-            st.session_state.copied_text = "Phone copied to clipboard!"
-        
-        st.markdown(f"""
-                    </div>
-                    <p><strong>📍 Location</strong></p>
-                    <p style="margin: 0.2rem 0 0.5rem 0;">{PERSONAL_INFO['location']}</p>
-                    <p><strong>🏫 School</strong></p>
-                    <p style="margin: 0.2rem 0 0.5rem 0;">Sheikh Zayed Public School</p>
-                    <p><strong>📚 Class</strong></p>
-                    <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
-                </div>
-                
+        </div>
+    """, unsafe_allow_html=True)
 
-            </div>
-        """, unsafe_allow_html=True)
-        
-        # Show copy success message
-        if st.session_state.copied_text:
-            st.success(st.session_state.copied_text)
-            st.session_state.copied_text = ""
-        
-        # Download Resume Button
-        st.markdown(create_download_resume(), unsafe_allow_html=True)
-
-# Skills Tab
-with tabs[1]:
-    st.markdown('<div class="card-title">🛠️ Technical Skills</div>', unsafe_allow_html=True)
-    
-    for category, skills in SKILLS.items():
-        with st.expander(f"**{category}**", expanded=True):
-            st.markdown(f"""
-                <div style="padding: 0.5rem 0;">
-                    {''.join(f'<span class="skill-tag">{skill}</span> ' for skill in skills)}
-                </div>
-            """, unsafe_allow_html=True)
-    
+    # Navigation with icons
     st.markdown("---")
-    st.markdown('<div class="card-title">📊 Skill Proficiency</div>', unsafe_allow_html=True)
-    
-    skill_levels = {
-        "Python": 70,
-        "JavaScript": 60,
-        "HTML/CSS": 65,
-        "Streamlit": 75,
-        "Problem Solving": 70,
-        "AI Concepts": 60
-    }
-    
-    for skill, level in skill_levels.items():
-        st.markdown(f"""
-            <div style="margin: 0.5rem 0;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
-                    <span style="font-weight: 500;">{skill}</span>
-                    <span style="color: #667eea;">{level}%</span>
-                </div>
-                <div style="background: #e0e0e0; border-radius: 10px; height: 8px; overflow: hidden;">
-                    <div style="width: {level}%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; transition: width 1s ease;"></div>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+    tabs = st.tabs([
+        "👤 About Me", 
+        "🛠️ Skills", 
+        "💼 Experience", 
+        "🎓 Education", 
+        "🚀 Projects", 
+        "🏆 Achievements",
+        "📊 Stats", 
+        "📬 Contact"
+    ])
 
-# Experience Tab
-with tabs[2]:
-    st.markdown('<div class="card-title">💼 Experience</div>', unsafe_allow_html=True)
-    
-    for exp in EXPERIENCE:
-        st.markdown(f"""
-            <div class="card timeline-item">
-                <div class="timeline-title">{exp['title']}</div>
-                <div class="timeline-subtitle">{exp['company']}</div>
-                <div class="timeline-date">📅 {exp['period']}</div>
-                <div style="margin-top: 0.8rem; white-space: pre-line; color: #555;">
-                    {exp['description']}
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-
-# Education Tab
-with tabs[3]:
-    st.markdown('<div class="card-title">🎓 Education</div>', unsafe_allow_html=True)
-    
-    cols = st.columns(2)
-    for idx, edu in enumerate(EDUCATION):
-        with cols[idx % 2]:
+    # About Tab
+    with tabs[0]:
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
             st.markdown(f"""
-                <div class="card" style="height: 100%;">
-                    <h4 style="color: #333;">{edu['degree']}</h4>
-                    <p style="color: #667eea; font-weight: 500;">{edu['institution']}</p>
-                    <p style="color: #888;">📅 {edu['year']}</p>
-                    <p style="color: #555;">🎯 GPA: {edu['gpa']}</p>
+                <div class="card">
+                    <div class="card-title">📖 About Me</div>
+                    <div class="about-text">
+                        {PERSONAL_INFO['bio']}
+                    </div>
                 </div>
             """, unsafe_allow_html=True)
-    
-    st.markdown('<div class="card-title" style="margin-top: 2rem;">📜 Certifications</div>', unsafe_allow_html=True)
-    
-    cert_cols = st.columns(3)
-    for idx, cert in enumerate(CERTIFICATIONS):
-        with cert_cols[idx % 3]:
-            st.markdown(f"""
-                <div class="card" style="text-align: center; padding: 1rem;">
-                    <span style="font-size: 1.5rem;">🏆</span>
-                    <p style="font-size: 0.9rem; margin-top: 0.5rem; color: #333;">{cert}</p>
+            
+            st.markdown("""
+                <div class="card">
+                    <div class="card-title">💡 What I Do</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="what-i-do-item">
+                            <span class="icon">💻</span>
+                            <p class="label">Coding</p>
+                        </div>
+                        <div class="what-i-do-item">
+                            <span class="icon">🤖</span>
+                            <p class="label">AI Enthusiast</p>
+                        </div>
+                        <div class="what-i-do-item">
+                            <span class="icon">📚</span>
+                            <p class="label">Student</p>
+                        </div>
+                        <div class="what-i-do-item">
+                            <span class="icon">🎯</span>
+                            <p class="label">Lifelong Learner</p>
+                        </div>
+                    </div>
                 </div>
             """, unsafe_allow_html=True)
-
-# Projects Tab
-with tabs[4]:
-    st.markdown('<div class="card-title">🚀 Projects</div>', unsafe_allow_html=True)
-    
-    for i in range(0, len(PROJECTS), 3):
-        cols = st.columns(3)
-        for j in range(3):
-            if i + j < len(PROJECTS):
-                project = PROJECTS[i + j]
-                with cols[j]:
-                    tech_tags = ' '.join(f'<span class="skill-tag" style="font-size: 0.8rem; margin: 0.1rem;">{tech}</span>' for tech in project['tech'])
-                    demo_link = f'<a href="{project["demo"]}" target="_blank" style="color: #667eea; text-decoration: none;">🔗 Live Demo</a>' if project['demo'] else ''
+        
+        with col2:
+            st.markdown("""
+                <div class="card profile-card">
+                    <div class="card-title">👤 Profile</div>
+            """, unsafe_allow_html=True)
+            
+            # Display profile image
+            img_base64 = get_profile_image_base64()
+            if img_base64:
+                st.markdown(f"""
+                    <div class="profile-image-container">
+                        <img src="data:image/png;base64,{img_base64}" alt="Profile Photo">
+                    </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("""
+                    <div class="profile-image-container">
+                        <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=150&background=fff&color=667eea&bold=true" alt="Profile Photo">
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown(f"""
+                    <h3 style="margin-top: 1rem;">{PERSONAL_INFO['name']}</h3>
+                    <p style="opacity: 0.9;">{PERSONAL_INFO['title']}</p>
                     
-                    st.markdown(f"""
-                        <div class="project-card">
-                            <div class="project-content">
-                                <div class="project-title">{project['title']}</div>
-                                <div class="project-description">{project['description']}</div>
-                                <div class="project-tech">{tech_tags}</div>
-                                <div style="margin-top: 1rem;">
-                                    <a href="{project['github']}" target="_blank" style="color: #667eea; text-decoration: none; margin-right: 1rem;">🐙 GitHub</a>
-                                    {demo_link}
+                    <div style="text-align: left; margin-top: 0.5rem;">
+                        <p><strong>📧 Email</strong></p>
+                        <div class="copy-container">
+                            <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white;">{PERSONAL_INFO['email']}</span>
+            """, unsafe_allow_html=True)
+            
+            # Email Copy Button
+            if st.button("📋 Copy", key="copy_email_profile", use_container_width=True):
+                st.session_state.copied_text = "Email copied to clipboard!"
+            
+            st.markdown(f"""
+                        </div>
+                        <p><strong>📱 Phone</strong></p>
+                        <div class="copy-container">
+                            <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white;">{PERSONAL_INFO['phone']}</span>
+            """, unsafe_allow_html=True)
+            
+            # Phone Copy Button
+            if st.button("📋 Copy", key="copy_phone_profile", use_container_width=True):
+                st.session_state.copied_text = "Phone copied to clipboard!"
+            
+            st.markdown(f"""
+                        </div>
+                        <p><strong>📍 Location</strong></p>
+                        <p style="margin: 0.2rem 0 0.5rem 0;">{PERSONAL_INFO['location']}</p>
+                        <p><strong>🏫 School</strong></p>
+                        <p style="margin: 0.2rem 0 0.5rem 0;">Sheikh Zayed Public School</p>
+                        <p><strong>📚 Class</strong></p>
+                        <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
+                    </div>
+                    
+                    <div class="profile-social-icons" style="margin-top: 0.5rem;">
+                        <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub">🐙</a>
+                        <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter">🐦</a>
+                        <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram">📸</a>
+                        <a href="{PERSONAL_INFO['tiktok']}" target="_blank" title="TikTok">🎵</a>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # Show copy success message
+            if st.session_state.copied_text:
+                st.success(st.session_state.copied_text)
+                st.session_state.copied_text = ""
+            
+            # Download Resume Button
+            st.markdown(create_download_resume(), unsafe_allow_html=True)
+
+    # Skills Tab
+    with tabs[1]:
+        st.markdown('<div class="card-title">🛠️ Technical Skills</div>', unsafe_allow_html=True)
+        
+        for category, skills in SKILLS.items():
+            with st.expander(f"**{category}**", expanded=True):
+                st.markdown(f"""
+                    <div style="padding: 0.5rem 0;">
+                        {''.join(f'<span class="skill-tag">{skill}</span> ' for skill in skills)}
+                    </div>
+                """, unsafe_allow_html=True)
+        
+        st.markdown("---")
+        st.markdown('<div class="card-title">📊 Skill Proficiency</div>', unsafe_allow_html=True)
+        
+        skill_levels = {
+            "Python": 70,
+            "JavaScript": 60,
+            "HTML/CSS": 65,
+            "Streamlit": 75,
+            "Problem Solving": 70,
+            "AI Concepts": 60
+        }
+        
+        for skill, level in skill_levels.items():
+            st.markdown(f"""
+                <div style="margin: 0.5rem 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+                        <span style="font-weight: 500;">{skill}</span>
+                        <span style="color: #667eea;">{level}%</span>
+                    </div>
+                    <div style="background: #e0e0e0; border-radius: 10px; height: 8px; overflow: hidden;">
+                        <div style="width: {level}%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; transition: width 1s ease;"></div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+
+    # Experience Tab
+    with tabs[2]:
+        st.markdown('<div class="card-title">💼 Experience</div>', unsafe_allow_html=True)
+        
+        for exp in EXPERIENCE:
+            st.markdown(f"""
+                <div class="card timeline-item">
+                    <div class="timeline-title">{exp['title']}</div>
+                    <div class="timeline-subtitle">{exp['company']}</div>
+                    <div class="timeline-date">📅 {exp['period']}</div>
+                    <div style="margin-top: 0.8rem; white-space: pre-line; color: #555;">
+                        {exp['description']}
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+
+    # Education Tab
+    with tabs[3]:
+        st.markdown('<div class="card-title">🎓 Education</div>', unsafe_allow_html=True)
+        
+        cols = st.columns(2)
+        for idx, edu in enumerate(EDUCATION):
+            with cols[idx % 2]:
+                st.markdown(f"""
+                    <div class="card" style="height: 100%;">
+                        <h4 style="color: #333;">{edu['degree']}</h4>
+                        <p style="color: #667eea; font-weight: 500;">{edu['institution']}</p>
+                        <p style="color: #888;">📅 {edu['year']}</p>
+                        <p style="color: #555;">🎯 GPA: {edu['gpa']}</p>
+                    </div>
+                """, unsafe_allow_html=True)
+        
+        st.markdown('<div class="card-title" style="margin-top: 2rem;">📜 Certifications</div>', unsafe_allow_html=True)
+        
+        cert_cols = st.columns(3)
+        for idx, cert in enumerate(CERTIFICATIONS):
+            with cert_cols[idx % 3]:
+                st.markdown(f"""
+                    <div class="card" style="text-align: center; padding: 1rem;">
+                        <span style="font-size: 1.5rem;">🏆</span>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem; color: #333;">{cert}</p>
+                    </div>
+                """, unsafe_allow_html=True)
+
+    # Projects Tab
+    with tabs[4]:
+        st.markdown('<div class="card-title">🚀 Projects</div>', unsafe_allow_html=True)
+        
+        for i in range(0, len(PROJECTS), 3):
+            cols = st.columns(3)
+            for j in range(3):
+                if i + j < len(PROJECTS):
+                    project = PROJECTS[i + j]
+                    with cols[j]:
+                        tech_tags = ' '.join(f'<span class="skill-tag" style="font-size: 0.8rem; margin: 0.1rem;">{tech}</span>' for tech in project['tech'])
+                        demo_link = f'<a href="{project["demo"]}" target="_blank" style="color: #667eea; text-decoration: none;">🔗 Live Demo</a>' if project['demo'] else ''
+                        
+                        st.markdown(f"""
+                            <div class="project-card">
+                                <div class="project-content">
+                                    <div class="project-title">{project['title']}</div>
+                                    <div class="project-description">{project['description']}</div>
+                                    <div class="project-tech">{tech_tags}</div>
+                                    <div style="margin-top: 1rem;">
+                                        <a href="{project['github']}" target="_blank" style="color: #667eea; text-decoration: none; margin-right: 1rem;">🐙 GitHub</a>
+                                        {demo_link}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    """, unsafe_allow_html=True)
+                        """, unsafe_allow_html=True)
 
-# Achievements Tab
-with tabs[5]:
-    st.markdown('<div class="card-title">🏆 Achievements & Recognition</div>', unsafe_allow_html=True)
-    
-    cols = st.columns(2)
-    for idx, achievement in enumerate(ACHIEVEMENTS):
-        with cols[idx % 2]:
+    # Achievements Tab
+    with tabs[5]:
+        st.markdown('<div class="card-title">🏆 Achievements & Recognition</div>', unsafe_allow_html=True)
+        
+        cols = st.columns(2)
+        for idx, achievement in enumerate(ACHIEVEMENTS):
+            with cols[idx % 2]:
+                st.markdown(f"""
+                    <div class="card" style="padding: 1rem; display: flex; align-items: center;">
+                        <span style="font-size: 2rem; margin-right: 1rem;">🏅</span>
+                        <div>
+                            <p style="margin: 0; color: #333; font-weight: 500;">{achievement}</p>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+
+    # Stats Tab
+    with tabs[6]:
+        st.markdown('<div class="card-title">📊 Statistics</div>', unsafe_allow_html=True)
+        
+        col1, col2, col3, col4 = st.columns(4)
+        
+        stats_data = [
+            ("10+", "Projects Built"),
+            ("15+", "Courses Completed"),
+            ("5+", "Certifications"),
+            ("20+", "Learning Hours/Week")
+        ]
+        
+        cols = [col1, col2, col3, col4]
+        for idx, (number, label) in enumerate(stats_data):
+            with cols[idx]:
+                st.markdown(f"""
+                    <div class="stat-box">
+                        <div class="stat-number">{number}</div>
+                        <div class="stat-label">{label}</div>
+                    </div>
+                """, unsafe_allow_html=True)
+        
+        st.markdown("---")
+        st.markdown("### 💪 Key Highlights")
+        
+        highlights = [
+            "🏆 Actively learning new technologies every day",
+            "📚 Balancing school studies with tech learning",
+            "🎯 Building projects to apply what I learn",
+            "🤖 Passionate about AI and its applications",
+            "💡 Participating in coding challenges and competitions"
+        ]
+        
+        for highlight in highlights:
             st.markdown(f"""
-                <div class="card" style="padding: 1rem; display: flex; align-items: center;">
-                    <span style="font-size: 2rem; margin-right: 1rem;">🏅</span>
-                    <div>
-                        <p style="margin: 0; color: #333; font-weight: 500;">{achievement}</p>
+                <div style="padding: 0.5rem 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                    <span style="margin-right: 0.5rem;">✨</span>
+                    <span>{highlight}</span>
+                </div>
+            """, unsafe_allow_html=True)
+
+    # Contact Tab
+    with tabs[7]:
+        st.markdown('<div class="card-title">📬 Contact Me</div>', unsafe_allow_html=True)
+        
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            st.markdown(f"""
+                <div class="card">
+                    <h4 style="color: #333;">Get in Touch</h4>
+                    <p style="color: #666;">
+                        I'm always open to learning opportunities, collaborations, or just a friendly chat. 
+                        Feel free to reach out through any of the following channels:
+                    </p>
+                    <div style="margin-top: 0.5rem;">
+                        <p><strong>📧 Email:</strong></p>
+                        <div class="copy-container">
+                            <span class="copy-text">{PERSONAL_INFO['email']}</span>
+            """, unsafe_allow_html=True)
+            
+            if st.button("📋 Copy", key="copy_email_contact", use_container_width=True):
+                st.session_state.copied_text = "Email copied to clipboard!"
+            
+            st.markdown(f"""
+                        </div>
+                        <p><strong>📱 Phone:</strong></p>
+                        <div class="copy-container">
+                            <span class="copy-text">{PERSONAL_INFO['phone']}</span>
+            """, unsafe_allow_html=True)
+            
+            if st.button("📋 Copy", key="copy_phone_contact", use_container_width=True):
+                st.session_state.copied_text = "Phone copied to clipboard!"
+            
+            st.markdown(f"""
+                        </div>
+                        <p><strong>📍 Location:</strong></p>
+                        <p style="margin: 0.2rem 0 0.5rem 0;">{PERSONAL_INFO['location']}</p>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <a href="{PERSONAL_INFO['github']}" target="_blank" style="margin-right: 1rem; color: #333; text-decoration: none;">🐙 GitHub</a>
+                        <a href="{PERSONAL_INFO['twitter']}" target="_blank" style="margin-right: 1rem; color: #333; text-decoration: none;">🐦 Twitter</a>
+                        <a href="{PERSONAL_INFO['instagram']}" target="_blank" style="margin-right: 1rem; color: #333; text-decoration: none;">📸 Instagram</a>
+                        <a href="{PERSONAL_INFO['tiktok']}" target="_blank" style="color: #333; text-decoration: none;">🎵 TikTok</a>
+                    </div>
+                    <hr style="margin: 1rem 0;">
+                    <div style="text-align: center;">
+                        <p style="color: #888; font-size: 0.9rem;">🕐 Always open to learn and collaborate</p>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
-
-# Stats Tab
-with tabs[6]:
-    st.markdown('<div class="card-title">📊 Statistics</div>', unsafe_allow_html=True)
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    stats_data = [
-        ("10+", "Projects Built"),
-        ("15+", "Courses Completed"),
-        ("5+", "Certifications"),
-        ("20+", "Learning Hours/Week")
-    ]
-    
-    cols = [col1, col2, col3, col4]
-    for idx, (number, label) in enumerate(stats_data):
-        with cols[idx]:
-            st.markdown(f"""
-                <div class="stat-box">
-                    <div class="stat-number">{number}</div>
-                    <div class="stat-label">{label}</div>
+        
+        with col2:
+            st.markdown("""
+                <div class="card">
+                    <h4 style="color: #333;">📝 Send a Message</h4>
                 </div>
             """, unsafe_allow_html=True)
-    
+            
+            with st.form(key="contact_form", clear_on_submit=True):
+                name = st.text_input("Your Name *", placeholder="Enter your full name")
+                email = st.text_input("Your Email *", placeholder="Enter your email address")
+                subject = st.text_input("Subject", placeholder="What's this about?")
+                message = st.text_area("Message *", placeholder="Write your message here...", height=150)
+                
+                submit_button = st.form_submit_button("📨 Send Message", type="primary", use_container_width=True)
+                
+                if submit_button:
+                    if name and email and message:
+                        st.markdown("""
+                            <div class="success-message">
+                                ✅ Thank you for your message! I'll get back to you soon.
+                            </div>
+                        """, unsafe_allow_html=True)
+                        st.balloons()
+                    else:
+                        st.error("❌ Please fill in all required fields (*)")
+
+    # Show copy success message (global)
+    if st.session_state.copied_text:
+        st.success(st.session_state.copied_text)
+        st.session_state.copied_text = ""
+
+    # Footer
     st.markdown("---")
-    st.markdown("### 💪 Key Highlights")
-    
-    highlights = [
-        "🏆 Actively learning new technologies every day",
-        "📚 Balancing school studies with tech learning",
-        "🎯 Building projects to apply what I learn",
-        "🤖 Passionate about AI and its applications",
-        "💡 Participating in coding challenges and competitions"
-    ]
-    
-    for highlight in highlights:
-        st.markdown(f"""
-            <div style="padding: 0.5rem 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
-                <span style="margin-right: 0.5rem;">✨</span>
-                <span>{highlight}</span>
+    st.markdown(f"""
+        <div style="text-align: center; color: #888; padding: 2rem 0;">
+            <p style="font-size: 0.9rem;">
+                © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ using Streamlit
+            </p>
+            <p style="font-size: 0.8rem; opacity: 0.7;">
+                Student | AI Enthusiast | Lifelong Learner
+            </p>
+            <div style="margin-top: 1rem;">
+                <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-icon" title="GitHub">🐙</a>
+                <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-icon" title="Twitter">🐦</a>
+                <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-icon" title="Instagram">📸</a>
+                <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-icon" title="TikTok">🎵</a>
             </div>
-        """, unsafe_allow_html=True)
-
-# Contact Tab
-with tabs[7]:
-    st.markdown('<div class="card-title">📬 Contact Me</div>', unsafe_allow_html=True)
-    
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        st.markdown(f"""
-            <div class="card">
-                <h4 style="color: #333;">Get in Touch</h4>
-                <p style="color: #666;">
-                    I'm always open to learning opportunities, collaborations, or just a friendly chat. 
-                    Feel free to reach out through any of the following channels:
-                </p>
-                <div style="margin-top: 0.5rem;">
-                    <p><strong>📧 Email:</strong></p>
-                    <div class="copy-container">
-                        <span class="copy-text">{PERSONAL_INFO['email']}</span>
-        """, unsafe_allow_html=True)
-        
-        if st.button("📋 Copy", key="copy_email_contact", use_container_width=True):
-            st.session_state.copied_text = "Email copied to clipboard!"
-        
-        st.markdown(f"""
-                    </div>
-                    <p><strong>📱 Phone:</strong></p>
-                    <div class="copy-container">
-                        <span class="copy-text">{PERSONAL_INFO['phone']}</span>
-        """, unsafe_allow_html=True)
-        
-        if st.button("📋 Copy", key="copy_phone_contact", use_container_width=True):
-            st.session_state.copied_text = "Phone copied to clipboard!"
-        
-        st.markdown(f"""
-                    </div>
-                    <p><strong>📍 Location:</strong></p>
-                    <p style="margin: 0.2rem 0 0.5rem 0;">{PERSONAL_INFO['location']}</p>
-                </div>
-                <div style="margin-top: 1rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" style="margin-right: 1rem; color: #333; text-decoration: none;">🐙 GitHub</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" style="margin-right: 1rem; color: #333; text-decoration: none;">🐦 Twitter</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" style="margin-right: 1rem; color: #333; text-decoration: none;">📸 Instagram</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" style="color: #333; text-decoration: none;">🎵 TikTok</a>
-                </div>
-                <hr style="margin: 1rem 0;">
-                <div style="text-align: center;">
-                    <p style="color: #888; font-size: 0.9rem;">🕐 Always open to learn and collaborate</p>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("""
-            <div class="card">
-                <h4 style="color: #333;">📝 Send a Message</h4>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        with st.form(key="contact_form", clear_on_submit=True):
-            name = st.text_input("Your Name *", placeholder="Enter your full name")
-            email = st.text_input("Your Email *", placeholder="Enter your email address")
-            subject = st.text_input("Subject", placeholder="What's this about?")
-            message = st.text_area("Message *", placeholder="Write your message here...", height=150)
-            
-            submit_button = st.form_submit_button("📨 Send Message", type="primary", use_container_width=True)
-            
-            if submit_button:
-                if name and email and message:
-                    st.markdown("""
-                        <div class="success-message">
-                            ✅ Thank you for your message! I'll get back to you soon.
-                        </div>
-                    """, unsafe_allow_html=True)
-                    st.balloons()
-                else:
-                    st.error("❌ Please fill in all required fields (*)")
-
-# Show copy success message (global)
-if st.session_state.copied_text:
-    st.success(st.session_state.copied_text)
-    st.session_state.copied_text = ""
-
-# Footer
-st.markdown("---")
-st.markdown(f"""
-    <div style="text-align: center; color: #888; padding: 2rem 0;">
-        <p style="font-size: 0.9rem;">
-            © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ using Streamlit
-        </p>
-        <p style="font-size: 0.8rem; opacity: 0.7;">
-            Student | AI Enthusiast | Lifelong Learner
-        </p>
-        <div style="margin-top: 1rem;">
-            <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-icon" title="GitHub">🐙</a>
-            <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-icon" title="Twitter">🐦</a>
-            <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-icon" title="Instagram">📸</a>
-            <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-icon" title="TikTok">🎵</a>
         </div>
-    </div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+
+# ============ APP ROUTING ============
+
+def main():
+    """Main app routing based on authentication status"""
+    
+    if st.session_state.authenticated:
+        # Show portfolio
+        show_portfolio()
+    else:
+        # Show login/register based on state
+        if st.session_state.show_register:
+            show_register_page()
+        else:
+            show_login_page()
+
+# Run the app
+if __name__ == "__main__":
+    main()
