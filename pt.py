@@ -14,7 +14,7 @@ from email.mime.multipart import MIMEMultipart
 
 # Page configuration
 st.set_page_config(
-    page_title="Faizan Tanveer ",
+    page_title="Faizan Tanveer | Portfolio",
     page_icon="💻",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -31,13 +31,12 @@ USERS_FILE = "users.json"
 PROFILE_IMAGE_PATH = "images/profile_image.png"
 PROFILE_IMAGE_PATH_JPG = "images/profile_image.jpg"
 
-# ============ EMAIL SETUP - FIXED ============
 
 
 EMAIL_SENDER = "faizan75601@gmail.com"
 EMAIL_PASSWORD = "YOUR_APP_PASSWORD_HERE"  # Replace with your App Password
 EMAIL_RECEIVER = "faizan75601@gmail.com"
-# ============ END EMAIL SETUP ============
+
 
 # User authentication functions
 def hash_password(password):
@@ -122,6 +121,12 @@ Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
     except smtplib.SMTPAuthenticationError as e:
         return False, """❌ Authentication Error: Please check your email credentials.
         
+💡 Solution:
+1. Go to https://myaccount.google.com/apppasswords
+2. Enable 2-Step Verification first
+3. Generate an App Password for "Mail" and "Other"
+4. Copy the 16-character password
+5. Replace EMAIL_PASSWORD in the code with this password"""
         
     except smtplib.SMTPException as e:
         return False, f"❌ SMTP Error: {str(e)}"
@@ -145,7 +150,7 @@ st.markdown("""
     <style>
     /* Global Styles */
     .main {
-        background: linear-gradient( 180deg)
+        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     }
     
     /* Fix emoji display */
@@ -1245,9 +1250,9 @@ st.markdown("""
 # Personal Information
 PERSONAL_INFO = {
     "name": "Faizan Tanveer",
-    "title": "Student | Python Developer",
+    "title": "Student | AI Enthusiast",
     "email": "faizan75601@email.com",
-    "phone": "+92 300 1234567",
+    "phone": "+92 300 4023123",
     "location": "Pakistan",
     "bio": """👋 Hi, I'm Faizan Tanveer! I'm a passionate student currently in Class 10 at Sheikh Zayed Public School.
 
@@ -1429,7 +1434,7 @@ def get_profile_image_base64():
 def create_download_resume():
     resume_content = f"""
 FAIZAN TANVEER
-Student | Python Developer
+Student | AI Enthusiast
 
 Email: {PERSONAL_INFO['email']}
 Phone: {PERSONAL_INFO['phone']}
@@ -2068,7 +2073,7 @@ def main():
         st.markdown(f"""
             <div style="text-align: center; color: rgba(255,255,255,0.3); padding: 2rem 0;">
                 <p style="font-size: 0.9rem;">
-                    © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ using Streamlit
+                    © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ BY FR56
                 </p>
                 <p style="font-size: 0.8rem; opacity: 0.7;">
                     Student | AI Enthusiast | Lifelong Learner
