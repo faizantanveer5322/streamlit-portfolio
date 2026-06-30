@@ -14,8 +14,8 @@ from email.mime.multipart import MIMEMultipart
 
 # Page configuration
 st.set_page_config(
-    page_title="Faizan Tanveer | Portfolio",
-    page_icon="👨‍💻",
+    page_title="Faizan Tanveer ",
+    page_icon="💻",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -32,15 +32,11 @@ PROFILE_IMAGE_PATH = "images/profile_image.png"
 PROFILE_IMAGE_PATH_JPG = "images/profile_image.jpg"
 
 # ============ EMAIL SETUP - FIXED ============
-# IMPORTANT: You MUST use an App Password for Gmail
-# 1. Go to https://myaccount.google.com/apppasswords
-# 2. Enable 2-Step Verification first
-# 3. Generate App Password for "Mail" and "Other"
-# 4. Copy the 16-character password and paste below
 
-EMAIL_SENDER = "faizantanveer532@gmail.com"
+
+EMAIL_SENDER = "faizan75601@gmail.com"
 EMAIL_PASSWORD = "YOUR_APP_PASSWORD_HERE"  # Replace with your App Password
-EMAIL_RECEIVER = "faizantanveer532@gmail.com"
+EMAIL_RECEIVER = "faizan75601@gmail.com"
 # ============ END EMAIL SETUP ============
 
 # User authentication functions
@@ -126,12 +122,6 @@ Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
     except smtplib.SMTPAuthenticationError as e:
         return False, """❌ Authentication Error: Please check your email credentials.
         
-💡 Solution:
-1. Go to https://myaccount.google.com/apppasswords
-2. Enable 2-Step Verification first
-3. Generate an App Password for "Mail" and "Other"
-4. Copy the 16-character password
-5. Replace EMAIL_PASSWORD in the code with this password"""
         
     except smtplib.SMTPException as e:
         return False, f"❌ SMTP Error: {str(e)}"
@@ -1255,7 +1245,7 @@ st.markdown("""
 # Personal Information
 PERSONAL_INFO = {
     "name": "Faizan Tanveer",
-    "title": "Student | AI Enthusiast",
+    "title": "Student | Python Developer",
     "email": "faizan75601@email.com",
     "phone": "+92 300 1234567",
     "location": "Pakistan",
@@ -1439,7 +1429,7 @@ def get_profile_image_base64():
 def create_download_resume():
     resume_content = f"""
 FAIZAN TANVEER
-Student | AI Enthusiast
+Student | Python Developer
 
 Email: {PERSONAL_INFO['email']}
 Phone: {PERSONAL_INFO['phone']}
@@ -1754,12 +1744,7 @@ def show_home_page():
                     <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
                 </div>
                 
-                <div class="profile-social-icons" style="margin-top: 0.5rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub">🐙</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter">🐦</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram">📸</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" title="TikTok">🎵</a>
-                </div>
+
             </div>
         """, unsafe_allow_html=True)
         
