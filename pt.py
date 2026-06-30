@@ -1699,7 +1699,7 @@ def show_home_page():
     with col2:
         st.markdown("""
             <div class="card profile-card">
-                <div class="card-title">👤 Profile</div>
+                <div class="card-title">😎 Profile</div>
         """, unsafe_allow_html=True)
         
         img_base64 = get_profile_image_base64()
