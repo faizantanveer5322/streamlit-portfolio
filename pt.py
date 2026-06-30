@@ -5,10 +5,7 @@ import base64
 from PIL import Image
 import io
 import os
-
-# ============================================
-# 🚀 PWA CONFIGURATION - YEH CODE COPY KAREIN
-# ============================================
+import pyperclip
 
 # Page configuration
 st.set_page_config(
@@ -17,39 +14,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
-
-# PWA Meta Tags aur Service Worker
-st.markdown("""
-    <!-- PWA Manifest Link -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                .then(function(registration) {
-                    console.log('✅ Service Worker registered successfully!');
-                })
-                .catch(function(error) {
-                    console.log('❌ Service Worker registration failed:', error);
-                });
-            });
-        }
-    </script>
-    
-    <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#667eea">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Faizan Portfolio">
-    <link rel="apple-touch-icon" href="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=192&background=667eea&color=fff&bold=true">
-    
-    <!-- App Description for PWA -->
-    <meta name="description" content="Faizan Tanveer - Student Portfolio | AI Enthusiast | Python Developer">
-""", unsafe_allow_html=True)
-
-
 
 # Create images folder if it doesn't exist
 if not os.path.exists("images"):
@@ -71,7 +35,6 @@ st.markdown("""
     [data-testid="stSidebar"] {
         display: none !important;
     }
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     
     [data-testid="stSidebarNav"] {
         display: none !important;
@@ -79,6 +42,7 @@ st.markdown("""
     
     /* Hero Section */
     .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 3rem 2rem;
         border-radius: 20px;
         margin-bottom: 2rem;
@@ -905,7 +869,7 @@ with tabs[0]:
     with col2:
         st.markdown("""
             <div class="card profile-card">
-                <div class="card-title">😉 Profile</div>
+                <div class="card-title">👤 Profile</div>
         """, unsafe_allow_html=True)
         
         # Display profile image
@@ -1233,38 +1197,12 @@ with tabs[7]:
                 else:
                     st.error("❌ Please fill in all required fields (*)")
 
-
-# ===== PWA FIX CODE =====
-st.markdown("""
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- Service Worker -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-            .then(function(registration) {
-                console.log('Service Worker registered');
-            })
-            .catch(function(error) {
-                console.log('Service Worker registration failed');
-            });
-        }
-    </script>
-    
-    <!-- App Description -->
-    <meta name="description" content="Faizan Tanveer - Student Portfolio | AI Enthusiast | Python Developer">
-    <meta name="theme-color" content="#667eea">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-""", unsafe_allow_html=True)
-
 # Footer
 st.markdown("---")
 st.markdown(f"""
     <div style="text-align: center; color: #888; padding: 2rem 0;">
         <p style="font-size: 0.9rem;">
-            © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ BY FR 56
+            © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ using Streamlit
         </p>
         <p style="font-size: 0.8rem; opacity: 0.7;">
             Student | AI Enthusiast | Lifelong Learner
