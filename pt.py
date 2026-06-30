@@ -1201,7 +1201,7 @@ st.markdown("---")
 st.markdown(f"""
     <div style="text-align: center; color: #888; padding: 2rem 0;">
         <p style="font-size: 0.9rem;">
-            © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ using Streamlit
+            © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ BY FR 56
         </p>
         <p style="font-size: 0.8rem; opacity: 0.7;">
             Student | AI Enthusiast | Lifelong Learner
