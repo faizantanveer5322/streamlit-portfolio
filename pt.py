@@ -783,7 +783,19 @@ ACHIEVEMENTS
     return href
 
 # Hero Section
-
+st.markdown(f"""
+    <div class="hero-section">
+        <div class="hero-title">👋 {PERSONAL_INFO['name']}</div>
+        <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
+        <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
+        <div style="margin-top: 1.5rem;">
+            <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-link">🐙 GitHub</a>
+            <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-link">🐦 Twitter</a>
+            <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-link">📸 Instagram</a>
+            <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-link">🎵 TikTok</a>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 
 # Navigation with icons
 st.markdown("---")
@@ -892,12 +904,7 @@ with tabs[0]:
                     <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
                 </div>
                 
-                <div class="profile-social-icons" style="margin-top: 0.5rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub">🐙</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter">🐦</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram">📸</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" title="TikTok">🎵</a>
-                </div>
+
             </div>
         """, unsafe_allow_html=True)
         
