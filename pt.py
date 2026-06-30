@@ -6,7 +6,6 @@ from PIL import Image
 import io
 import os
 
-
 # Page configuration
 st.set_page_config(
     page_title="Faizan Tanveer | Portfolio",
@@ -352,10 +351,6 @@ st.markdown("""
         box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
     }
     
-    .profile-card hr {
-        border-color: rgba(255,255,255,0.2) !important;
-    }
-    
     .profile-card .copy-text {
         background: rgba(255,255,255,0.15) !important;
         color: white !important;
@@ -540,8 +535,13 @@ st.markdown("""
         }
     }
     
-    /* Hide file uploader */
+    /* Hide upload section */
     .upload-section {
+        display: none !important;
+    }
+    
+    /* Hide HR in profile card */
+    .profile-card hr {
         display: none !important;
     }
     </style>
@@ -688,9 +688,9 @@ ACHIEVEMENTS = [
     "🎤 Active participant in school tech events"
 ]
 
-# Initialize session state
-if 'form_submitted' not in st.session_state:
-    st.session_state.form_submitted = False
+# Initialize session state for copy
+if 'copied_text' not in st.session_state:
+    st.session_state.copied_text = ""
 
 # Function to check if image exists (jpg or png)
 def image_exists():
@@ -872,8 +872,8 @@ with tabs[0]:
         st.markdown(f"""
                 <h3 style="margin-top: 1rem;">{PERSONAL_INFO['name']}</h3>
                 <p style="opacity: 0.9;">{PERSONAL_INFO['title']}</p>
-                <hr>
-                <div style="text-align: left;">
+                
+                <div style="text-align: left; margin-top: 0.5rem;">
                     <p><strong>📧 Email</strong></p>
                     <div class="copy-container">
                         <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white;">{PERSONAL_INFO['email']}</span>
@@ -881,8 +881,7 @@ with tabs[0]:
         
         # Email Copy Button
         if st.button("📋 Copy", key="copy_email_profile", use_container_width=True):
-            pyperclip.copy(PERSONAL_INFO['email'])
-            st.success("✅ Email copied!")
+            st.session_state.copied_text = "Email copied to clipboard!"
         
         st.markdown(f"""
                     </div>
@@ -893,8 +892,7 @@ with tabs[0]:
         
         # Phone Copy Button
         if st.button("📋 Copy", key="copy_phone_profile", use_container_width=True):
-            pyperclip.copy(PERSONAL_INFO['phone'])
-            st.success("✅ Phone copied!")
+            st.session_state.copied_text = "Phone copied to clipboard!"
         
         st.markdown(f"""
                     </div>
@@ -906,9 +904,7 @@ with tabs[0]:
                     <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
                 </div>
                 
-                <hr>
-                
-                <div class="profile-social-icons">
+                <div class="profile-social-icons" style="margin-top: 0.5rem;">
                     <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub">🐙</a>
                     <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter">🐦</a>
                     <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram">📸</a>
@@ -916,6 +912,11 @@ with tabs[0]:
                 </div>
             </div>
         """, unsafe_allow_html=True)
+        
+        # Show copy success message
+        if st.session_state.copied_text:
+            st.success(st.session_state.copied_text)
+            st.session_state.copied_text = ""
         
         # Download Resume Button
         st.markdown(create_download_resume(), unsafe_allow_html=True)
@@ -1107,8 +1108,7 @@ with tabs[7]:
         """, unsafe_allow_html=True)
         
         if st.button("📋 Copy", key="copy_email_contact", use_container_width=True):
-            pyperclip.copy(PERSONAL_INFO['email'])
-            st.success("✅ Email copied!")
+            st.session_state.copied_text = "Email copied to clipboard!"
         
         st.markdown(f"""
                     </div>
@@ -1118,8 +1118,7 @@ with tabs[7]:
         """, unsafe_allow_html=True)
         
         if st.button("📋 Copy", key="copy_phone_contact", use_container_width=True):
-            pyperclip.copy(PERSONAL_INFO['phone'])
-            st.success("✅ Phone copied!")
+            st.session_state.copied_text = "Phone copied to clipboard!"
         
         st.markdown(f"""
                     </div>
@@ -1164,6 +1163,11 @@ with tabs[7]:
                     st.balloons()
                 else:
                     st.error("❌ Please fill in all required fields (*)")
+
+# Show copy success message (global)
+if st.session_state.copied_text:
+    st.success(st.session_state.copied_text)
+    st.session_state.copied_text = ""
 
 # Footer
 st.markdown("---")
