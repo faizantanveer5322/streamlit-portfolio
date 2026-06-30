@@ -145,7 +145,7 @@ st.markdown("""
     <style>
     /* Global Styles */
     .main {
-        background: linear-gradient( #0f0c29, #302b63, #24243e);
+        background: linear-gradient( #0f0c29, #302b63, #24243e);)
     }
     
     /* Fix emoji display */
