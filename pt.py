@@ -344,11 +344,10 @@ st.markdown("""
         background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     }
     
-    /* Fix emoji display - IMPORTANT */
+    /* Fix emoji display */
     .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
     .stMarkdown span, .stMarkdown div, .stMarkdown li, .stMarkdown a,
-    .stMarkdown strong, .stMarkdown em, .stMarkdown b,
-    .stMarkdown .emoji, .stMarkdown [data-testid="stMarkdownContainer"] * {
+    .stMarkdown strong, .stMarkdown em, .stMarkdown b {
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Helvetica Neue', sans-serif !important;
         color: rgba(255,255,255,0.95) !important;
     }
@@ -357,25 +356,16 @@ st.markdown("""
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
-    /* Sidebar - Collapsible with dot menu */
-    section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #1a0533 100%) !important;
-        padding: 1rem 0.5rem;
-        border-right: none !important;
-        box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3);
-        transition: all 0.3s ease;
-    }
-    
     /* Hide sidebar toggle arrows */
     button[data-testid="baseButton-header"] {
         display: none !important;
     }
     
-    /* Custom dot menu button */
-    .dot-menu {
+    /* Dot menu button */
+    .dot-menu-btn {
         position: fixed;
-        top: 10px;
-        left: 10px;
+        top: 12px;
+        left: 12px;
         z-index: 999;
         background: rgba(255,255,255,0.1);
         backdrop-filter: blur(10px);
@@ -387,22 +377,27 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         color: white;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        letter-spacing: 2px;
+        line-height: 1;
     }
     
-    .dot-menu:hover {
+    .dot-menu-btn:hover {
         background: rgba(255,215,0,0.2);
         transform: scale(1.1);
         border-color: rgba(255,215,0,0.4);
     }
     
-    .dot-menu .dots {
-        font-size: 1.8rem;
-        line-height: 1;
-        letter-spacing: 2px;
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #1a0533 100%) !important;
+        padding: 1rem 0.5rem;
+        border-right: none !important;
+        box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3);
+        transition: all 0.3s ease;
     }
     
     .sidebar-user {
@@ -596,7 +591,6 @@ st.markdown("""
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
     }
     
-    /* Fix emoji in hero title */
     .hero-title .emoji-text {
         -webkit-text-fill-color: initial !important;
         color: #fff !important;
@@ -643,13 +637,6 @@ st.markdown("""
     @keyframes float {
         0%, 100% { transform: translateY(0px); }
         50% { transform: translateY(-10px); }
-    }
-    
-    @keyframes bounceIn {
-        0% { opacity: 0; transform: scale(0.3); }
-        50% { opacity: 1; transform: scale(1.05); }
-        70% { transform: scale(0.9); }
-        100% { transform: scale(1); }
     }
     
     .card {
@@ -1437,26 +1424,6 @@ st.markdown("""
     .project-content a:hover {
         color: #ffd700 !important;
     }
-    
-    .upload-section {
-        background: rgba(255,255,255,0.08);
-        backdrop-filter: blur(20px);
-        padding: 1.5rem;
-        border-radius: 20px;
-        border: 1px solid rgba(255,255,255,0.08);
-        margin-top: 1rem;
-    }
-    
-    .upload-section h4 {
-        color: #ffd700 !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .upload-section p {
-        color: rgba(255,255,255,0.5) !important;
-        font-size: 0.85rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -1585,6 +1552,13 @@ def show_settings():
 
 def show_sidebar():
     # Dot menu button - always visible
+    st.markdown("""
+        <div class="dot-menu-btn" onclick="document.querySelector('[data-testid=\"stSidebar\"]').style.display='block'">
+            ⦿⦿⦿
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Sidebar toggle using button
     col1, col2, col3 = st.columns([1, 10, 1])
     with col1:
         if st.button("⦿⦿⦿", key="dot_menu", help="Toggle Sidebar"):
@@ -1620,9 +1594,10 @@ def show_sidebar():
                 <div class="sidebar-nav">
             """, unsafe_allow_html=True)
             
+            # Navigation items - Removed About Me, added What I Do
             nav_items = [
                 {"key": "home", "icon": "🏠", "label": "Home"},
-                {"key": "about", "icon": "👤", "label": "About Me"},
+                {"key": "whatido", "icon": "💡", "label": "What I Do"},
                 {"key": "skills", "icon": "🛠️", "label": "Skills"},
                 {"key": "experience", "icon": "💼", "label": "Experience"},
                 {"key": "education", "icon": "🎓", "label": "Education"},
@@ -1657,49 +1632,22 @@ def show_sidebar():
 # ============ PAGE FUNCTIONS ============
 
 def show_home_page():
+    # About Me and Profile side by side - equal height
     col1, col2 = st.columns([2, 1])
     
     with col1:
         st.markdown(f"""
-            <div class="card">
+            <div class="card" style="height: 100%;">
                 <div class="card-title">📖 About Me</div>
                 <div class="about-text">
                     {PERSONAL_INFO['bio']}
                 </div>
             </div>
         """, unsafe_allow_html=True)
-        
-        st.markdown("""
-            <div class="card">
-                <div class="card-title">💡 What I Do</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="what-i-do-item" onclick="window.location.href='?page=skills'">
-                        <span class="icon">💻</span>
-                        <p class="label">Coding</p>
-                        <p class="description">Building amazing applications</p>
-                    </div>
-                    <div class="what-i-do-item" onclick="window.location.href='?page=projects'">
-                        <span class="icon">🤖</span>
-                        <p class="label">AI Enthusiast</p>
-                        <p class="description">Exploring Artificial Intelligence</p>
-                    </div>
-                    <div class="what-i-do-item" onclick="window.location.href='?page=education'">
-                        <span class="icon">📚</span>
-                        <p class="label">Student</p>
-                        <p class="description">Learning new technologies</p>
-                    </div>
-                    <div class="what-i-do-item" onclick="window.location.href='?page=achievements'">
-                        <span class="icon">🎯</span>
-                        <p class="label">Lifelong Learner</p>
-                        <p class="description">Continuous improvement</p>
-                    </div>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
     
     with col2:
         st.markdown("""
-            <div class="card profile-card">
+            <div class="card profile-card" style="height: 100%;">
                 <div class="card-title">👤 Profile</div>
         """, unsafe_allow_html=True)
         
@@ -1764,24 +1712,35 @@ def show_home_page():
             st.session_state.copied_text = ""
         
         st.markdown(create_download_resume(), unsafe_allow_html=True)
-        
-        # Image Upload Section
-        st.markdown("""
-            <div class="upload-section">
-                <h4>📸 Upload Profile Image</h4>
-                <p>Image will be saved permanently</p>
+
+def show_whatido_page():
+    st.markdown("""
+        <div class="card">
+            <div class="card-title">💡 What I Do</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="what-i-do-item">
+                    <span class="icon">💻</span>
+                    <p class="label">Coding</p>
+                    <p class="description">Building amazing applications</p>
+                </div>
+                <div class="what-i-do-item">
+                    <span class="icon">🤖</span>
+                    <p class="label">AI Enthusiast</p>
+                    <p class="description">Exploring Artificial Intelligence</p>
+                </div>
+                <div class="what-i-do-item">
+                    <span class="icon">📚</span>
+                    <p class="label">Student</p>
+                    <p class="description">Learning new technologies</p>
+                </div>
+                <div class="what-i-do-item">
+                    <span class="icon">🎯</span>
+                    <p class="label">Lifelong Learner</p>
+                    <p class="description">Continuous improvement</p>
+                </div>
             </div>
-        """, unsafe_allow_html=True)
-        
-        uploaded_file = st.file_uploader("Choose a profile image...", type=['jpg', 'jpeg', 'png'], key="permanent_uploader")
-        if uploaded_file is not None:
-            current_img = get_profile_image_base64()
-            new_img = base64.b64encode(uploaded_file.read()).decode()
-            uploaded_file.seek(0)
-            
-            if current_img != new_img:
-                if save_image_permanently(uploaded_file):
-                    st.success("✅ Image uploaded permanently!")
+        </div>
+    """, unsafe_allow_html=True)
 
 def show_about_page():
     st.markdown(f"""
@@ -2053,7 +2012,7 @@ def main():
         
         page = st.session_state.page
         
-        # Hero Section - Fixed emoji display
+        # Hero Section
         st.markdown(f"""
             <div class="hero-section">
                 <div class="hero-title"><span class="emoji-text">👋</span> {PERSONAL_INFO['name']}</div>
@@ -2071,6 +2030,8 @@ def main():
         # Page routing
         if page == "home":
             show_home_page()
+        elif page == "whatido":
+            show_whatido_page()
         elif page == "about":
             show_about_page()
         elif page == "skills":
