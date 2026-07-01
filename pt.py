@@ -347,7 +347,7 @@ st.markdown("""
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
-    /* Sidebar - Collapsible with dot menu */
+    /* Sidebar */
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #1a0533 100%) !important;
         padding: 1rem 0.5rem;
@@ -356,43 +356,47 @@ st.markdown("""
         transition: all 0.3s ease;
     }
     
-    /* Hide sidebar toggle arrows */
-    button[data-testid="baseButton-header"] {
-        display: none !important;
-    }
-    
-    /* Custom dot menu button */
-    .dot-menu {
+    /* Hamburger Menu Button */
+    .hamburger-container {
         position: fixed;
-        top: 10px;
-        left: 10px;
+        top: 15px;
+        left: 15px;
         z-index: 999;
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 50%;
-        width: 45px;
-        height: 45px;
         display: flex;
         align-items: center;
-        justify-content: center;
+        gap: 8px;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 12px;
+        padding: 8px 16px;
         cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    
+    .hamburger-container:hover {
+        background: rgba(255,215,0,0.15);
+        transform: scale(1.05);
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 4px 30px rgba(255,215,0,0.15);
+    }
+    
+    .hamburger-icon {
         font-size: 1.5rem;
         color: white;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-    
-    .dot-menu:hover {
-        background: rgba(255,215,0,0.2);
-        transform: scale(1.1);
-        border-color: rgba(255,215,0,0.4);
-    }
-    
-    .dot-menu .dots {
-        font-size: 1.8rem;
         line-height: 1;
-        letter-spacing: 2px;
+    }
+    
+    .hamburger-text {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: rgba(255,255,255,0.85);
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .hamburger-container:hover .hamburger-text {
+        color: #ffd700;
     }
     
     .sidebar-user {
@@ -586,7 +590,6 @@ st.markdown("""
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
     }
     
-    /* Fix emoji in hero title */
     .hero-title .emoji-text {
         -webkit-text-fill-color: initial !important;
         color: #fff !important;
@@ -1216,6 +1219,8 @@ st.markdown("""
         .hero-subtitle { font-size: 1.2rem; }
         .copy-container { flex-wrap: wrap; }
         .what-i-do-item { padding: 1rem; }
+        .hamburger-container { padding: 6px 12px; }
+        .hamburger-text { font-size: 0.8rem; }
     }
     
     ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -1579,17 +1584,32 @@ def show_settings():
         </div>
     """.format(username=st.session_state.username), unsafe_allow_html=True)
 
-# ============ SIDEBAR WITH DOT MENU ============
+# ============ SIDEBAR WITH HAMBURGER MENU ============
 
 def show_sidebar():
-    # Dot menu button - always visible
+    # Custom Hamburger Menu Button
+    st.markdown("""
+        <style>
+        .hamburger-wrapper {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 999;
+        }
+        </style>
+        <div class="hamburger-wrapper">
+    """, unsafe_allow_html=True)
+    
+    # Create the hamburger button with "Write" text
     col1, col2, col3 = st.columns([1, 10, 1])
     with col1:
-        if st.button("⦿⦿⦿", key="dot_menu", help="Toggle Sidebar"):
+        if st.button("☰ Write", key="hamburger_menu", help="Toggle Sidebar"):
             st.session_state.sidebar_open = not st.session_state.sidebar_open
             st.rerun()
     
-    # Sidebar content - only shows when open
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Sidebar content - shows when open
     if st.session_state.sidebar_open:
         with st.sidebar:
             st.markdown("""
@@ -2056,7 +2076,7 @@ def show_contact_page():
 
 def main():
     if st.session_state.authenticated:
-        # Show sidebar (collapsible with dot menu)
+        # Show sidebar with hamburger menu
         show_sidebar()
         
         page = st.session_state.page
