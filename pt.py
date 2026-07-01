@@ -10,12 +10,13 @@ import json
 import time
 import tempfile
 
-# Try importing fpdf2 (better Unicode support)
+# Try importing fpdf2
 try:
     from fpdf import FPDF
+    PDF_AVAILABLE = True
 except ImportError:
-    st.error("❌ fpdf2 library not installed! Please install it using: pip install fpdf2")
-    FPDF = None
+    PDF_AVAILABLE = False
+    st.warning("⚠️ Installing required library... Please run: pip install fpdf2")
 
 # Page configuration
 st.set_page_config(
@@ -254,114 +255,118 @@ def get_profile_image_base64():
             return None
     return None
 
-# ============ PDF RESUME GENERATION ============
+# ============ PDF RESUME GENERATION - FIXED ============
 
 def create_download_resume():
-    """Generate PDF resume with Unicode support"""
+    """Generate PDF resume - Fixed version"""
     
-    if FPDF is None:
-        return '<a href="#" class="download-btn" style="background: #ff6b6b;">❌ PDF Library Not Installed</a>'
+    # If PDF library not available, return text version
+    if not PDF_AVAILABLE:
+        return create_download_text_resume()
     
     try:
-        # Create PDF
+        # Create PDF object
         pdf = FPDF('P', 'mm', 'A4')
         pdf.add_page()
         
-        # Header - Using Helvetica font for better compatibility
+        # Set font for Unicode support
         pdf.set_font('Helvetica', 'B', 20)
         pdf.set_text_color(0, 0, 0)
+        
+        # Header - Name
         pdf.cell(0, 15, 'FAIZAN TANVEER', 0, 1, 'C')
         
+        # Subtitle
         pdf.set_font('Helvetica', 'I', 12)
         pdf.set_text_color(100, 100, 100)
         pdf.cell(0, 8, 'Student | Python Developer', 0, 1, 'C')
         
+        # Contact Info
         pdf.set_font('Helvetica', '', 10)
         pdf.set_text_color(255, 215, 0)
-        pdf.cell(0, 8, f'Email: {PERSONAL_INFO["email"]} | Phone: {PERSONAL_INFO["phone"]} | Location: {PERSONAL_INFO["location"]}', 0, 1, 'C')
+        pdf.cell(0, 8, f'Email: {PERSONAL_INFO["email"]}  |  Phone: {PERSONAL_INFO["phone"]}  |  Location: {PERSONAL_INFO["location"]}', 0, 1, 'C')
         pdf.ln(5)
         
-        # Line
+        # Decorative Line
         pdf.set_draw_color(255, 215, 0)
         pdf.line(10, 55, 200, 55)
         pdf.ln(5)
         
-        # ABOUT ME
-        pdf.set_text_color(255, 215, 0)
+        # ABOUT ME Section
         pdf.set_font('Helvetica', 'B', 14)
+        pdf.set_text_color(255, 215, 0)
         pdf.cell(0, 10, 'ABOUT ME', 0, 1, 'L')
-        pdf.set_text_color(0, 0, 0)
         pdf.set_font('Helvetica', '', 11)
+        pdf.set_text_color(0, 0, 0)
         pdf.multi_cell(0, 6, PERSONAL_INFO['bio'])
         pdf.ln(3)
         
-        # EDUCATION
-        pdf.set_text_color(255, 215, 0)
+        # EDUCATION Section
         pdf.set_font('Helvetica', 'B', 14)
+        pdf.set_text_color(255, 215, 0)
         pdf.cell(0, 10, 'EDUCATION', 0, 1, 'L')
-        pdf.set_text_color(0, 0, 0)
         pdf.set_font('Helvetica', '', 11)
+        pdf.set_text_color(0, 0, 0)
         for edu in EDUCATION:
             pdf.multi_cell(0, 6, f"{edu['degree']} - {edu['institution']} ({edu['year']})")
         pdf.ln(3)
         
-        # SKILLS
-        pdf.set_text_color(255, 215, 0)
+        # SKILLS Section
         pdf.set_font('Helvetica', 'B', 14)
+        pdf.set_text_color(255, 215, 0)
         pdf.cell(0, 10, 'SKILLS', 0, 1, 'L')
-        pdf.set_text_color(0, 0, 0)
         pdf.set_font('Helvetica', '', 11)
+        pdf.set_text_color(0, 0, 0)
         for category, skills in SKILLS.items():
             pdf.multi_cell(0, 6, f"{category}: {', '.join(skills)}")
         pdf.ln(3)
         
-        # ACHIEVEMENTS
-        pdf.set_text_color(255, 215, 0)
+        # ACHIEVEMENTS Section
         pdf.set_font('Helvetica', 'B', 14)
+        pdf.set_text_color(255, 215, 0)
         pdf.cell(0, 10, 'ACHIEVEMENTS', 0, 1, 'L')
-        pdf.set_text_color(0, 0, 0)
         pdf.set_font('Helvetica', '', 11)
+        pdf.set_text_color(0, 0, 0)
         for achievement in ACHIEVEMENTS:
             # Remove emojis for PDF compatibility
-            clean_achievement = achievement.replace('🏆', '').replace('📝', '').replace('🎯', '').replace('💡', '').replace('🎤', '').strip()
-            pdf.multi_cell(0, 6, f"• {clean_achievement}")
+            clean = achievement.replace('🏆', '').replace('📝', '').replace('🎯', '').replace('💡', '').replace('🎤', '').strip()
+            pdf.multi_cell(0, 6, f"• {clean}")
         
         # Footer
         pdf.set_y(270)
-        pdf.set_text_color(150, 150, 150)
         pdf.set_font('Helvetica', 'I', 8)
+        pdf.set_text_color(150, 150, 150)
         pdf.cell(0, 5, 'Generated from Faizan Tanveer\'s Portfolio', 0, 1, 'C')
+        pdf.cell(0, 5, f'Date: {datetime.now().strftime("%Y-%m-%d %H:%M")}', 0, 1, 'C')
         
-        # Save PDF to temporary file
+        # Save to temporary file
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
         pdf.output(temp_file.name)
         temp_file.close()
         
-        # Read the file and encode to base64
+        # Read the file
         with open(temp_file.name, 'rb') as f:
             pdf_bytes = f.read()
         
-        # Clean up temp file
+        # Clean up
         try:
             os.unlink(temp_file.name)
         except:
             pass
         
-        # Encode to base64
+        # Convert to base64
         b64 = base64.b64encode(pdf_bytes).decode()
         
-        # Create download link
-        href = f'<a href="data:application/pdf;base64,{b64}" download="Faizan_Tanveer_Resume.pdf" class="download-btn">📄 Download Resume (PDF)</a>'
-        return href
-    
+        # Return download link
+        return f'<a href="data:application/pdf;base64,{b64}" download="Faizan_Tanveer_Resume.pdf" class="download-btn">📄 Download Resume (PDF)</a>'
+        
     except Exception as e:
-        # Fallback to text resume if PDF fails
+        # If PDF fails, fallback to text
         return create_download_text_resume()
 
 def create_download_text_resume():
     """Fallback: Create text resume download"""
-    resume_content = f"""
-FAIZAN TANVEER
+    resume_content = f"""FAIZAN TANVEER
 Student | Python Developer
 
 Email: {PERSONAL_INFO['email']}
@@ -386,40 +391,23 @@ ACHIEVEMENTS
 • Completed multiple online courses
 • Built 10+ personal projects
 • Active participant in tech events
+
+Generated: {datetime.now().strftime("%Y-%m-%d %H:%M")}
 """
     b64 = base64.b64encode(resume_content.encode()).decode()
-    href = f'<a href="data:text/plain;base64,{b64}" download="Faizan_Tanveer_Resume.txt" class="download-btn">📄 Download Resume (TXT)</a>'
-    return href
+    return f'<a href="data:text/plain;base64,{b64}" download="Faizan_Tanveer_Resume.txt" class="download-btn">📄 Download Resume (TXT)</a>'
 
-# ============ CUSTOM CSS ============
+# ============ APPLY CUSTOM CSS ============
 
-def apply_custom_css():
+def apply_css():
     st.markdown("""
     <style>
-    /* HIDE NATIVE STREAMLIT SIDEBAR TOGGLE */
-    button[data-testid="baseButton-header"] {
-        display: none !important;
-    }
-    [data-testid="collapsedControl"] {
-        display: none !important;
-    }
+    /* Hide default sidebar toggle */
+    button[data-testid="baseButton-header"] { display: none !important; }
+    [data-testid="collapsedControl"] { display: none !important; }
     
-    /* Main Background */
-    .main {
-        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-    }
-    
-    /* Fix emoji display */
-    .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
-    .stMarkdown span, .stMarkdown div, .stMarkdown li, .stMarkdown a,
-    .stMarkdown strong, .stMarkdown em, .stMarkdown b {
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Helvetica Neue', sans-serif !important;
-        color: rgba(255,255,255,0.95) !important;
-    }
-    
-    .stButton button {
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
+    /* Main background */
+    .main { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
     
     /* Sidebar */
     section[data-testid="stSidebar"] {
@@ -429,7 +417,7 @@ def apply_custom_css():
         box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3);
     }
     
-    /* Custom Hamburger Menu Button */
+    /* Hamburger Menu */
     .hamburger-btn {
         position: fixed;
         top: 15px;
@@ -458,21 +446,14 @@ def apply_custom_css():
         box-shadow: 0 4px 30px rgba(255,215,0,0.15);
     }
     
-    .hamburger-btn .icon {
-        font-size: 1.5rem;
-        line-height: 1;
-    }
-    
+    .hamburger-btn .icon { font-size: 1.5rem; line-height: 1; }
     .hamburger-btn .text {
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
         color: rgba(255,255,255,0.9);
     }
+    .hamburger-btn:hover .text { color: #ffd700; }
     
-    .hamburger-btn:hover .text {
-        color: #ffd700;
-    }
-    
-    /* Sidebar User Profile */
+    /* Sidebar User */
     .sidebar-user {
         text-align: center;
         padding: 0.5rem 0;
@@ -569,9 +550,7 @@ def apply_custom_css():
         transition: left 0.6s ease;
     }
     
-    .sidebar-nav .stButton button:hover::before {
-        left: 100%;
-    }
+    .sidebar-nav .stButton button:hover::before { left: 100%; }
     
     .sidebar-nav .stButton button:hover {
         background: rgba(255,215,0,0.15) !important;
@@ -581,9 +560,7 @@ def apply_custom_css():
         box-shadow: 0 0 40px rgba(255,215,0,0.15);
     }
     
-    .sidebar-nav .stButton button:active {
-        transform: scale(0.95);
-    }
+    .sidebar-nav .stButton button:active { transform: scale(0.95); }
     
     /* Sidebar Logout */
     .sidebar-logout .stButton button {
@@ -649,10 +626,7 @@ def apply_custom_css():
         100% { transform: rotate(360deg); }
     }
     
-    .hero-section * {
-        position: relative;
-        z-index: 1;
-    }
+    .hero-section * { position: relative; z-index: 1; }
     
     .hero-title {
         font-size: 4rem;
@@ -778,7 +752,7 @@ def apply_custom_css():
         box-shadow: 0 4px 25px rgba(245, 87, 108, 0.5);
     }
     
-    /* What I Do Items */
+    /* What I Do */
     .what-i-do-item {
         text-align: center;
         padding: 1.5rem 1rem;
@@ -811,9 +785,7 @@ def apply_custom_css():
         transition: opacity 0.6s ease;
     }
     
-    .what-i-do-item:hover::before {
-        opacity: 1;
-    }
+    .what-i-do-item:hover::before { opacity: 1; }
     
     .what-i-do-item:hover {
         transform: translateY(-10px) scale(1.02);
@@ -936,36 +908,14 @@ def apply_custom_css():
         animation: rotateGradient 15s linear infinite;
     }
     
-    .profile-card * {
-        position: relative;
-        z-index: 1;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .profile-card .card-title {
-        color: white !important;
-        border-bottom-color: rgba(255,255,255,0.2) !important;
-    }
-    
-    .profile-card h3 {
-        color: white !important;
-    }
-    
-    .profile-card p {
-        color: rgba(255,255,255,0.9) !important;
-    }
-    
-    .profile-card .profile-image-container {
-        border-color: rgba(255,255,255,0.6) !important;
-        box-shadow: 0 0 40px rgba(255,255,255,0.1) !important;
-    }
-    
-    .profile-card .copy-text {
-        background: rgba(255,255,255,0.15) !important;
-        color: white !important;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.1);
-    }
+    .profile-card * { position: relative; z-index: 1; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
+    .profile-card .card-title { color: white !important; border-bottom-color: rgba(255,255,255,0.2) !important; }
+    .profile-card h3 { color: white !important; }
+    .profile-card p { color: rgba(255,255,255,0.9) !important; }
+    .profile-card .profile-image-container { border-color: rgba(255,255,255,0.6) !important; box-shadow: 0 0 40px rgba(255,255,255,0.1) !important; }
+    .profile-card .copy-text { background: rgba(255,255,255,0.15) !important; color: white !important; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    .profile-card hr { display: none !important; }
+    .profile-card strong { color: rgba(255,255,255,0.9) !important; }
     
     .profile-card .stButton button {
         background: rgba(255,255,255,0.2) !important;
@@ -983,45 +933,6 @@ def apply_custom_css():
         background: rgba(255,255,255,0.35) !important;
         transform: scale(1.05);
         box-shadow: 0 0 30px rgba(255,255,255,0.1);
-    }
-    
-    .profile-card strong {
-        color: rgba(255,255,255,0.9) !important;
-    }
-    
-    .profile-card hr {
-        display: none !important;
-    }
-    
-    /* Social Icons */
-    .profile-social-icons {
-        display: flex;
-        justify-content: center;
-        gap: 0.8rem;
-        margin-top: 0.5rem;
-        flex-wrap: wrap;
-    }
-    
-    .profile-social-icons a {
-        color: white !important;
-        font-size: 1.5rem;
-        text-decoration: none;
-        transition: all 0.4s ease;
-        display: inline-block;
-        background: rgba(255,255,255,0.1);
-        padding: 0.3rem 0.6rem;
-        border-radius: 10px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.05);
-        animation: float 3s ease-in-out infinite;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .profile-social-icons a:hover {
-        transform: scale(1.3) rotate(-10deg) translateY(-5px);
-        background: rgba(255,215,0,0.25);
-        box-shadow: 0 0 40px rgba(255,215,0,0.2);
-        border-color: rgba(255,215,0,0.3);
     }
     
     /* Download Button */
@@ -1061,10 +972,7 @@ def apply_custom_css():
         animation: slideInRight 0.6s ease;
     }
     
-    .contact-form-card h4 {
-        color: #ffd700 !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
+    .contact-form-card h4 { color: #ffd700 !important; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
     
     .contact-form-card .stTextInput input,
     .contact-form-card .stTextArea textarea {
@@ -1111,7 +1019,24 @@ def apply_custom_css():
         box-shadow: 0 8px 35px rgba(255,215,0,0.3) !important;
     }
     
-    /* Authentication */
+    /* Copy Container */
+    .copy-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.3rem 0;
+    }
+    
+    .copy-text {
+        flex: 1;
+        padding: 0.3rem 0.5rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        word-break: break-all;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    /* Auth */
     .auth-container {
         max-width: 420px;
         margin: 50px auto;
@@ -1226,16 +1151,8 @@ def apply_custom_css():
         box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     }
     
-    .settings-card h2 {
-        color: #ffd700 !important;
-        text-align: center;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .settings-card h3 {
-        color: rgba(255,255,255,0.9) !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
+    .settings-card h2 { color: #ffd700 !important; text-align: center; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
+    .settings-card h3 { color: rgba(255,255,255,0.9) !important; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
     
     .settings-card .stButton button {
         width: 100%;
@@ -1279,18 +1196,9 @@ def apply_custom_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
-    .settings-card hr {
-        border-color: rgba(255,255,255,0.1);
-    }
-    
-    .settings-card p {
-        color: rgba(255,255,255,0.6) !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .settings-card strong {
-        color: #ffd700 !important;
-    }
+    .settings-card hr { border-color: rgba(255,255,255,0.1); }
+    .settings-card p { color: rgba(255,255,255,0.6) !important; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
+    .settings-card strong { color: #ffd700 !important; }
     
     /* Timeline */
     .timeline-item {
@@ -1354,10 +1262,7 @@ def apply_custom_css():
         border-color: rgba(255,215,0,0.2);
     }
     
-    .project-content {
-        padding: 1.5rem;
-    }
-    
+    .project-content { padding: 1.5rem; }
     .project-title {
         font-weight: 600;
         color: #ffd700 !important;
@@ -1365,27 +1270,15 @@ def apply_custom_css():
         margin-bottom: 0.5rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
-    
     .project-description {
         color: rgba(255,255,255,0.7) !important;
         font-size: 0.95rem;
         line-height: 1.5;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
-    
-    .project-tech {
-        margin-top: 1rem;
-    }
-    
-    .project-content a {
-        color: #f093fb !important;
-        transition: color 0.3s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .project-content a:hover {
-        color: #ffd700 !important;
-    }
+    .project-tech { margin-top: 1rem; }
+    .project-content a { color: #f093fb !important; transition: color 0.3s ease; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
+    .project-content a:hover { color: #ffd700 !important; }
     
     /* Upload Section */
     .upload-section {
@@ -1397,58 +1290,8 @@ def apply_custom_css():
         margin-top: 1rem;
     }
     
-    .upload-section h4 {
-        color: #ffd700 !important;
-        font-size: 1rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .upload-section p {
-        color: rgba(255,255,255,0.5) !important;
-        font-size: 0.8rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    /* Copy Container */
-    .copy-container {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin: 0.3rem 0;
-    }
-    
-    .copy-text {
-        flex: 1;
-        padding: 0.3rem 0.5rem;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        word-break: break-all;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    /* Social Links */
-    .social-link {
-        display: inline-block;
-        color: white;
-        background: rgba(255,255,255,0.1);
-        padding: 0.5rem 1.2rem;
-        border-radius: 25px;
-        margin: 0.3rem;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-        animation: float 3s ease-in-out infinite;
-        border: 1px solid rgba(255,255,255,0.05);
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .social-link:hover {
-        background: rgba(255,215,0,0.2);
-        transform: scale(1.1) translateY(-3px);
-        color: #ffd700;
-        border-color: rgba(255,215,0,0.3);
-        box-shadow: 0 0 30px rgba(255,215,0,0.1);
-    }
+    .upload-section h4 { color: #ffd700 !important; font-size: 1rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
+    .upload-section p { color: rgba(255,255,255,0.5) !important; font-size: 0.8rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
     
     /* Stats */
     .stat-box {
@@ -1487,7 +1330,67 @@ def apply_custom_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
-    /* Success/Error Messages */
+    .about-text {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: rgba(255,255,255,0.9) !important;
+        white-space: pre-wrap;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .social-link {
+        display: inline-block;
+        color: white;
+        background: rgba(255,255,255,0.1);
+        padding: 0.5rem 1.2rem;
+        border-radius: 25px;
+        margin: 0.3rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        animation: float 3s ease-in-out infinite;
+        border: 1px solid rgba(255,255,255,0.05);
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .social-link:hover {
+        background: rgba(255,215,0,0.2);
+        transform: scale(1.1) translateY(-3px);
+        color: #ffd700;
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
+    }
+    
+    .profile-social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .profile-social-icons a {
+        color: white !important;
+        font-size: 1.5rem;
+        text-decoration: none;
+        transition: all 0.4s ease;
+        display: inline-block;
+        background: rgba(255,255,255,0.1);
+        padding: 0.3rem 0.6rem;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.05);
+        animation: float 3s ease-in-out infinite;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .profile-social-icons a:hover {
+        transform: scale(1.3) rotate(-10deg) translateY(-5px);
+        background: rgba(255,215,0,0.25);
+        box-shadow: 0 0 40px rgba(255,215,0,0.2);
+        border-color: rgba(255,215,0,0.3);
+    }
+    
     .success-message {
         background: rgba(46, 213, 115, 0.2);
         backdrop-filter: blur(20px);
@@ -1514,22 +1417,12 @@ def apply_custom_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
-    /* About Text */
-    .about-text {
-        font-size: 1.05rem;
-        line-height: 1.8;
-        color: rgba(255,255,255,0.9) !important;
-        white-space: pre-wrap;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
     /* Scrollbar */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: #1a1a2e; border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #ffd700, #f093fb); border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #f093fb, #ffd700); }
     
-    /* Responsive */
     @media (max-width: 768px) {
         .hero-title { font-size: 2.5rem; }
         .hero-subtitle { font-size: 1.2rem; }
@@ -1838,7 +1731,7 @@ def show_home_page():
                 <div style="margin-top: 1rem;">
         """, unsafe_allow_html=True)
         
-        # Download Resume Button
+        # Download Resume Button - FIXED
         st.markdown(create_download_resume(), unsafe_allow_html=True)
         
         st.markdown("""
@@ -2142,7 +2035,7 @@ def show_contact_page():
 
 def main():
     # Apply custom CSS
-    apply_custom_css()
+    apply_css()
     
     if st.session_state.authenticated:
         # Show sidebar
