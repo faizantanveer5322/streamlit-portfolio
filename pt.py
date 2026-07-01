@@ -17,10 +17,10 @@ st.set_page_config(
     page_title="Faizan Tanveer | Portfolio",
     page_icon="👨‍💻",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# Create images folder if it doesn't exist (auto-creates on GitHub too)
+# Create images folder if it doesn't exist
 if not os.path.exists("images"):
     os.makedirs("images")
 
@@ -135,6 +135,8 @@ if 'page' not in st.session_state:
     st.session_state.page = "home"
 if 'copied_text' not in st.session_state:
     st.session_state.copied_text = ""
+if 'sidebar_open' not in st.session_state:
+    st.session_state.sidebar_open = False
 
 # Personal Information
 PERSONAL_INFO = {
@@ -280,7 +282,6 @@ ACHIEVEMENTS = [
 # ============ IMAGE FUNCTIONS ============
 
 def save_image_permanently(uploaded_file):
-    """Save uploaded image permanently to disk"""
     if uploaded_file is not None:
         try:
             image = Image.open(uploaded_file)
@@ -295,7 +296,6 @@ def save_image_permanently(uploaded_file):
     return False
 
 def get_profile_image_base64():
-    """Get profile image as base64 from permanent storage"""
     if os.path.exists(PROFILE_IMAGE_PATH):
         try:
             with open(PROFILE_IMAGE_PATH, "rb") as f:
@@ -344,30 +344,65 @@ st.markdown("""
         background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     }
     
+    /* Fix emoji display - IMPORTANT */
     .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
-    .stMarkdown span, .stMarkdown div, .stMarkdown li, .stMarkdown a {
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
+    .stMarkdown span, .stMarkdown div, .stMarkdown li, .stMarkdown a,
+    .stMarkdown strong, .stMarkdown em, .stMarkdown b,
+    .stMarkdown .emoji, .stMarkdown [data-testid="stMarkdownContainer"] * {
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Helvetica Neue', sans-serif !important;
+        color: rgba(255,255,255,0.95) !important;
     }
     
     .stButton button, button {
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
+    /* Sidebar - Collapsible with dot menu */
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #1a0533 100%) !important;
         padding: 1rem 0.5rem;
         border-right: none !important;
         box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3);
-        animation: sidebarGlow 4s ease-in-out infinite;
+        transition: all 0.3s ease;
     }
     
-    @keyframes sidebarGlow {
-        0%, 100% { box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3); }
-        50% { box-shadow: 4px 0 50px rgba(200, 100, 255, 0.5); }
+    /* Hide sidebar toggle arrows */
+    button[data-testid="baseButton-header"] {
+        display: none !important;
     }
     
-    section[data-testid="stSidebar"] .stMarkdown {
-        color: white !important;
+    /* Custom dot menu button */
+    .dot-menu {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 999;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    
+    .dot-menu:hover {
+        background: rgba(255,215,0,0.2);
+        transform: scale(1.1);
+        border-color: rgba(255,215,0,0.4);
+    }
+    
+    .dot-menu .dots {
+        font-size: 1.8rem;
+        line-height: 1;
+        letter-spacing: 2px;
     }
     
     .sidebar-user {
@@ -558,7 +593,14 @@ st.markdown("""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
+    }
+    
+    /* Fix emoji in hero title */
+    .hero-title .emoji-text {
+        -webkit-text-fill-color: initial !important;
+        color: #fff !important;
+        background: none !important;
     }
     
     .hero-subtitle {
@@ -1539,69 +1581,78 @@ def show_settings():
         </div>
     """.format(username=st.session_state.username), unsafe_allow_html=True)
 
-# ============ SIDEBAR ============
+# ============ SIDEBAR WITH DOT MENU ============
 
 def show_sidebar():
-    with st.sidebar:
-        st.markdown("""
-            <div class="sidebar-user">
-        """, unsafe_allow_html=True)
-        
-        img_base64 = get_profile_image_base64()
-        if img_base64:
-            st.markdown(f"""
-                <div class="avatar">
-                    <img src="data:image/png;base64,{img_base64}" alt="Profile Photo">
-                </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown("""
-                <div class="avatar">
-                    <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=80&background=ffd700&color=1a1a2e&bold=true" alt="Profile Photo">
-                </div>
-            """, unsafe_allow_html=True)
-        
-        st.markdown(f"""
-                <h3>{PERSONAL_INFO['name']}</h3>
-                <p>{PERSONAL_INFO['title']}</p>
-            </div>
-            <hr>
-            <div class="sidebar-nav">
-        """, unsafe_allow_html=True)
-        
-        nav_items = [
-            {"key": "home", "icon": "🏠", "label": "Home"},
-            {"key": "about", "icon": "👤", "label": "About Me"},
-            {"key": "skills", "icon": "🛠️", "label": "Skills"},
-            {"key": "experience", "icon": "💼", "label": "Experience"},
-            {"key": "education", "icon": "🎓", "label": "Education"},
-            {"key": "projects", "icon": "🚀", "label": "Projects"},
-            {"key": "achievements", "icon": "🏆", "label": "Achievements"},
-            {"key": "stats", "icon": "📊", "label": "Stats"},
-            {"key": "contact", "icon": "📬", "label": "Contact"},
-            {"key": "settings", "icon": "⚙️", "label": "Settings"}
-        ]
-        
-        for item in nav_items:
-            if st.button(f"{item['icon']} {item['label']}", key=f"nav_{item['key']}", use_container_width=True):
-                st.session_state.page = item["key"]
-                st.rerun()
-        
-        st.markdown("""
-            </div>
-            <hr>
-            <div class="sidebar-logout">
-        """, unsafe_allow_html=True)
-        
-        if st.button("🚪 Logout", key="logout_sidebar", use_container_width=True):
-            st.session_state.authenticated = False
-            st.session_state.username = ""
-            st.session_state.page = "home"
+    # Dot menu button - always visible
+    col1, col2, col3 = st.columns([1, 10, 1])
+    with col1:
+        if st.button("⦿⦿⦿", key="dot_menu", help="Toggle Sidebar"):
+            st.session_state.sidebar_open = not st.session_state.sidebar_open
             st.rerun()
-        
-        st.markdown("""
-            </div>
-        """, unsafe_allow_html=True)
+    
+    # Sidebar content - only shows when open
+    if st.session_state.sidebar_open:
+        with st.sidebar:
+            st.markdown("""
+                <div class="sidebar-user">
+            """, unsafe_allow_html=True)
+            
+            img_base64 = get_profile_image_base64()
+            if img_base64:
+                st.markdown(f"""
+                    <div class="avatar">
+                        <img src="data:image/png;base64,{img_base64}" alt="Profile Photo">
+                    </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("""
+                    <div class="avatar">
+                        <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=80&background=ffd700&color=1a1a2e&bold=true" alt="Profile Photo">
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown(f"""
+                    <h3>{PERSONAL_INFO['name']}</h3>
+                    <p>{PERSONAL_INFO['title']}</p>
+                </div>
+                <hr>
+                <div class="sidebar-nav">
+            """, unsafe_allow_html=True)
+            
+            nav_items = [
+                {"key": "home", "icon": "🏠", "label": "Home"},
+                {"key": "about", "icon": "👤", "label": "About Me"},
+                {"key": "skills", "icon": "🛠️", "label": "Skills"},
+                {"key": "experience", "icon": "💼", "label": "Experience"},
+                {"key": "education", "icon": "🎓", "label": "Education"},
+                {"key": "projects", "icon": "🚀", "label": "Projects"},
+                {"key": "achievements", "icon": "🏆", "label": "Achievements"},
+                {"key": "stats", "icon": "📊", "label": "Stats"},
+                {"key": "contact", "icon": "📬", "label": "Contact"},
+                {"key": "settings", "icon": "⚙️", "label": "Settings"}
+            ]
+            
+            for item in nav_items:
+                if st.button(f"{item['icon']} {item['label']}", key=f"nav_{item['key']}", use_container_width=True):
+                    st.session_state.page = item["key"]
+                    st.rerun()
+            
+            st.markdown("""
+                </div>
+                <hr>
+                <div class="sidebar-logout">
+            """, unsafe_allow_html=True)
+            
+            if st.button("🚪 Logout", key="logout_sidebar", use_container_width=True):
+                st.session_state.authenticated = False
+                st.session_state.username = ""
+                st.session_state.page = "home"
+                st.rerun()
+            
+            st.markdown("""
+                </div>
+            """, unsafe_allow_html=True)
 
 # ============ PAGE FUNCTIONS ============
 
@@ -1714,7 +1765,7 @@ def show_home_page():
         
         st.markdown(create_download_resume(), unsafe_allow_html=True)
         
-        # Image Upload Section - NO RERUN to prevent blinking
+        # Image Upload Section
         st.markdown("""
             <div class="upload-section">
                 <h4>📸 Upload Profile Image</h4>
@@ -1724,16 +1775,13 @@ def show_home_page():
         
         uploaded_file = st.file_uploader("Choose a profile image...", type=['jpg', 'jpeg', 'png'], key="permanent_uploader")
         if uploaded_file is not None:
-            # Check if image is already saved to avoid re-saving
             current_img = get_profile_image_base64()
             new_img = base64.b64encode(uploaded_file.read()).decode()
-            uploaded_file.seek(0)  # Reset file pointer
+            uploaded_file.seek(0)
             
-            # Only save if it's a new image
             if current_img != new_img:
                 if save_image_permanently(uploaded_file):
                     st.success("✅ Image uploaded permanently!")
-                    # No st.rerun() - prevents blinking
 
 def show_about_page():
     st.markdown(f"""
@@ -2000,14 +2048,15 @@ def show_contact_page():
 
 def main():
     if st.session_state.authenticated:
+        # Show sidebar (collapsible with dot menu)
         show_sidebar()
         
         page = st.session_state.page
         
-        # Hero Section
+        # Hero Section - Fixed emoji display
         st.markdown(f"""
             <div class="hero-section">
-                <div class="hero-title">👋 {PERSONAL_INFO['name']}</div>
+                <div class="hero-title"><span class="emoji-text">👋</span> {PERSONAL_INFO['name']}</div>
                 <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
                 <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
                 <div style="margin-top: 1.5rem;">
