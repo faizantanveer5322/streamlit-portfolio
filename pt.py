@@ -295,36 +295,100 @@ def get_profile_image_base64():
             return None
     return None
 
+from fpdf import FPDF
+import tempfile
+
 def create_download_resume():
-    resume_content = f"""
-FAIZAN TANVEER
-Student | Python Developer
-
-Email: {PERSONAL_INFO['email']}
-Phone: {PERSONAL_INFO['phone']}
-Location: {PERSONAL_INFO['location']}
-
-ABOUT ME
-{PERSONAL_INFO['bio']}
-
-EDUCATION
-12th Grade (Pre-Engineering) - F.G. Public School (2024-2025)
-Computer Science Studies - Self-Learning (2023-Present)
-
-SKILLS
-Programming: Python, JavaScript, HTML, CSS, C++
-Web Development: Streamlit, React, Flask
-AI/ML: TensorFlow, OpenAI API, LangChain
-Tools: Git, VS Code, Linux, Docker
-
-ACHIEVEMENTS
-• Best Student Award in Computer Science
-• Completed multiple online courses
-• Built 10+ personal projects
-• Active participant in tech events
-"""
-    b64 = base64.b64encode(resume_content.encode()).decode()
-    href = f'<a href="data:text/plain;base64,{b64}" download="Faizan_Tanveer_Resume.txt" class="download-btn">📄 Download Resume</a>'
+    """Generate PDF resume and return download link"""
+    
+    # Create PDF
+    pdf = FPDF('P', 'mm', 'A4')
+    pdf.add_page()
+    
+    # Set colors and fonts
+    pdf.set_fill_color(102, 126, 234)  # Blue gradient color
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font('Arial', 'B', 20)
+    
+    # Header
+    pdf.cell(0, 15, 'FAIZAN TANVEER', 0, 1, 'C')
+    pdf.set_font('Arial', 'I', 12)
+    pdf.set_text_color(200, 200, 200)
+    pdf.cell(0, 8, 'Student | Python Developer', 0, 1, 'C')
+    pdf.set_text_color(255, 215, 0)
+    pdf.cell(0, 8, '📧 faizan75601@gmail.com | 📱 +92 300 1234567 | 📍 Pakistan', 0, 1, 'C')
+    pdf.ln(5)
+    
+    # Line
+    pdf.set_draw_color(255, 215, 0)
+    pdf.line(10, 55, 200, 55)
+    pdf.ln(5)
+    
+    # ABOUT ME
+    pdf.set_text_color(255, 215, 0)
+    pdf.set_font('Arial', 'B', 14)
+    pdf.cell(0, 10, 'ABOUT ME', 0, 1, 'L')
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font('Arial', '', 11)
+    pdf.multi_cell(0, 6, "I'm Faizan Tanveer, a passionate student and AI enthusiast who loves building intelligent solutions and beautiful user experiences. I enjoy turning ideas into real projects using Python and modern technologies. My goal is to leverage AI to solve real-world problems and make a positive impact. Student developer passionate about Python and AI technologies.")
+    pdf.ln(3)
+    
+    # EDUCATION
+    pdf.set_text_color(255, 215, 0)
+    pdf.set_font('Arial', 'B', 14)
+    pdf.cell(0, 10, 'EDUCATION', 0, 1, 'L')
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font('Arial', '', 11)
+    pdf.multi_cell(0, 6, '12th Grade (Pre-Engineering) - F.G. Public School (2024-2025)')
+    pdf.multi_cell(0, 6, 'Computer Science Studies - Self-Learning (2023-Present)')
+    pdf.ln(3)
+    
+    # SKILLS
+    pdf.set_text_color(255, 215, 0)
+    pdf.set_font('Arial', 'B', 14)
+    pdf.cell(0, 10, 'SKILLS', 0, 1, 'L')
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font('Arial', '', 11)
+    pdf.multi_cell(0, 6, 'Programming: Python, JavaScript, HTML, CSS, C++')
+    pdf.multi_cell(0, 6, 'Web Development: Streamlit, React, Flask')
+    pdf.multi_cell(0, 6, 'AI/ML: TensorFlow, OpenAI API, LangChain')
+    pdf.multi_cell(0, 6, 'Tools: Git, VS Code, Linux, Docker')
+    pdf.ln(3)
+    
+    # ACHIEVEMENTS
+    pdf.set_text_color(255, 215, 0)
+    pdf.set_font('Arial', 'B', 14)
+    pdf.cell(0, 10, 'ACHIEVEMENTS', 0, 1, 'L')
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font('Arial', '', 11)
+    pdf.multi_cell(0, 6, '🏆 Best Student Award in Computer Science')
+    pdf.multi_cell(0, 6, '📝 Completed multiple online courses')
+    pdf.multi_cell(0, 6, '🎯 Built 10+ personal projects')
+    pdf.multi_cell(0, 6, '🎤 Active participant in tech events')
+    
+    # Footer
+    pdf.set_y(270)
+    pdf.set_text_color(150, 150, 150)
+    pdf.set_font('Arial', 'I', 8)
+    pdf.cell(0, 5, 'Generated from Faizan Tanveer\'s Portfolio', 0, 1, 'C')
+    
+    # Save PDF to temporary file
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
+    pdf.output(temp_file.name)
+    temp_file.close()
+    
+    # Read the file and encode to base64
+    with open(temp_file.name, 'rb') as f:
+        pdf_bytes = f.read()
+    
+    # Clean up temp file
+    os.unlink(temp_file.name)
+    
+    # Encode to base64
+    b64 = base64.b64encode(pdf_bytes).decode()
+    
+    # Create download link
+    href = f'<a href="data:application/pdf;base64,{b64}" download="Faizan_Tanveer_Resume.pdf" class="download-btn">📄 Download Resume (PDF)</a>'
     return href
 
 # Custom CSS
