@@ -330,11 +330,26 @@ ACHIEVEMENTS
 # Custom CSS
 st.markdown("""
     <style>
+    /* HIDE NATIVE STREAMLIT SIDEBAR TOGGLE ARROWS */
+    button[data-testid="baseButton-header"] {
+        display: none !important;
+    }
+    
+    /* HIDE THE SIDEBAR COLLAPSE BUTTON */
+    .st-emotion-cache-16idsys p {
+        display: none !important;
+    }
+    
+    /* Remove the default sidebar toggle completely */
+    [data-testid="collapsedControl"] {
+        display: none !important;
+    }
+    
     .main {
         background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     }
     
-    /* Fix emoji display - IMPORTANT */
+    /* Fix emoji display */
     .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
     .stMarkdown span, .stMarkdown div, .stMarkdown li, .stMarkdown a,
     .stMarkdown strong, .stMarkdown em, .stMarkdown b,
@@ -356,46 +371,46 @@ st.markdown("""
         transition: all 0.3s ease;
     }
     
-    /* Hamburger Menu Button */
-    .hamburger-container {
+    /* Custom Hamburger Menu Button - Only One Button */
+    .hamburger-btn {
         position: fixed;
         top: 15px;
         left: 15px;
         z-index: 999;
-        display: flex;
-        align-items: center;
-        gap: 8px;
         background: rgba(255,255,255,0.1);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.15);
         border-radius: 12px;
-        padding: 8px 16px;
+        padding: 10px 18px;
         cursor: pointer;
         transition: all 0.3s ease;
         box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 500;
     }
     
-    .hamburger-container:hover {
+    .hamburger-btn:hover {
         background: rgba(255,215,0,0.15);
         transform: scale(1.05);
         border-color: rgba(255,215,0,0.3);
         box-shadow: 0 4px 30px rgba(255,215,0,0.15);
     }
     
-    .hamburger-icon {
+    .hamburger-btn .icon {
         font-size: 1.5rem;
-        color: white;
         line-height: 1;
     }
     
-    .hamburger-text {
-        font-size: 0.95rem;
-        font-weight: 500;
-        color: rgba(255,255,255,0.85);
+    .hamburger-btn .text {
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        color: rgba(255,255,255,0.9);
     }
     
-    .hamburger-container:hover .hamburger-text {
+    .hamburger-btn:hover .text {
         color: #ffd700;
     }
     
@@ -1219,8 +1234,8 @@ st.markdown("""
         .hero-subtitle { font-size: 1.2rem; }
         .copy-container { flex-wrap: wrap; }
         .what-i-do-item { padding: 1rem; }
-        .hamburger-container { padding: 6px 12px; }
-        .hamburger-text { font-size: 0.8rem; }
+        .hamburger-btn { padding: 8px 14px; }
+        .hamburger-btn .text { font-size: 0.85rem; }
     }
     
     ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -1584,12 +1599,13 @@ def show_settings():
         </div>
     """.format(username=st.session_state.username), unsafe_allow_html=True)
 
-# ============ SIDEBAR WITH HAMBURGER MENU ============
+# ============ SIDEBAR WITH SINGLE HAMBURGER BUTTON ============
 
 def show_sidebar():
-    # Custom Hamburger Menu Button
+    # Create a single hamburger button
     st.markdown("""
         <style>
+        /* Fix for hamburger button positioning */
         .hamburger-wrapper {
             position: fixed;
             top: 15px;
@@ -1600,16 +1616,14 @@ def show_sidebar():
         <div class="hamburger-wrapper">
     """, unsafe_allow_html=True)
     
-    # Create the hamburger button with "Write" text
-    col1, col2, col3 = st.columns([1, 10, 1])
-    with col1:
-        if st.button("☰ Write", key="hamburger_menu", help="Toggle Sidebar"):
-            st.session_state.sidebar_open = not st.session_state.sidebar_open
-            st.rerun()
+    # Single button that controls sidebar
+    if st.button("☰ Write", key="hamburger_menu", help="Toggle Sidebar"):
+        st.session_state.sidebar_open = not st.session_state.sidebar_open
+        st.rerun()
     
     st.markdown("</div>", unsafe_allow_html=True)
     
-    # Sidebar content - shows when open
+    # Sidebar content - shows only when open
     if st.session_state.sidebar_open:
         with st.sidebar:
             st.markdown("""
@@ -2076,12 +2090,12 @@ def show_contact_page():
 
 def main():
     if st.session_state.authenticated:
-        # Show sidebar with hamburger menu
+        # Show sidebar with single hamburger button
         show_sidebar()
         
         page = st.session_state.page
         
-        # Hero Section - Fixed emoji display
+        # Hero Section
         st.markdown(f"""
             <div class="hero-section">
                 <div class="hero-title"><span class="emoji-text">👋</span> {PERSONAL_INFO['name']}</div>
