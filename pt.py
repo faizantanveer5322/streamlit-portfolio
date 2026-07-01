@@ -1752,14 +1752,7 @@ def show_home_page():
             st.rerun()
         
         st.markdown(f"""
-                    </div>
-                    
-                    <p style="margin-bottom: 0.3rem; color: rgba(255,255,255,0.9) !important; font-weight: 500;">📍 Location</p>
-                    <p style="margin: 0.2rem 0 0.8rem 0; color: rgba(255,255,255,0.85) !important;">{PERSONAL_INFO['location']}</p>
-                    
-                    <p style="margin-bottom: 0.3rem; color: rgba(255,255,255,0.9) !important; font-weight: 500;">🏫 School & Class</p>
-                    <p style="margin: 0.2rem 0 0.8rem 0; color: rgba(255,255,255,0.85) !important;">F.G. Public School<br>12th Grade (Pre-Engineering)</p>
-                </div>
+
                 
                 <div style="margin-top: 1rem;">
         """, unsafe_allow_html=True)
