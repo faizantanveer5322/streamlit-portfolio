@@ -141,21 +141,11 @@ if 'sidebar_open' not in st.session_state:
 # Personal Information
 PERSONAL_INFO = {
     "name": "Faizan Tanveer",
-    "title": "Student | AI Enthusiast",
-    "email": "faizan75601@gmail.com",
-    "phone": "+92 300 4023123",
-    "location": "Pakistan",
-    "bio": """👋 Hi, I'm Faizan Tanveer! I'm a passionate student currently in Class 10 at Sheikh Zayed Public School.
-
-🚀 I'm fascinated by technology, especially Artificial Intelligence and programming. I love learning new things and building projects that can make a difference.
-
-💡 My goal is to become a skilled developer and contribute to the tech industry. I enjoy exploring new technologies and working on innovative projects.
-
-🎯 When I'm not studying, you'll find me coding, learning new programming languages, or working on personal projects. I believe in continuous learning and improvement.
-
-🏫 School: Sheikh Zayed Public School
-📚 Class: 10th Grade
-""",
+    "title": "Student | AI Enthusiast | Lifelong Learner",
+    "email": "faizantanveer@example.com",
+    "phone": "+92 300 1234567",
+    "location": "Lahore, Pakistan",
+    "bio": """I'm Faizan Tanveer, a passionate student and AI enthusiast who loves building intelligent solutions and beautiful user experiences. I enjoy turning ideas into real projects using Python and modern technologies. My goal is to leverage AI to solve real-world problems and make a positive impact.""",
     "github": "https://github.com/faizan",
     "twitter": "https://x.com/",
     "instagram": "https://www.instagram.com/?hl=en",
@@ -202,8 +192,8 @@ EXPERIENCE = [
 # Education
 EDUCATION = [
     {
-        "degree": "Class 10 (Matriculation)",
-        "institution": "Sheikh Zayed Public School",
+        "degree": "12th Grade (Pre-Engineering)",
+        "institution": "F.G. Public School",
         "year": "2024 - 2025",
         "gpa": "Excellent"
     },
@@ -308,7 +298,7 @@ def get_profile_image_base64():
 def create_download_resume():
     resume_content = f"""
 FAIZAN TANVEER
-Student | AI Enthusiast
+Student | AI Enthusiast | Lifelong Learner
 
 Email: {PERSONAL_INFO['email']}
 Phone: {PERSONAL_INFO['phone']}
@@ -318,7 +308,7 @@ ABOUT ME
 {PERSONAL_INFO['bio']}
 
 EDUCATION
-Class 10 (Matriculation) - Sheikh Zayed Public School (2024-2025)
+12th Grade (Pre-Engineering) - F.G. Public School (2024-2025)
 Computer Science Studies - Self-Learning (2023-Present)
 
 SKILLS
@@ -665,14 +655,14 @@ st.markdown("""
     }
     
     .card:hover {
-        transform: translateY(-8px) scale(1.01);
+        transform: translateY(-5px);
         box-shadow: 0 15px 50px rgba(0,0,0,0.3);
         border-color: rgba(255,215,0,0.2);
     }
     
     .card-title {
-        font-size: 1.3rem;
-        font-weight: 600;
+        font-size: 1.5rem;
+        font-weight: 700;
         color: #ffd700 !important;
         margin-bottom: 1rem;
         border-bottom: 2px solid rgba(255,215,0,0.2);
@@ -708,17 +698,22 @@ st.markdown("""
     
     .what-i-do-item {
         text-align: center;
-        padding: 1.5rem;
+        padding: 1.5rem 1rem;
         background: rgba(255,255,255,0.05);
         backdrop-filter: blur(10px);
         border-radius: 16px;
         border: 1px solid rgba(255,255,255,0.05);
         transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        animation: slideInUp 0.6s ease;
         cursor: pointer;
         position: relative;
         overflow: hidden;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        height: 100%;
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
     
     .what-i-do-item::before {
@@ -738,7 +733,7 @@ st.markdown("""
     }
     
     .what-i-do-item:hover {
-        transform: translateY(-10px) scale(1.05);
+        transform: translateY(-10px) scale(1.02);
         border-color: rgba(255,215,0,0.3);
         box-shadow: 0 10px 40px rgba(255,215,0,0.15);
         background: rgba(255,215,0,0.08);
@@ -749,7 +744,7 @@ st.markdown("""
     }
     
     .what-i-do-item .icon {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         display: block;
         animation: float 3s ease-in-out infinite;
         position: relative;
@@ -760,20 +755,22 @@ st.markdown("""
     .what-i-do-item .label {
         margin-top: 0.5rem;
         font-weight: 600;
-        color: rgba(255,255,255,0.9) !important;
+        color: rgba(255,255,255,0.95) !important;
         position: relative;
         z-index: 1;
-        font-size: 1rem;
+        font-size: 1.1rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .what-i-do-item .description {
-        font-size: 0.85rem;
-        color: rgba(255,255,255,0.5) !important;
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.6) !important;
         margin-top: 0.3rem;
         position: relative;
         z-index: 1;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        line-height: 1.4;
+        max-width: 90%;
     }
     
     @keyframes slideInUp {
@@ -1229,7 +1226,7 @@ st.markdown("""
     .about-text {
         font-size: 1.05rem;
         line-height: 1.8;
-        color: rgba(255,255,255,0.85) !important;
+        color: rgba(255,255,255,0.9) !important;
         white-space: pre-wrap;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
@@ -1441,7 +1438,7 @@ st.markdown("""
     .upload-section {
         background: rgba(255,255,255,0.08);
         backdrop-filter: blur(20px);
-        padding: 1.5rem;
+        padding: 1rem;
         border-radius: 20px;
         border: 1px solid rgba(255,255,255,0.08);
         margin-top: 1rem;
@@ -1449,12 +1446,13 @@ st.markdown("""
     
     .upload-section h4 {
         color: #ffd700 !important;
+        font-size: 1rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .upload-section p {
         color: rgba(255,255,255,0.5) !important;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     </style>
@@ -1654,126 +1652,140 @@ def show_sidebar():
                 </div>
             """, unsafe_allow_html=True)
 
-# ============ PAGE FUNCTIONS ============
+# ============ HOME PAGE ============
 
 def show_home_page():
-    col1, col2 = st.columns([2, 1])
+    # Create two columns with 65%-35% split
+    col1, col2 = st.columns([6.5, 3.5])
     
     with col1:
+        # ============ ABOUT ME SECTION ============
         st.markdown(f"""
             <div class="card">
-                <div class="card-title">📖 About Me</div>
-                <div class="about-text">
+                <div class="card-title" style="font-size: 1.5rem; font-weight: 700; color: #ffd700 !important;">📖 About Me</div>
+                <div class="about-text" style="font-size: 1.05rem; line-height: 1.8; color: rgba(255,255,255,0.9) !important;">
                     {PERSONAL_INFO['bio']}
                 </div>
             </div>
         """, unsafe_allow_html=True)
         
+        # ============ WHAT I DO SECTION ============
         st.markdown("""
             <div class="card">
-                <div class="card-title">💡 What I Do</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="what-i-do-item" onclick="window.location.href='?page=skills'">
-                        <span class="icon">💻</span>
-                        <p class="label">Coding</p>
-                        <p class="description">Building amazing applications</p>
+                <div class="card-title" style="font-size: 1.5rem; font-weight: 700; color: #ffd700 !important;">💡 What I Do</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 0.5rem;">
+                    <div class="what-i-do-item">
+                        <span class="icon" style="font-size: 2.8rem; display: block; animation: float 3s ease-in-out infinite;">💻</span>
+                        <p class="label" style="font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.95) !important; margin-top: 0.5rem;">Coding</p>
+                        <p class="description" style="font-size: 0.9rem; color: rgba(255,255,255,0.6) !important; margin-top: 0.3rem; line-height: 1.4;">Building efficient and scalable applications with Python and modern tools.</p>
                     </div>
-                    <div class="what-i-do-item" onclick="window.location.href='?page=projects'">
-                        <span class="icon">🤖</span>
-                        <p class="label">AI Enthusiast</p>
-                        <p class="description">Exploring Artificial Intelligence</p>
+                    <div class="what-i-do-item">
+                        <span class="icon" style="font-size: 2.8rem; display: block; animation: float 3s ease-in-out infinite 0.5s;">🤖</span>
+                        <p class="label" style="font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.95) !important; margin-top: 0.5rem;">AI</p>
+                        <p class="description" style="font-size: 0.9rem; color: rgba(255,255,255,0.6) !important; margin-top: 0.3rem; line-height: 1.4;">Exploring Artificial Intelligence and Machine Learning to solve real-world problems.</p>
                     </div>
-                    <div class="what-i-do-item" onclick="window.location.href='?page=education'">
-                        <span class="icon">📚</span>
-                        <p class="label">Student</p>
-                        <p class="description">Learning new technologies</p>
+                    <div class="what-i-do-item">
+                        <span class="icon" style="font-size: 2.8rem; display: block; animation: float 3s ease-in-out infinite 1s;">🎓</span>
+                        <p class="label" style="font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.95) !important; margin-top: 0.5rem;">Student</p>
+                        <p class="description" style="font-size: 0.9rem; color: rgba(255,255,255,0.6) !important; margin-top: 0.3rem; line-height: 1.4;">Continuously learning and improving my skills every day to grow as a developer.</p>
                     </div>
-                    <div class="what-i-do-item" onclick="window.location.href='?page=achievements'">
-                        <span class="icon">🎯</span>
-                        <p class="label">Lifelong Learner</p>
-                        <p class="description">Continuous improvement</p>
+                    <div class="what-i-do-item">
+                        <span class="icon" style="font-size: 2.8rem; display: block; animation: float 3s ease-in-out infinite 1.5s;">📚</span>
+                        <p class="label" style="font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.95) !important; margin-top: 0.5rem;">Lifelong Learner</p>
+                        <p class="description" style="font-size: 0.9rem; color: rgba(255,255,255,0.6) !important; margin-top: 0.3rem; line-height: 1.4;">Always curious, always learning new technologies and staying up-to-date.</p>
                     </div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
     
     with col2:
+        # ============ PROFILE SECTION ============
         st.markdown("""
-            <div class="card profile-card">
-                <div class="card-title">👤 Profile</div>
+            <div class="card profile-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%) !important; padding: 2rem 1.5rem !important; border-radius: 20px !important; color: white !important; border: none !important; box-shadow: 0 15px 50px rgba(0,0,0,0.3) !important;">
+                <div class="card-title" style="font-size: 1.5rem; font-weight: 700; color: white !important; border-bottom: 2px solid rgba(255,255,255,0.2); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">👤 Profile</div>
         """, unsafe_allow_html=True)
         
+        # Profile Image
         img_base64 = get_profile_image_base64()
         if img_base64:
             st.markdown(f"""
-                <div class="profile-image-container">
-                    <img src="data:image/png;base64,{img_base64}" alt="Profile Photo">
+                <div class="profile-image-container" style="width: 150px; height: 150px; border-radius: 50%; margin: 0 auto; overflow: hidden; border: 4px solid rgba(255,255,255,0.6); box-shadow: 0 0 40px rgba(255,255,255,0.2);">
+                    <img src="data:image/png;base64,{img_base64}" alt="Profile Photo" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown("""
-                <div class="profile-image-container">
-                    <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=150&background=fff&color=667eea&bold=true" alt="Profile Photo">
+                <div class="profile-image-container" style="width: 150px; height: 150px; border-radius: 50%; margin: 0 auto; overflow: hidden; border: 4px solid rgba(255,255,255,0.6); box-shadow: 0 0 40px rgba(255,255,255,0.2);">
+                    <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=150&background=fff&color=667eea&bold=true" alt="Profile Photo" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
             """, unsafe_allow_html=True)
         
+        # Name and Title
         st.markdown(f"""
-                <h3 style="margin-top: 1rem;">{PERSONAL_INFO['name']}</h3>
-                <p style="opacity: 0.9;">{PERSONAL_INFO['title']}</p>
+                <h3 style="margin-top: 1.2rem; color: white !important; font-size: 1.4rem; text-align: center; font-weight: 700;">{PERSONAL_INFO['name']}</h3>
+                <p style="text-align: center; opacity: 0.95; color: rgba(255,255,255,0.95) !important; font-size: 1rem; margin-top: 0.2rem; font-weight: 400;">{PERSONAL_INFO['title']}</p>
                 
-                <div style="text-align: left; margin-top: 0.5rem;">
-                    <p><strong>📧 Email</strong></p>
-                    <div class="copy-container">
-                        <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white;">{PERSONAL_INFO['email']}</span>
+                <hr style="border-color: rgba(255,255,255,0.15); margin: 1rem 0;">
+                
+                <div style="text-align: left;">
+                    <p style="margin-bottom: 0.3rem; color: rgba(255,255,255,0.9) !important; font-weight: 500;">📧 Email</p>
+                    <div class="copy-container" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem;">
+                        <span class="copy-text" style="flex: 1; padding: 0.3rem 0.5rem; border-radius: 8px; font-size: 0.9rem; background: rgba(255,255,255,0.15); color: white !important;">{PERSONAL_INFO['email']}</span>
         """, unsafe_allow_html=True)
         
+        # Email Copy Button
         if st.button("📋 Copy", key="copy_email_home", use_container_width=True):
             st.session_state.copied_text = "Email copied to clipboard!"
+            st.rerun()
         
         st.markdown(f"""
                     </div>
-                    <p><strong>📱 Phone</strong></p>
-                    <div class="copy-container">
-                        <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white;">{PERSONAL_INFO['phone']}</span>
+                    
+                    <p style="margin-bottom: 0.3rem; color: rgba(255,255,255,0.9) !important; font-weight: 500;">📱 Phone</p>
+                    <div class="copy-container" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem;">
+                        <span class="copy-text" style="flex: 1; padding: 0.3rem 0.5rem; border-radius: 8px; font-size: 0.9rem; background: rgba(255,255,255,0.15); color: white !important;">{PERSONAL_INFO['phone']}</span>
         """, unsafe_allow_html=True)
         
+        # Phone Copy Button
         if st.button("📋 Copy", key="copy_phone_home", use_container_width=True):
             st.session_state.copied_text = "Phone copied to clipboard!"
+            st.rerun()
         
         st.markdown(f"""
                     </div>
-                    <p><strong>📍 Location</strong></p>
-                    <p style="margin: 0.2rem 0 0.5rem 0;">{PERSONAL_INFO['location']}</p>
-                    <p><strong>🏫 School</strong></p>
-                    <p style="margin: 0.2rem 0 0.5rem 0;">Sheikh Zayed Public School</p>
-                    <p><strong>📚 Class</strong></p>
-                    <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
+                    
+                    <p style="margin-bottom: 0.3rem; color: rgba(255,255,255,0.9) !important; font-weight: 500;">📍 Location</p>
+                    <p style="margin: 0.2rem 0 0.8rem 0; color: rgba(255,255,255,0.85) !important;">{PERSONAL_INFO['location']}</p>
+                    
+                    <p style="margin-bottom: 0.3rem; color: rgba(255,255,255,0.9) !important; font-weight: 500;">🏫 School & Class</p>
+                    <p style="margin: 0.2rem 0 0.8rem 0; color: rgba(255,255,255,0.85) !important;">F.G. Public School<br>12th Grade (Pre-Engineering)</p>
                 </div>
                 
-                <div class="profile-social-icons" style="margin-top: 0.5rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub">🐙</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter">🐦</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram">📸</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" title="TikTok">🎵</a>
+                <div style="margin-top: 1rem;">
+        """, unsafe_allow_html=True)
+        
+        # Download Resume Button
+        st.markdown(create_download_resume(), unsafe_allow_html=True)
+        
+        st.markdown("""
                 </div>
             </div>
         """, unsafe_allow_html=True)
         
+        # Show copy confirmation message
         if st.session_state.copied_text:
             st.success(st.session_state.copied_text)
             st.session_state.copied_text = ""
         
-        st.markdown(create_download_resume(), unsafe_allow_html=True)
-        
-        # Image Upload Section
+        # ============ IMAGE UPLOAD SECTION ============
         st.markdown("""
-            <div class="upload-section">
-                <h4>📸 Upload Profile Image</h4>
-                <p>Image will be saved permanently</p>
+            <div class="upload-section" style="background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); padding: 1rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); margin-top: 1rem;">
+                <h4 style="color: #ffd700 !important; font-size: 1rem; margin-bottom: 0.5rem;">📸 Upload Profile Image</h4>
+                <p style="color: rgba(255,255,255,0.5) !important; font-size: 0.8rem;">Image will be saved permanently</p>
             </div>
         """, unsafe_allow_html=True)
         
-        uploaded_file = st.file_uploader("Choose a profile image...", type=['jpg', 'jpeg', 'png'], key="permanent_uploader")
+        uploaded_file = st.file_uploader("Choose a profile image...", type=['jpg', 'jpeg', 'png'], key="permanent_uploader", label_visibility="collapsed")
         if uploaded_file is not None:
             current_img = get_profile_image_base64()
             new_img = base64.b64encode(uploaded_file.read()).decode()
@@ -1782,6 +1794,9 @@ def show_home_page():
             if current_img != new_img:
                 if save_image_permanently(uploaded_file):
                     st.success("✅ Image uploaded permanently!")
+                    st.rerun()
+
+# ============ OTHER PAGE FUNCTIONS ============
 
 def show_about_page():
     st.markdown(f"""
@@ -2056,7 +2071,7 @@ def main():
         # Hero Section - Fixed emoji display
         st.markdown(f"""
             <div class="hero-section">
-                <div class="hero-title"><span class="emoji-text">👋</span> {PERSONAL_INFO['name']}</div>
+                <div class="hero-title"><span class="emoji-text">👋</span> Hi, I'm {PERSONAL_INFO['name']}</div>
                 <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
                 <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
                 <div style="margin-top: 1.5rem;">
