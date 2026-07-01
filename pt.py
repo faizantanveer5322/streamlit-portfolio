@@ -145,7 +145,7 @@ PERSONAL_INFO = {
     "email": "faizan75601@gmail.com",
     "phone": "+92 300 1234567",
     "location": "Pakistan",
-    "bio": """I'm Faizan Tanveer, a passionate student and AI enthusiast who loves building intelligent solutions and beautiful user experiences. I enjoy turning ideas into real projects using Python and modern technologies. My goal is to leverage AI to solve real-world problems and make a positive impact.""",
+    "bio": """I'm Faizan Tanveer, a passionate student and AI enthusiast who loves building intelligent solutions and beautiful user experiences. I enjoy turning ideas into real projects using Python and modern technologies. My goal is to leverage AI to solve real-world problems and make a positive impact.Student developer passionate about Python and AI technologies.""",
     "github": "https://github.com/faizan",
     "twitter": "https://x.com/",
     "instagram": "https://www.instagram.com/?hl=en",
