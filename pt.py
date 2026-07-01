@@ -10,13 +10,21 @@ import json
 import time
 import tempfile
 
-# Try importing fpdf2
+# Try importing reportlab for PDF generation
 try:
-    from fpdf import FPDF
-    PDF_AVAILABLE = True
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.pagesizes import A4, letter
+    from reportlab.lib.units import mm, inch
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.lib import colors
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+    REPORTLAB_AVAILABLE = True
 except ImportError:
-    PDF_AVAILABLE = False
-    st.warning("⚠️ Installing required library... Please run: pip install fpdf2")
+    REPORTLAB_AVAILABLE = False
+    st.warning("⚠️ reportlab not installed. Installing...")
 
 # Page configuration
 st.set_page_config(
@@ -255,182 +263,201 @@ def get_profile_image_base64():
             return None
     return None
 
-# ============ PDF RESUME GENERATION - FIXED ============
+# ============ PDF RESUME GENERATION - FIXED WITH REPORTLAB ============
 
 def create_download_resume():
-    """Generate PDF resume - Fixed version"""
+    """Generate professional PDF resume using reportlab"""
     
-    # If PDF library not available, return text version
-    if not PDF_AVAILABLE:
+    # If reportlab not available, fallback to text
+    if not REPORTLAB_AVAILABLE:
         return create_download_text_resume()
     
     try:
-        # Create PDF object
-        pdf = FPDF('P', 'mm', 'A4')
-        pdf.add_page()
+        # Create a BytesIO buffer
+        buffer = io.BytesIO()
         
-        # Set font for Unicode support
-        pdf.set_font('Helvetica', 'B', 20)
-        pdf.set_text_color(0, 0, 0)
+        # Create PDF document
+        doc = SimpleDocTemplate(
+            buffer,
+            pagesize=A4,
+            rightMargin=72,
+            leftMargin=72,
+            topMargin=72,
+            bottomMargin=72
+        )
         
-        # Header - Name
-        pdf.cell(0, 15, 'FAIZAN TANVEER', 0, 1, 'C')
+        # Styles
+        styles = getSampleStyleSheet()
         
-        # Subtitle
-        pdf.set_font('Helvetica', 'I', 12)
-        pdf.set_text_color(100, 100, 100)
-        pdf.cell(0, 8, 'Student | Python Developer', 0, 1, 'C')
+        # Title Style
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            textColor=colors.HexColor('#667eea'),
+            alignment=TA_CENTER,
+            spaceAfter=6,
+            fontName='Helvetica-Bold'
+        )
         
-        # Contact Info
-        pdf.set_font('Helvetica', '', 10)
-        pdf.set_text_color(255, 215, 0)
-        pdf.cell(0, 8, f'Email: {PERSONAL_INFO["email"]}  |  Phone: {PERSONAL_INFO["phone"]}  |  Location: {PERSONAL_INFO["location"]}', 0, 1, 'C')
-        pdf.ln(5)
+        # Subtitle Style
+        subtitle_style = ParagraphStyle(
+            'CustomSubtitle',
+            parent=styles['Normal'],
+            fontSize=12,
+            textColor=colors.grey,
+            alignment=TA_CENTER,
+            spaceAfter=12,
+            fontName='Helvetica-Oblique'
+        )
         
-        # Decorative Line
-        pdf.set_draw_color(255, 215, 0)
-        pdf.line(10, 55, 200, 55)
-        pdf.ln(5)
+        # Contact Style
+        contact_style = ParagraphStyle(
+            'ContactStyle',
+            parent=styles['Normal'],
+            fontSize=10,
+            textColor=colors.HexColor('#ffd700'),
+            alignment=TA_CENTER,
+            spaceAfter=4,
+            fontName='Helvetica'
+        )
         
-        # ABOUT ME Section
-        pdf.set_font('Helvetica', 'B', 14)
-        pdf.set_text_color(255, 215, 0)
-        pdf.cell(0, 10, 'ABOUT ME', 0, 1, 'L')
-        pdf.set_font('Helvetica', '', 11)
-        pdf.set_text_color(0, 0, 0)
-        pdf.multi_cell(0, 6, PERSONAL_INFO['bio'])
-        pdf.ln(3)
+        # Heading Style
+        heading_style = ParagraphStyle(
+            'CustomHeading',
+            parent=styles['Heading2'],
+            fontSize=14,
+            textColor=colors.HexColor('#ffd700'),
+            spaceAfter=6,
+            spaceBefore=12,
+            fontName='Helvetica-Bold'
+        )
         
-        # EDUCATION Section
-        pdf.set_font('Helvetica', 'B', 14)
-        pdf.set_text_color(255, 215, 0)
-        pdf.cell(0, 10, 'EDUCATION', 0, 1, 'L')
-        pdf.set_font('Helvetica', '', 11)
-        pdf.set_text_color(0, 0, 0)
+        # Body Style
+        body_style = ParagraphStyle(
+            'CustomBody',
+            parent=styles['Normal'],
+            fontSize=10,
+            textColor=colors.black,
+            spaceAfter=4,
+            leading=14,
+            fontName='Helvetica'
+        )
+        
+        # List Style
+        list_style = ParagraphStyle(
+            'ListStyle',
+            parent=styles['Normal'],
+            fontSize=10,
+            textColor=colors.black,
+            spaceAfter=2,
+            leading=12,
+            fontName='Helvetica',
+            leftIndent=20
+        )
+        
+        # Build story
+        story = []
+        
+        # === HEADER ===
+        story.append(Paragraph('FAIZAN TANVEER', title_style))
+        story.append(Paragraph('Student | Python Developer', subtitle_style))
+        story.append(Paragraph(f'Email: {PERSONAL_INFO["email"]}  |  Phone: {PERSONAL_INFO["phone"]}  |  Location: {PERSONAL_INFO["location"]}', contact_style))
+        story.append(Spacer(1, 12))
+        
+        # === DECORATIVE LINE ===
+        story.append(Paragraph('_' * 80, styles['Normal']))
+        story.append(Spacer(1, 8))
+        
+        # === ABOUT ME ===
+        story.append(Paragraph('ABOUT ME', heading_style))
+        story.append(Paragraph(PERSONAL_INFO['bio'], body_style))
+        story.append(Spacer(1, 4))
+        
+        # === EDUCATION ===
+        story.append(Paragraph('EDUCATION', heading_style))
         for edu in EDUCATION:
-            pdf.multi_cell(0, 6, f"{edu['degree']} - {edu['institution']} ({edu['year']})")
-        pdf.ln(3)
+            story.append(Paragraph(f'• {edu["degree"]} - {edu["institution"]} ({edu["year"]})', list_style))
+        story.append(Spacer(1, 4))
         
-        # SKILLS Section
-        pdf.set_font('Helvetica', 'B', 14)
-        pdf.set_text_color(255, 215, 0)
-        pdf.cell(0, 10, 'SKILLS', 0, 1, 'L')
-        pdf.set_font('Helvetica', '', 11)
-        pdf.set_text_color(0, 0, 0)
+        # === SKILLS ===
+        story.append(Paragraph('SKILLS', heading_style))
         for category, skills in SKILLS.items():
-            pdf.multi_cell(0, 6, f"{category}: {', '.join(skills)}")
-        pdf.ln(3)
+            story.append(Paragraph(f'• {category}: {", ".join(skills)}', list_style))
+        story.append(Spacer(1, 4))
         
-        # ACHIEVEMENTS Section
-        pdf.set_font('Helvetica', 'B', 14)
-        pdf.set_text_color(255, 215, 0)
-        pdf.cell(0, 10, 'ACHIEVEMENTS', 0, 1, 'L')
-        pdf.set_font('Helvetica', '', 11)
-        pdf.set_text_color(0, 0, 0)
+        # === ACHIEVEMENTS ===
+        story.append(Paragraph('ACHIEVEMENTS', heading_style))
         for achievement in ACHIEVEMENTS:
             # Remove emojis for PDF compatibility
             clean = achievement.replace('🏆', '').replace('📝', '').replace('🎯', '').replace('💡', '').replace('🎤', '').strip()
-            pdf.multi_cell(0, 6, f"• {clean}")
+            story.append(Paragraph(f'• {clean}', list_style))
         
-        # Footer
-        pdf.set_y(270)
-        pdf.set_font('Helvetica', 'I', 8)
-        pdf.set_text_color(150, 150, 150)
-        pdf.cell(0, 5, 'Generated from Faizan Tanveer\'s Portfolio', 0, 1, 'C')
-        pdf.cell(0, 5, f'Date: {datetime.now().strftime("%Y-%m-%d %H:%M")}', 0, 1, 'C')
+        # === FOOTER ===
+        story.append(Spacer(1, 20))
+        footer_style = ParagraphStyle(
+            'FooterStyle',
+            parent=styles['Normal'],
+            fontSize=8,
+            textColor=colors.grey,
+            alignment=TA_CENTER,
+            fontName='Helvetica-Oblique'
+        )
+        story.append(Paragraph(f'Generated from Faizan Tanveer\'s Portfolio', footer_style))
+        story.append(Paragraph(f'Date: {datetime.now().strftime("%Y-%m-%d %H:%M")}', footer_style))
         
-        # Save to temporary file
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
-        pdf.output(temp_file.name)
-        temp_file.close()
+        # Build PDF
+        doc.build(story)
+        buffer.seek(0)
         
-        # Read the file
-        with open(temp_file.name, 'rb') as f:
-            pdf_bytes = f.read()
+        # Get PDF bytes
+        pdf_bytes = buffer.getvalue()
+        buffer.close()
         
-        # Clean up
-        try:
-            os.unlink(temp_file.name)
-        except:
-            pass
-        
-        # Convert to base64
+        # Encode to base64
         b64 = base64.b64encode(pdf_bytes).decode()
         
         # Return download link
         return f'<a href="data:application/pdf;base64,{b64}" download="Faizan_Tanveer_Resume.pdf" class="download-btn">📄 Download Resume (PDF)</a>'
         
     except Exception as e:
-        # If PDF fails, fallback to text
+        # If PDF generation fails, fallback to text
         return create_download_text_resume()
 
-from weasyprint import HTML
+def create_download_text_resume():
+    """Fallback: Create text resume download"""
+    resume_content = f"""FAIZAN TANVEER
+Student | Python Developer
 
-def create_download_resume():
-    """Generate PDF using HTML to PDF"""
-    try:
-        html_content = f"""
-        <html>
-        <head>
-        <style>
-            body {{ font-family: Arial, sans-serif; padding: 40px; }}
-            h1 {{ color: #667eea; text-align: center; font-size: 28px; }}
-            .subtitle {{ text-align: center; color: #666; font-size: 14px; }}
-            .contact {{ text-align: center; color: #ffd700; font-size: 12px; }}
-            h2 {{ color: #ffd700; border-bottom: 2px solid #ffd700; padding-bottom: 5px; font-size: 18px; }}
-            ul {{ list-style-type: none; padding: 0; }}
-            li {{ padding: 3px 0; font-size: 12px; }}
-            .footer {{ text-align: center; color: #999; font-size: 10px; margin-top: 40px; }}
-        </style>
-        </head>
-        <body>
-            <h1>FAIZAN TANVEER</h1>
-            <p class="subtitle">Student | Python Developer</p>
-            <p class="contact">Email: {PERSONAL_INFO['email']} | Phone: {PERSONAL_INFO['phone']} | Location: {PERSONAL_INFO['location']}</p>
-            
-            <h2>ABOUT ME</h2>
-            <p>{PERSONAL_INFO['bio']}</p>
-            
-            <h2>EDUCATION</h2>
-            <ul>
-                <li>12th Grade (Pre-Engineering) - F.G. Public School (2024-2025)</li>
-                <li>Computer Science Studies - Self-Learning (2023-Present)</li>
-            </ul>
-            
-            <h2>SKILLS</h2>
-            <ul>
-                <li>Programming: Python, JavaScript, HTML, CSS, C++</li>
-                <li>Web Development: Streamlit, React, Flask</li>
-                <li>AI/ML: TensorFlow, OpenAI API, LangChain</li>
-                <li>Tools: Git, VS Code, Linux, Docker</li>
-            </ul>
-            
-            <h2>ACHIEVEMENTS</h2>
-            <ul>
-                <li>Best Student Award in Computer Science</li>
-                <li>Completed multiple online courses</li>
-                <li>Built 10+ personal projects</li>
-                <li>Active participant in tech events</li>
-            </ul>
-            
-            <p class="footer">Generated from Faizan Tanveer's Portfolio</p>
-        </body>
-        </html>
-        """
-        
-        # Generate PDF
-        pdf_bytes = HTML(string=html_content).write_pdf()
-        
-        # Encode to base64
-        b64 = base64.b64encode(pdf_bytes).decode()
-        
-        return f'<a href="data:application/pdf;base64,{b64}" download="Faizan_Tanveer_Resume.pdf" class="download-btn">📄 Download Resume (PDF)</a>'
-        
-    except Exception as e:
-        # Fallback to text
-        return create_download_text_resume()
+Email: {PERSONAL_INFO['email']}
+Phone: {PERSONAL_INFO['phone']}
+Location: {PERSONAL_INFO['location']}
 
-# ============ APPLY CUSTOM CSS ============
+ABOUT ME
+{PERSONAL_INFO['bio']}
+
+EDUCATION
+12th Grade (Pre-Engineering) - F.G. Public School (2024-2025)
+Computer Science Studies - Self-Learning (2023-Present)
+
+SKILLS
+Programming: Python, JavaScript, HTML, CSS, C++
+Web Development: Streamlit, React, Flask
+AI/ML: TensorFlow, OpenAI API, LangChain
+Tools: Git, VS Code, Linux, Docker
+
+ACHIEVEMENTS
+• Best Student Award in Computer Science
+• Completed multiple online courses
+• Built 10+ personal projects
+• Active participant in tech events
+
+Generated: {datetime.now().strftime("%Y-%m-%d %H:%M")}
+"""
+    b64 = base64.b64encode(resume_content.encode()).decode()
+    return f'<a href="data:text/plain;base64,{b64}" download="Faizan_Tanveer_Resume.txt" class="download-btn">📄 Download Resume (TXT)</a>'
+
+# ============ CUSTOM CSS ============
 
 def apply_css():
     st.markdown("""
