@@ -1774,7 +1774,7 @@ def show_home_page():
         st.markdown("""
             <div class="upload-section" style="background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); padding: 1rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); margin-top: 1rem;">
                 <h4 style="color: #ffd700 !important; font-size: 1rem; margin-bottom: 0.5rem;">📸 Upload Profile Image</h4>
-                <p style="color: rgba(255,255,255,0.5) !important; font-size: 0.8rem;">Image will be saved permanently</p>
+                <p style="color: rgba(255,255,255,0.5) !important; font-size: 0.8rem;"></p>
             </div>
         """, unsafe_allow_html=True)
         
