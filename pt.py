@@ -1582,16 +1582,7 @@ def show_settings():
 # ============ SIDEBAR WITH DOT MENU ============
 
 def show_sidebar():
-    # Dot menu button - always visible
-    col1, col2, col3 = st.columns([1, 10, 1])
-    with col1:
-        if st.button("⦿⦿⦿", key="dot_menu", help="Toggle Sidebar"):
-            st.session_state.sidebar_open = not st.session_state.sidebar_open
-            st.rerun()
-    
-    # Sidebar content - only shows when open
-    if st.session_state.sidebar_open:
-        with st.sidebar:
+
             st.markdown("""
                 <div class="sidebar-user">
             """, unsafe_allow_html=True)
