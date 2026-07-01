@@ -2108,7 +2108,7 @@ def main():
                     © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ BY FR 56
                 </p>
                 <p style="font-size: 0.8rem; opacity: 0.7;">
-                    Student | AI Enthusiast | Lifelong Learner
+                    Student | Python Developer
                 </p>
                 <div style="margin-top: 0.5rem;">
                     <a href="{PERSONAL_INFO['github']}" target="_blank" style="color: rgba(255,255,255,0.3); font-size: 1.5rem; margin: 0 0.5rem; text-decoration: none;">🐙</a>
