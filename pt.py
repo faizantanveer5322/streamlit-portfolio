@@ -141,11 +141,21 @@ if 'sidebar_open' not in st.session_state:
 # Personal Information
 PERSONAL_INFO = {
     "name": "Faizan Tanveer",
-    "title": "Student | AI Enthusiast | Lifelong Learner",
-    "email": "faizantanveer@example.com",
-    "phone": "+92 300 1234567",
-    "location": "Lahore, Pakistan",
-    "bio": """I'm Faizan Tanveer, a passionate student and AI enthusiast who loves building intelligent solutions and beautiful user experiences. I enjoy turning ideas into real projects using Python and modern technologies. My goal is to leverage AI to solve real-world problems and make a positive impact.""",
+    "title": "Student | AI Enthusiast",
+    "email": "faizan75601@gmail.com",
+    "phone": "+92 300 4023123",
+    "location": "Pakistan",
+    "bio": """👋 Hi, I'm Faizan Tanveer! I'm a passionate student currently in Class 10 at Sheikh Zayed Public School.
+
+🚀 I'm fascinated by technology, especially Artificial Intelligence and programming. I love learning new things and building projects that can make a difference.
+
+💡 My goal is to become a skilled developer and contribute to the tech industry. I enjoy exploring new technologies and working on innovative projects.
+
+🎯 When I'm not studying, you'll find me coding, learning new programming languages, or working on personal projects. I believe in continuous learning and improvement.
+
+🏫 School: Sheikh Zayed Public School
+📚 Class: 10th Grade
+""",
     "github": "https://github.com/faizan",
     "twitter": "https://x.com/",
     "instagram": "https://www.instagram.com/?hl=en",
@@ -192,8 +202,8 @@ EXPERIENCE = [
 # Education
 EDUCATION = [
     {
-        "degree": "12th Grade (Pre-Engineering)",
-        "institution": "F.G. Public School",
+        "degree": "Class 10 (Matriculation)",
+        "institution": "Sheikh Zayed Public School",
         "year": "2024 - 2025",
         "gpa": "Excellent"
     },
@@ -298,7 +308,7 @@ def get_profile_image_base64():
 def create_download_resume():
     resume_content = f"""
 FAIZAN TANVEER
-Student | AI Enthusiast | Lifelong Learner
+Student | AI Enthusiast
 
 Email: {PERSONAL_INFO['email']}
 Phone: {PERSONAL_INFO['phone']}
@@ -308,7 +318,7 @@ ABOUT ME
 {PERSONAL_INFO['bio']}
 
 EDUCATION
-12th Grade (Pre-Engineering) - F.G. Public School (2024-2025)
+Class 10 (Matriculation) - Sheikh Zayed Public School (2024-2025)
 Computer Science Studies - Self-Learning (2023-Present)
 
 SKILLS
@@ -334,11 +344,10 @@ st.markdown("""
         background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     }
     
-    /* Fix emoji display - IMPORTANT */
+    /* Fix emoji display */
     .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
     .stMarkdown span, .stMarkdown div, .stMarkdown li, .stMarkdown a,
-    .stMarkdown strong, .stMarkdown em, .stMarkdown b,
-    .stMarkdown .emoji, .stMarkdown [data-testid="stMarkdownContainer"] * {
+    .stMarkdown strong, .stMarkdown em, .stMarkdown b {
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Helvetica Neue', sans-serif !important;
         color: rgba(255,255,255,0.95) !important;
     }
@@ -347,52 +356,20 @@ st.markdown("""
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
-    /* Sidebar - Collapsible with dot menu */
+    /* Hide sidebar toggle arrows */
+    button[data-testid="baseButton-header"] {
+        display: none !important;
+    }
+    
+    /* Sidebar */
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #1a0533 100%) !important;
         padding: 1rem 0.5rem;
         border-right: none !important;
         box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3);
         transition: all 0.3s ease;
-    }
-    
-    /* Hide sidebar toggle arrows */
-    button[data-testid="baseButton-header"] {
-        display: none !important;
-    }
-    
-    /* Custom dot menu button */
-    .dot-menu {
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        z-index: 999;
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 50%;
-        width: 45px;
-        height: 45px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-size: 1.5rem;
-        color: white;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-    
-    .dot-menu:hover {
-        background: rgba(255,215,0,0.2);
-        transform: scale(1.1);
-        border-color: rgba(255,215,0,0.4);
-    }
-    
-    .dot-menu .dots {
-        font-size: 1.8rem;
-        line-height: 1;
-        letter-spacing: 2px;
+        margin-top: -60px !important;
+        padding-top: 70px !important;
     }
     
     .sidebar-user {
@@ -586,7 +563,6 @@ st.markdown("""
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
     }
     
-    /* Fix emoji in hero title */
     .hero-title .emoji-text {
         -webkit-text-fill-color: initial !important;
         color: #fff !important;
@@ -635,13 +611,6 @@ st.markdown("""
         50% { transform: translateY(-10px); }
     }
     
-    @keyframes bounceIn {
-        0% { opacity: 0; transform: scale(0.3); }
-        50% { opacity: 1; transform: scale(1.05); }
-        70% { transform: scale(0.9); }
-        100% { transform: scale(1); }
-    }
-    
     .card {
         background: rgba(255,255,255,0.08);
         backdrop-filter: blur(20px);
@@ -652,17 +621,19 @@ st.markdown("""
         transition: all 0.4s ease;
         border: 1px solid rgba(255,255,255,0.08);
         animation: slideInLeft 0.6s ease;
+        height: auto !important;
+        min-height: 380px !important;
     }
     
     .card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-8px) scale(1.01);
         box-shadow: 0 15px 50px rgba(0,0,0,0.3);
         border-color: rgba(255,215,0,0.2);
     }
     
     .card-title {
-        font-size: 1.5rem;
-        font-weight: 700;
+        font-size: 1.3rem;
+        font-weight: 600;
         color: #ffd700 !important;
         margin-bottom: 1rem;
         border-bottom: 2px solid rgba(255,215,0,0.2);
@@ -698,22 +669,17 @@ st.markdown("""
     
     .what-i-do-item {
         text-align: center;
-        padding: 1.5rem 1rem;
+        padding: 1.5rem;
         background: rgba(255,255,255,0.05);
         backdrop-filter: blur(10px);
         border-radius: 16px;
         border: 1px solid rgba(255,255,255,0.05);
         transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        animation: slideInUp 0.6s ease;
         cursor: pointer;
         position: relative;
         overflow: hidden;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-        height: 100%;
-        min-height: 180px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
     }
     
     .what-i-do-item::before {
@@ -733,7 +699,7 @@ st.markdown("""
     }
     
     .what-i-do-item:hover {
-        transform: translateY(-10px) scale(1.02);
+        transform: translateY(-10px) scale(1.05);
         border-color: rgba(255,215,0,0.3);
         box-shadow: 0 10px 40px rgba(255,215,0,0.15);
         background: rgba(255,215,0,0.08);
@@ -744,7 +710,7 @@ st.markdown("""
     }
     
     .what-i-do-item .icon {
-        font-size: 2.8rem;
+        font-size: 2.5rem;
         display: block;
         animation: float 3s ease-in-out infinite;
         position: relative;
@@ -755,22 +721,20 @@ st.markdown("""
     .what-i-do-item .label {
         margin-top: 0.5rem;
         font-weight: 600;
-        color: rgba(255,255,255,0.95) !important;
+        color: rgba(255,255,255,0.9) !important;
         position: relative;
         z-index: 1;
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .what-i-do-item .description {
-        font-size: 0.9rem;
-        color: rgba(255,255,255,0.6) !important;
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.5) !important;
         margin-top: 0.3rem;
         position: relative;
         z-index: 1;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-        line-height: 1.4;
-        max-width: 90%;
     }
     
     @keyframes slideInUp {
@@ -779,8 +743,8 @@ st.markdown("""
     }
     
     .profile-image-container {
-        width: 150px;
-        height: 150px;
+        width: 130px;
+        height: 130px;
         border-radius: 50%;
         margin: 0 auto;
         overflow: hidden;
@@ -838,7 +802,7 @@ st.markdown("""
     .profile-card {
         text-align: center;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%) !important;
-        padding: 2rem 1.5rem !important;
+        padding: 1.8rem 1.2rem !important;
         border-radius: 20px !important;
         color: white !important;
         border: none !important;
@@ -847,6 +811,8 @@ st.markdown("""
         position: relative;
         overflow: hidden;
         animation: slideInRight 0.6s ease;
+        height: auto !important;
+        min-height: 380px !important;
     }
     
     .profile-card::before {
@@ -873,10 +839,13 @@ st.markdown("""
     
     .profile-card h3 {
         color: white !important;
+        font-size: 1.2rem !important;
+        margin-top: 0.8rem !important;
     }
     
     .profile-card p {
         color: rgba(255,255,255,0.9) !important;
+        font-size: 0.9rem !important;
     }
     
     .profile-card .profile-image-container {
@@ -895,9 +864,9 @@ st.markdown("""
         background: rgba(255,255,255,0.2) !important;
         color: white !important;
         border: 1px solid rgba(255,255,255,0.2) !important;
-        border-radius: 10px !important;
-        padding: 0.3rem 0.8rem !important;
-        font-size: 0.8rem !important;
+        border-radius: 8px !important;
+        padding: 0.2rem 0.6rem !important;
+        font-size: 0.75rem !important;
         font-weight: 500 !important;
         transition: all 0.3s ease !important;
         width: 100% !important;
@@ -911,46 +880,53 @@ st.markdown("""
     
     .profile-card strong {
         color: rgba(255,255,255,0.9) !important;
+        font-size: 0.85rem !important;
     }
     
     .profile-card hr {
         display: none !important;
     }
     
-    .profile-social-icons {
+    /* Social Icons inside profile card - NO DIV */
+    .social-icons-row {
         display: flex;
         justify-content: center;
-        gap: 0.8rem;
-        margin-top: 0.5rem;
+        gap: 0.6rem;
+        margin-top: 0.3rem;
         flex-wrap: wrap;
     }
     
-    .profile-social-icons a {
+    .social-icons-row a {
         color: white !important;
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         text-decoration: none;
         transition: all 0.4s ease;
         display: inline-block;
         background: rgba(255,255,255,0.1);
-        padding: 0.3rem 0.6rem;
-        border-radius: 10px;
+        padding: 0.2rem 0.5rem;
+        border-radius: 8px;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.05);
         animation: float 3s ease-in-out infinite;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
-    .profile-social-icons a:hover {
+    .social-icons-row a:hover {
         transform: scale(1.3) rotate(-10deg) translateY(-5px);
         background: rgba(255,215,0,0.25);
         box-shadow: 0 0 40px rgba(255,215,0,0.2);
         border-color: rgba(255,215,0,0.3);
     }
     
+    .social-icons-row a:nth-child(1) { animation-delay: 0s; }
+    .social-icons-row a:nth-child(2) { animation-delay: 0.5s; }
+    .social-icons-row a:nth-child(3) { animation-delay: 1s; }
+    .social-icons-row a:nth-child(4) { animation-delay: 1.5s; }
+    
     .download-btn {
         display: block;
         text-align: center;
-        padding: 0.8rem;
+        padding: 0.6rem;
         background: linear-gradient(135deg, #ffd700, #f093fb);
         color: white !important;
         border-radius: 25px;
@@ -960,10 +936,11 @@ st.markdown("""
         border: none;
         cursor: pointer;
         width: 100%;
-        margin-top: 0.5rem;
+        margin-top: 0.3rem;
         animation: pulse 2s infinite;
         box-shadow: 0 4px 25px rgba(255,215,0,0.3);
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        font-size: 0.9rem;
     }
     
     .download-btn:hover {
@@ -1216,6 +1193,9 @@ st.markdown("""
         .hero-subtitle { font-size: 1.2rem; }
         .copy-container { flex-wrap: wrap; }
         .what-i-do-item { padding: 1rem; }
+        .card { min-height: 300px !important; }
+        .profile-card { min-height: 300px !important; }
+        .profile-image-container { width: 100px; height: 100px; }
     }
     
     ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -1224,9 +1204,9 @@ st.markdown("""
     ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #f093fb, #ffd700); }
     
     .about-text {
-        font-size: 1.05rem;
+        font-size: 1rem;
         line-height: 1.8;
-        color: rgba(255,255,255,0.9) !important;
+        color: rgba(255,255,255,0.85) !important;
         white-space: pre-wrap;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
@@ -1271,14 +1251,14 @@ st.markdown("""
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        margin: 0.3rem 0;
+        margin: 0.2rem 0;
     }
     
     .copy-text {
         flex: 1;
-        padding: 0.3rem 0.5rem;
-        border-radius: 8px;
-        font-size: 0.9rem;
+        padding: 0.2rem 0.4rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
         word-break: break-all;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
@@ -1308,7 +1288,7 @@ st.markdown("""
     
     .stat-box {
         text-align: center;
-        padding: 1.5rem;
+        padding: 1.2rem;
         background: rgba(255,255,255,0.06);
         backdrop-filter: blur(20px);
         border-radius: 16px;
@@ -1325,7 +1305,7 @@ st.markdown("""
     }
     
     .stat-number {
-        font-size: 2.5rem;
+        font-size: 2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #ffd700, #f093fb);
         -webkit-background-clip: text;
@@ -1337,15 +1317,15 @@ st.markdown("""
     
     .stat-label {
         color: rgba(255,255,255,0.6) !important;
-        font-size: 0.9rem;
-        margin-top: 0.3rem;
+        font-size: 0.8rem;
+        margin-top: 0.2rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .timeline-item {
         border-left: 3px solid #ffd700;
-        padding-left: 1.5rem;
-        margin-bottom: 1.5rem;
+        padding-left: 1.2rem;
+        margin-bottom: 1rem;
         position: relative;
         animation: slideInRight 0.6s ease;
     }
@@ -1355,33 +1335,35 @@ st.markdown("""
         position: absolute;
         left: -0.7rem;
         color: #ffd700;
-        font-size: 1.2rem;
+        font-size: 1rem;
         animation: pulse 2s infinite;
     }
     
     .timeline-title {
         font-weight: 600;
         color: #ffd700 !important;
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .timeline-subtitle {
         color: #f093fb !important;
         font-weight: 500;
-        margin: 0.2rem 0;
+        margin: 0.1rem 0;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        font-size: 0.9rem;
     }
     
     .timeline-date {
         color: rgba(255,255,255,0.5) !important;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .timeline-item div {
         color: rgba(255,255,255,0.8) !important;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        font-size: 0.9rem;
     }
     
     .project-card {
@@ -1403,57 +1385,37 @@ st.markdown("""
     }
     
     .project-content {
-        padding: 1.5rem;
+        padding: 1.2rem;
     }
     
     .project-title {
         font-weight: 600;
         color: #ffd700 !important;
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+        margin-bottom: 0.3rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .project-description {
         color: rgba(255,255,255,0.7) !important;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         line-height: 1.5;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .project-tech {
-        margin-top: 1rem;
+        margin-top: 0.5rem;
     }
     
     .project-content a {
         color: #f093fb !important;
         transition: color 0.3s ease;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        font-size: 0.9rem;
     }
     
     .project-content a:hover {
         color: #ffd700 !important;
-    }
-    
-    .upload-section {
-        background: rgba(255,255,255,0.08);
-        backdrop-filter: blur(20px);
-        padding: 1rem;
-        border-radius: 20px;
-        border: 1px solid rgba(255,255,255,0.08);
-        margin-top: 1rem;
-    }
-    
-    .upload-section h4 {
-        color: #ffd700 !important;
-        font-size: 1rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .upload-section p {
-        color: rgba(255,255,255,0.5) !important;
-        font-size: 0.8rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -1582,7 +1544,7 @@ def show_settings():
 # ============ SIDEBAR WITH DOT MENU ============
 
 def show_sidebar():
-    # Dot menu button - always visible
+    # Dot menu button at top-left
     col1, col2, col3 = st.columns([1, 10, 1])
     with col1:
         if st.button("⦿⦿⦿", key="dot_menu", help="Toggle Sidebar"):
@@ -1618,9 +1580,10 @@ def show_sidebar():
                 <div class="sidebar-nav">
             """, unsafe_allow_html=True)
             
+            # Navigation items
             nav_items = [
                 {"key": "home", "icon": "🏠", "label": "Home"},
-                {"key": "about", "icon": "👤", "label": "About Me"},
+                {"key": "whatido", "icon": "💡", "label": "What I Do"},
                 {"key": "skills", "icon": "🛠️", "label": "Skills"},
                 {"key": "experience", "icon": "💼", "label": "Experience"},
                 {"key": "education", "icon": "🎓", "label": "Education"},
@@ -1652,151 +1615,119 @@ def show_sidebar():
                 </div>
             """, unsafe_allow_html=True)
 
-# ============ HOME PAGE ============
+# ============ PAGE FUNCTIONS ============
 
 def show_home_page():
-    # Create two columns with 65%-35% split
-    col1, col2 = st.columns([6.5, 3.5])
+    # About Me and Profile side by side - EQUAL HEIGHT
+    col1, col2 = st.columns([2, 1])
     
     with col1:
-        # ============ ABOUT ME SECTION ============
         st.markdown(f"""
-            <div class="card">
-                <div class="card-title" style="font-size: 1.5rem; font-weight: 700; color: #ffd700 !important;">📖 About Me</div>
-                <div class="about-text" style="font-size: 1.05rem; line-height: 1.8; color: rgba(255,255,255,0.9) !important;">
+            <div class="card" style="height: 100%; min-height: 380px;">
+                <div class="card-title">📖 About Me</div>
+                <div class="about-text">
                     {PERSONAL_INFO['bio']}
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        # ============ WHAT I DO SECTION ============
-        st.markdown("""
-            <div class="card">
-                <div class="card-title" style="font-size: 1.5rem; font-weight: 700; color: #ffd700 !important;">💡 What I Do</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 0.5rem;">
-                    <div class="what-i-do-item">
-                        <span class="icon" style="font-size: 2.8rem; display: block; animation: float 3s ease-in-out infinite;">💻</span>
-                        <p class="label" style="font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.95) !important; margin-top: 0.5rem;">Coding</p>
-                        <p class="description" style="font-size: 0.9rem; color: rgba(255,255,255,0.6) !important; margin-top: 0.3rem; line-height: 1.4;">Building efficient and scalable applications with Python and modern tools.</p>
-                    </div>
-                    <div class="what-i-do-item">
-                        <span class="icon" style="font-size: 2.8rem; display: block; animation: float 3s ease-in-out infinite 0.5s;">🤖</span>
-                        <p class="label" style="font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.95) !important; margin-top: 0.5rem;">AI</p>
-                        <p class="description" style="font-size: 0.9rem; color: rgba(255,255,255,0.6) !important; margin-top: 0.3rem; line-height: 1.4;">Exploring Artificial Intelligence and Machine Learning to solve real-world problems.</p>
-                    </div>
-                    <div class="what-i-do-item">
-                        <span class="icon" style="font-size: 2.8rem; display: block; animation: float 3s ease-in-out infinite 1s;">🎓</span>
-                        <p class="label" style="font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.95) !important; margin-top: 0.5rem;">Student</p>
-                        <p class="description" style="font-size: 0.9rem; color: rgba(255,255,255,0.6) !important; margin-top: 0.3rem; line-height: 1.4;">Continuously learning and improving my skills every day to grow as a developer.</p>
-                    </div>
-                    <div class="what-i-do-item">
-                        <span class="icon" style="font-size: 2.8rem; display: block; animation: float 3s ease-in-out infinite 1.5s;">📚</span>
-                        <p class="label" style="font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.95) !important; margin-top: 0.5rem;">Lifelong Learner</p>
-                        <p class="description" style="font-size: 0.9rem; color: rgba(255,255,255,0.6) !important; margin-top: 0.3rem; line-height: 1.4;">Always curious, always learning new technologies and staying up-to-date.</p>
-                    </div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
     
     with col2:
-        # ============ PROFILE SECTION ============
         st.markdown("""
-            <div class="card profile-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%) !important; padding: 2rem 1.5rem !important; border-radius: 20px !important; color: white !important; border: none !important; box-shadow: 0 15px 50px rgba(0,0,0,0.3) !important;">
-                <div class="card-title" style="font-size: 1.5rem; font-weight: 700; color: white !important; border-bottom: 2px solid rgba(255,255,255,0.2); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">👤 Profile</div>
+            <div class="card profile-card" style="height: 100%; min-height: 380px;">
+                <div class="card-title">👤 Profile</div>
         """, unsafe_allow_html=True)
         
-        # Profile Image
         img_base64 = get_profile_image_base64()
         if img_base64:
             st.markdown(f"""
-                <div class="profile-image-container" style="width: 150px; height: 150px; border-radius: 50%; margin: 0 auto; overflow: hidden; border: 4px solid rgba(255,255,255,0.6); box-shadow: 0 0 40px rgba(255,255,255,0.2);">
-                    <img src="data:image/png;base64,{img_base64}" alt="Profile Photo" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="profile-image-container">
+                    <img src="data:image/png;base64,{img_base64}" alt="Profile Photo">
                 </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown("""
-                <div class="profile-image-container" style="width: 150px; height: 150px; border-radius: 50%; margin: 0 auto; overflow: hidden; border: 4px solid rgba(255,255,255,0.6); box-shadow: 0 0 40px rgba(255,255,255,0.2);">
-                    <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=150&background=fff&color=667eea&bold=true" alt="Profile Photo" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="profile-image-container">
+                    <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=150&background=fff&color=667eea&bold=true" alt="Profile Photo">
                 </div>
             """, unsafe_allow_html=True)
         
-        # Name and Title
         st.markdown(f"""
-                <h3 style="margin-top: 1.2rem; color: white !important; font-size: 1.4rem; text-align: center; font-weight: 700;">{PERSONAL_INFO['name']}</h3>
-                <p style="text-align: center; opacity: 0.95; color: rgba(255,255,255,0.95) !important; font-size: 1rem; margin-top: 0.2rem; font-weight: 400;">{PERSONAL_INFO['title']}</p>
+                <h3 style="margin-top: 0.5rem;">{PERSONAL_INFO['name']}</h3>
+                <p style="opacity: 0.9; font-size: 0.85rem;">{PERSONAL_INFO['title']}</p>
                 
-                <hr style="border-color: rgba(255,255,255,0.15); margin: 1rem 0;">
-                
-                <div style="text-align: left;">
-                    <p style="margin-bottom: 0.3rem; color: rgba(255,255,255,0.9) !important; font-weight: 500;">📧 Email</p>
-                    <div class="copy-container" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem;">
-                        <span class="copy-text" style="flex: 1; padding: 0.3rem 0.5rem; border-radius: 8px; font-size: 0.9rem; background: rgba(255,255,255,0.15); color: white !important;">{PERSONAL_INFO['email']}</span>
+                <div style="text-align: left; margin-top: 0.3rem;">
+                    <p style="margin: 0.2rem 0;"><strong>📧 Email</strong></p>
+                    <div class="copy-container">
+                        <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white; font-size: 0.8rem;">{PERSONAL_INFO['email']}</span>
         """, unsafe_allow_html=True)
         
-        # Email Copy Button
         if st.button("📋 Copy", key="copy_email_home", use_container_width=True):
             st.session_state.copied_text = "Email copied to clipboard!"
-            st.rerun()
         
         st.markdown(f"""
                     </div>
-                    
-                    <p style="margin-bottom: 0.3rem; color: rgba(255,255,255,0.9) !important; font-weight: 500;">📱 Phone</p>
-                    <div class="copy-container" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem;">
-                        <span class="copy-text" style="flex: 1; padding: 0.3rem 0.5rem; border-radius: 8px; font-size: 0.9rem; background: rgba(255,255,255,0.15); color: white !important;">{PERSONAL_INFO['phone']}</span>
+                    <p style="margin: 0.2rem 0;"><strong>📱 Phone</strong></p>
+                    <div class="copy-container">
+                        <span class="copy-text" style="background: rgba(255,255,255,0.15); color: white; font-size: 0.8rem;">{PERSONAL_INFO['phone']}</span>
         """, unsafe_allow_html=True)
         
-        # Phone Copy Button
         if st.button("📋 Copy", key="copy_phone_home", use_container_width=True):
             st.session_state.copied_text = "Phone copied to clipboard!"
-            st.rerun()
         
         st.markdown(f"""
                     </div>
-                    
-                    <p style="margin-bottom: 0.3rem; color: rgba(255,255,255,0.9) !important; font-weight: 500;">📍 Location</p>
-                    <p style="margin: 0.2rem 0 0.8rem 0; color: rgba(255,255,255,0.85) !important;">{PERSONAL_INFO['location']}</p>
-                    
-                    <p style="margin-bottom: 0.3rem; color: rgba(255,255,255,0.9) !important; font-weight: 500;">🏫 School & Class</p>
-                    <p style="margin: 0.2rem 0 0.8rem 0; color: rgba(255,255,255,0.85) !important;">F.G. Public School<br>12th Grade (Pre-Engineering)</p>
+                    <p style="margin: 0.2rem 0;"><strong>📍 Location</strong></p>
+                    <p style="margin: 0 0 0.2rem 0; font-size: 0.85rem;">{PERSONAL_INFO['location']}</p>
+                    <p style="margin: 0.2rem 0;"><strong>🏫 School</strong></p>
+                    <p style="margin: 0 0 0.2rem 0; font-size: 0.85rem;">Sheikh Zayed Public School</p>
+                    <p style="margin: 0.2rem 0;"><strong>📚 Class</strong></p>
+                    <p style="margin: 0 0 0.2rem 0; font-size: 0.85rem;">10th Grade</p>
                 </div>
                 
-                <div style="margin-top: 1rem;">
-        """, unsafe_allow_html=True)
-        
-        # Download Resume Button
-        st.markdown(create_download_resume(), unsafe_allow_html=True)
-        
-        st.markdown("""
+                <!-- Social Icons - NO DIV, directly inline -->
+                <div style="display: flex; justify-content: center; gap: 0.6rem; margin-top: 0.3rem; flex-wrap: wrap;">
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub" style="color: white; font-size: 1.3rem; text-decoration: none; transition: all 0.4s ease; display: inline-block; background: rgba(255,255,255,0.1); padding: 0.2rem 0.5rem; border-radius: 8px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); animation: float 3s ease-in-out infinite;">🐙</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter" style="color: white; font-size: 1.3rem; text-decoration: none; transition: all 0.4s ease; display: inline-block; background: rgba(255,255,255,0.1); padding: 0.2rem 0.5rem; border-radius: 8px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); animation: float 3s ease-in-out infinite; animation-delay: 0.5s;">🐦</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram" style="color: white; font-size: 1.3rem; text-decoration: none; transition: all 0.4s ease; display: inline-block; background: rgba(255,255,255,0.1); padding: 0.2rem 0.5rem; border-radius: 8px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); animation: float 3s ease-in-out infinite; animation-delay: 1s;">📸</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" title="TikTok" style="color: white; font-size: 1.3rem; text-decoration: none; transition: all 0.4s ease; display: inline-block; background: rgba(255,255,255,0.1); padding: 0.2rem 0.5rem; border-radius: 8px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); animation: float 3s ease-in-out infinite; animation-delay: 1.5s;">🎵</a>
                 </div>
             </div>
         """, unsafe_allow_html=True)
         
-        # Show copy confirmation message
         if st.session_state.copied_text:
             st.success(st.session_state.copied_text)
             st.session_state.copied_text = ""
         
-        # ============ IMAGE UPLOAD SECTION ============
-        st.markdown("""
-            <div class="upload-section" style="background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); padding: 1rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); margin-top: 1rem;">
-                <h4 style="color: #ffd700 !important; font-size: 1rem; margin-bottom: 0.5rem;">📸 Upload Profile Image</h4>
-                <p style="color: rgba(255,255,255,0.5) !important; font-size: 0.8rem;">Image will be saved permanently</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        uploaded_file = st.file_uploader("Choose a profile image...", type=['jpg', 'jpeg', 'png'], key="permanent_uploader", label_visibility="collapsed")
-        if uploaded_file is not None:
-            current_img = get_profile_image_base64()
-            new_img = base64.b64encode(uploaded_file.read()).decode()
-            uploaded_file.seek(0)
-            
-            if current_img != new_img:
-                if save_image_permanently(uploaded_file):
-                    st.success("✅ Image uploaded permanently!")
-                    st.rerun()
+        st.markdown(create_download_resume(), unsafe_allow_html=True)
 
-# ============ OTHER PAGE FUNCTIONS ============
+def show_whatido_page():
+    st.markdown("""
+        <div class="card">
+            <div class="card-title">💡 What I Do</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="what-i-do-item">
+                    <span class="icon">💻</span>
+                    <p class="label">Coding</p>
+                    <p class="description">Building amazing applications</p>
+                </div>
+                <div class="what-i-do-item">
+                    <span class="icon">🤖</span>
+                    <p class="label">AI Enthusiast</p>
+                    <p class="description">Exploring Artificial Intelligence</p>
+                </div>
+                <div class="what-i-do-item">
+                    <span class="icon">📚</span>
+                    <p class="label">Student</p>
+                    <p class="description">Learning new technologies</p>
+                </div>
+                <div class="what-i-do-item">
+                    <span class="icon">🎯</span>
+                    <p class="label">Lifelong Learner</p>
+                    <p class="description">Continuous improvement</p>
+                </div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
 def show_about_page():
     st.markdown(f"""
@@ -1853,7 +1784,7 @@ def show_experience_page():
                 <div class="timeline-title">{exp['title']}</div>
                 <div class="timeline-subtitle">{exp['company']}</div>
                 <div class="timeline-date">📅 {exp['period']}</div>
-                <div style="margin-top: 0.8rem; white-space: pre-line;">
+                <div style="margin-top: 0.5rem; white-space: pre-line;">
                     {exp['description']}
                 </div>
             </div>
@@ -1867,10 +1798,10 @@ def show_education_page():
         with cols[idx % 2]:
             st.markdown(f"""
                 <div class="card" style="height: 100%;">
-                    <h4 style="color: #ffd700;">{edu['degree']}</h4>
-                    <p style="color: #f093fb; font-weight: 500;">{edu['institution']}</p>
-                    <p style="color: rgba(255,255,255,0.5);">📅 {edu['year']}</p>
-                    <p style="color: rgba(255,255,255,0.7);">🎯 GPA: {edu['gpa']}</p>
+                    <h4 style="color: #ffd700; font-size: 1rem;">{edu['degree']}</h4>
+                    <p style="color: #f093fb; font-weight: 500; font-size: 0.9rem;">{edu['institution']}</p>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">📅 {edu['year']}</p>
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">🎯 GPA: {edu['gpa']}</p>
                 </div>
             """, unsafe_allow_html=True)
     
@@ -1882,7 +1813,7 @@ def show_education_page():
             st.markdown(f"""
                 <div class="card" style="text-align: center; padding: 1rem;">
                     <span style="font-size: 1.5rem;">🏆</span>
-                    <p style="font-size: 0.9rem; margin-top: 0.5rem; color: rgba(255,255,255,0.8);">{cert}</p>
+                    <p style="font-size: 0.85rem; margin-top: 0.3rem; color: rgba(255,255,255,0.8);">{cert}</p>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -1895,7 +1826,7 @@ def show_projects_page():
             if i + j < len(PROJECTS):
                 project = PROJECTS[i + j]
                 with cols[j]:
-                    tech_tags = ' '.join(f'<span class="skill-tag" style="font-size: 0.8rem; margin: 0.1rem;">{tech}</span>' for tech in project['tech'])
+                    tech_tags = ' '.join(f'<span class="skill-tag" style="font-size: 0.7rem; margin: 0.1rem;">{tech}</span>' for tech in project['tech'])
                     demo_link = f'<a href="{project["demo"]}" target="_blank" style="color: #ffd700; text-decoration: none;">🔗 Live Demo</a>' if project['demo'] else ''
                     
                     st.markdown(f"""
@@ -1904,8 +1835,8 @@ def show_projects_page():
                                 <div class="project-title">{project['title']}</div>
                                 <div class="project-description">{project['description']}</div>
                                 <div class="project-tech">{tech_tags}</div>
-                                <div style="margin-top: 1rem;">
-                                    <a href="{project['github']}" target="_blank" style="color: #f093fb; text-decoration: none; margin-right: 1rem;">🐙 GitHub</a>
+                                <div style="margin-top: 0.5rem;">
+                                    <a href="{project['github']}" target="_blank" style="color: #f093fb; text-decoration: none; margin-right: 0.5rem;">🐙 GitHub</a>
                                     {demo_link}
                                 </div>
                             </div>
@@ -1919,10 +1850,10 @@ def show_achievements_page():
     for idx, achievement in enumerate(ACHIEVEMENTS):
         with cols[idx % 2]:
             st.markdown(f"""
-                <div class="card" style="padding: 1rem; display: flex; align-items: center;">
-                    <span style="font-size: 2rem; margin-right: 1rem;">🏅</span>
+                <div class="card" style="padding: 0.8rem; display: flex; align-items: center;">
+                    <span style="font-size: 1.5rem; margin-right: 0.8rem;">🏅</span>
                     <div>
-                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-weight: 500;">{achievement}</p>
+                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-weight: 500; font-size: 0.9rem;">{achievement}</p>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
@@ -1950,7 +1881,7 @@ def show_stats_page():
             """, unsafe_allow_html=True)
     
     st.markdown("---")
-    st.markdown('<h3 style="color: #ffd700;">💪 Key Highlights</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="color: #ffd700; font-size: 1.2rem;">💪 Key Highlights</h3>', unsafe_allow_html=True)
     
     highlights = [
         "🏆 Actively learning new technologies every day",
@@ -1962,9 +1893,9 @@ def show_stats_page():
     
     for highlight in highlights:
         st.markdown(f"""
-            <div style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center;">
+            <div style="padding: 0.3rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center;">
                 <span style="margin-right: 0.5rem;">✨</span>
-                <span style="color: rgba(255,255,255,0.8);">{highlight}</span>
+                <span style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">{highlight}</span>
             </div>
         """, unsafe_allow_html=True)
 
@@ -1977,14 +1908,14 @@ def show_contact_page():
         st.markdown(f"""
             <div class="card">
                 <h4 style="color: #ffd700;">Get in Touch</h4>
-                <p style="color: rgba(255,255,255,0.7);">
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">
                     I'm always open to learning opportunities, collaborations, or just a friendly chat. 
                     Feel free to reach out through any of the following channels:
                 </p>
-                <div style="margin-top: 0.5rem;">
-                    <p><strong style="color: rgba(255,255,255,0.8);">📧 Email:</strong></p>
+                <div style="margin-top: 0.3rem;">
+                    <p style="margin: 0.2rem 0;"><strong style="color: rgba(255,255,255,0.8);">📧 Email:</strong></p>
                     <div class="copy-container">
-                        <span class="copy-text" style="background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8);">{PERSONAL_INFO['email']}</span>
+                        <span class="copy-text" style="background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); font-size: 0.85rem;">{PERSONAL_INFO['email']}</span>
         """, unsafe_allow_html=True)
         
         if st.button("📋 Copy", key="copy_email_contact", use_container_width=True):
@@ -1992,9 +1923,9 @@ def show_contact_page():
         
         st.markdown(f"""
                     </div>
-                    <p><strong style="color: rgba(255,255,255,0.8);">📱 Phone:</strong></p>
+                    <p style="margin: 0.2rem 0;"><strong style="color: rgba(255,255,255,0.8);">📱 Phone:</strong></p>
                     <div class="copy-container">
-                        <span class="copy-text" style="background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8);">{PERSONAL_INFO['phone']}</span>
+                        <span class="copy-text" style="background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); font-size: 0.85rem;">{PERSONAL_INFO['phone']}</span>
         """, unsafe_allow_html=True)
         
         if st.button("📋 Copy", key="copy_phone_contact", use_container_width=True):
@@ -2002,18 +1933,18 @@ def show_contact_page():
         
         st.markdown(f"""
                     </div>
-                    <p><strong style="color: rgba(255,255,255,0.8);">📍 Location:</strong></p>
-                    <p style="margin: 0.2rem 0 0.5rem 0; color: rgba(255,255,255,0.7);">{PERSONAL_INFO['location']}</p>
+                    <p style="margin: 0.2rem 0;"><strong style="color: rgba(255,255,255,0.8);">📍 Location:</strong></p>
+                    <p style="margin: 0 0 0.3rem 0; color: rgba(255,255,255,0.7); font-size: 0.85rem;">{PERSONAL_INFO['location']}</p>
                 </div>
-                <div style="margin-top: 1rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" style="margin-right: 1rem; color: #f093fb; text-decoration: none;">🐙 GitHub</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" style="margin-right: 1rem; color: #f093fb; text-decoration: none;">🐦 Twitter</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" style="margin-right: 1rem; color: #f093fb; text-decoration: none;">📸 Instagram</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" style="color: #f093fb; text-decoration: none;">🎵 TikTok</a>
+                <div style="margin-top: 0.5rem;">
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" style="margin-right: 0.8rem; color: #f093fb; text-decoration: none; font-size: 0.9rem;">🐙 GitHub</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" style="margin-right: 0.8rem; color: #f093fb; text-decoration: none; font-size: 0.9rem;">🐦 Twitter</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" style="margin-right: 0.8rem; color: #f093fb; text-decoration: none; font-size: 0.9rem;">📸 Instagram</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" style="color: #f093fb; text-decoration: none; font-size: 0.9rem;">🎵 TikTok</a>
                 </div>
-                <hr style="margin: 1rem 0; border-color: rgba(255,255,255,0.1);">
+                <hr style="margin: 0.8rem 0; border-color: rgba(255,255,255,0.1);">
                 <div style="text-align: center;">
-                    <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem;">🕐 Always open to learn and collaborate</p>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">🕐 Always open to learn and collaborate</p>
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -2022,7 +1953,7 @@ def show_contact_page():
         st.markdown("""
             <div class="contact-form-card">
                 <h4 style="color: #ffd700;">📝 Send a Message</h4>
-                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">I'll get back to you within 24 hours</p>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem;">I'll get back to you within 24 hours</p>
             </div>
         """, unsafe_allow_html=True)
         
@@ -2030,7 +1961,7 @@ def show_contact_page():
             name = st.text_input("Your Name *", placeholder="Enter your full name")
             email = st.text_input("Your Email *", placeholder="Enter your email address")
             subject = st.text_input("Subject", placeholder="What's this about?")
-            message = st.text_area("Message *", placeholder="Write your message here...", height=150)
+            message = st.text_area("Message *", placeholder="Write your message here...", height=120)
             
             submit_button = st.form_submit_button("📨 Send Message", type="primary", use_container_width=True)
             
@@ -2068,10 +1999,10 @@ def main():
         
         page = st.session_state.page
         
-        # Hero Section - Fixed emoji display
+        # Hero Section
         st.markdown(f"""
             <div class="hero-section">
-                <div class="hero-title"><span class="emoji-text">👋</span> Hi, I'm {PERSONAL_INFO['name']}</div>
+                <div class="hero-title"><span class="emoji-text">👋</span> {PERSONAL_INFO['name']}</div>
                 <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
                 <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
                 <div style="margin-top: 1.5rem;">
@@ -2086,6 +2017,8 @@ def main():
         # Page routing
         if page == "home":
             show_home_page()
+        elif page == "whatido":
+            show_whatido_page()
         elif page == "about":
             show_about_page()
         elif page == "skills":
@@ -2110,18 +2043,18 @@ def main():
         # Footer
         st.markdown("---")
         st.markdown(f"""
-            <div style="text-align: center; color: rgba(255,255,255,0.3); padding: 2rem 0;">
-                <p style="font-size: 0.9rem;">
+            <div style="text-align: center; color: rgba(255,255,255,0.3); padding: 1.5rem 0;">
+                <p style="font-size: 0.85rem;">
                     © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ using Streamlit
                 </p>
-                <p style="font-size: 0.8rem; opacity: 0.7;">
+                <p style="font-size: 0.75rem; opacity: 0.7;">
                     Student | AI Enthusiast | Lifelong Learner
                 </p>
-                <div style="margin-top: 0.5rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" style="color: rgba(255,255,255,0.3); font-size: 1.5rem; margin: 0 0.5rem; text-decoration: none;">🐙</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" style="color: rgba(255,255,255,0.3); font-size: 1.5rem; margin: 0 0.5rem; text-decoration: none;">🐦</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" style="color: rgba(255,255,255,0.3); font-size: 1.5rem; margin: 0 0.5rem; text-decoration: none;">📸</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" style="color: rgba(255,255,255,0.3); font-size: 1.5rem; margin: 0 0.5rem; text-decoration: none;">🎵</a>
+                <div style="margin-top: 0.3rem;">
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" style="color: rgba(255,255,255,0.3); font-size: 1.2rem; margin: 0 0.4rem; text-decoration: none;">🐙</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" style="color: rgba(255,255,255,0.3); font-size: 1.2rem; margin: 0 0.4rem; text-decoration: none;">🐦</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" style="color: rgba(255,255,255,0.3); font-size: 1.2rem; margin: 0 0.4rem; text-decoration: none;">📸</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" style="color: rgba(255,255,255,0.3); font-size: 1.2rem; margin: 0 0.4rem; text-decoration: none;">🎵</a>
                 </div>
             </div>
         """, unsafe_allow_html=True)
