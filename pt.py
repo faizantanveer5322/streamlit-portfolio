@@ -11,6 +11,8 @@ import time
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from fpdf import FPDF
+import tempfile
 
 # Page configuration
 st.set_page_config(
