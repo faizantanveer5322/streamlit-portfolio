@@ -361,7 +361,7 @@ st.markdown("""
         display: none !important;
     }
     
-    /* Dot menu button */
+    /* Dot menu button - TOP LEFT */
     .dot-menu-btn {
         position: fixed;
         top: 12px;
@@ -383,6 +383,7 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         letter-spacing: 2px;
         line-height: 1;
+        font-weight: bold;
     }
     
     .dot-menu-btn:hover {
@@ -1551,7 +1552,7 @@ def show_settings():
 # ============ SIDEBAR WITH DOT MENU ============
 
 def show_sidebar():
-    # Dot menu button - always visible
+    # Dot menu button - TOP LEFT
     st.markdown("""
         <div class="dot-menu-btn" onclick="document.querySelector('[data-testid=\"stSidebar\"]').style.display='block'">
             ⦿⦿⦿
@@ -1594,7 +1595,7 @@ def show_sidebar():
                 <div class="sidebar-nav">
             """, unsafe_allow_html=True)
             
-            # Navigation items - Removed About Me, added What I Do
+            # Navigation items
             nav_items = [
                 {"key": "home", "icon": "🏠", "label": "Home"},
                 {"key": "whatido", "icon": "💡", "label": "What I Do"},
@@ -1632,12 +1633,12 @@ def show_sidebar():
 # ============ PAGE FUNCTIONS ============
 
 def show_home_page():
-    # About Me and Profile side by side - equal height
+    # About Me and Profile side by side - EQUAL HEIGHT
     col1, col2 = st.columns([2, 1])
     
     with col1:
         st.markdown(f"""
-            <div class="card" style="height: 100%;">
+            <div class="card" style="height: 100%; min-height: 500px;">
                 <div class="card-title">📖 About Me</div>
                 <div class="about-text">
                     {PERSONAL_INFO['bio']}
@@ -1647,7 +1648,7 @@ def show_home_page():
     
     with col2:
         st.markdown("""
-            <div class="card profile-card" style="height: 100%;">
+            <div class="card profile-card" style="height: 100%; min-height: 500px;">
                 <div class="card-title">👤 Profile</div>
         """, unsafe_allow_html=True)
         
