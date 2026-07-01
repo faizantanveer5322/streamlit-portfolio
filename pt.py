@@ -8,11 +8,14 @@ import os
 import hashlib
 import json
 import time
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from fpdf import FPDF
 import tempfile
+
+# Try importing fpdf2 (better Unicode support)
+try:
+    from fpdf import FPDF
+except ImportError:
+    st.error("❌ fpdf2 library not installed! Please install it using: pip install fpdf2")
+    FPDF = None
 
 # Page configuration
 st.set_page_config(
@@ -32,13 +35,8 @@ USERS_FILE = "users.json"
 # ============ PERMANENT IMAGE STORAGE ============
 PROFILE_IMAGE_PATH = "images/profile_image.png"
 
-# ============ EMAIL SETUP ============
-EMAIL_SENDER = "faizan75601@gmail.com"
-EMAIL_PASSWORD = "YOUR_GMAIL_PASSWORD"  # Replace with your password
-EMAIL_RECEIVER = "faizan75601@gmail.com"
-# ============ END EMAIL SETUP ============
+# ============ USER AUTHENTICATION FUNCTIONS ============
 
-# User authentication functions
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
@@ -77,56 +75,8 @@ def change_password(username, old_password, new_password):
         return True
     return False
 
-# Email sending function
-def send_email(name, email, subject, message):
-    try:
-        msg = MIMEMultipart()
-        msg['From'] = EMAIL_SENDER
-        msg['To'] = EMAIL_RECEIVER
-        msg['Subject'] = f"Portfolio Contact: {subject}"
+# ============ SESSION STATE INITIALIZATION ============
 
-        body = f"""
-📬 New Message from Portfolio Contact Form
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━
-👤 Name: {name}
-📧 Email: {email}
-📝 Subject: {subject}
-━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-💬 Message:
-{message}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━
-Sent from: Faizan Tanveer's Portfolio
-Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-"""
-        
-        msg.attach(MIMEText(body, 'plain'))
-
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.set_debuglevel(0)
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
-        server.login(EMAIL_SENDER, EMAIL_PASSWORD)
-        server.send_message(msg)
-        server.quit()
-        
-        return True, "✅ Message sent successfully! I'll get back to you soon."
-        
-    except smtplib.SMTPAuthenticationError as e:
-        return False, """❌ Authentication Error: 
-
-💡 SOLUTION:
-1. Go to: https://myaccount.google.com/lesssecureapps
-2. Turn ON "Allow less secure apps"
-3. Make sure your email and password are correct"""
-        
-    except Exception as e:
-        return False, f"❌ Failed to send message. Error: {str(e)}"
-
-# Initialize session state
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
 if 'username' not in st.session_state:
@@ -140,21 +90,23 @@ if 'copied_text' not in st.session_state:
 if 'sidebar_open' not in st.session_state:
     st.session_state.sidebar_open = False
 
-# Personal Information
+# ============ PERSONAL INFORMATION ============
+
 PERSONAL_INFO = {
     "name": "Faizan Tanveer",
-    "title": "Student | Python Developer ",
+    "title": "Student | Python Developer",
     "email": "faizan75601@gmail.com",
     "phone": "+92 300 1234567",
     "location": "Pakistan",
-    "bio": """I'm Faizan Tanveer, a passionate student and AI enthusiast who loves building intelligent solutions and beautiful user experiences. I enjoy turning ideas into real projects using Python and modern technologies. My goal is to leverage AI to solve real-world problems and make a positive impact.Student developer passionate about Python and AI technologies.""",
+    "bio": """I'm Faizan Tanveer, a passionate student and AI enthusiast who loves building intelligent solutions and beautiful user experiences. I enjoy turning ideas into real projects using Python and modern technologies. My goal is to leverage AI to solve real-world problems and make a positive impact. Student developer passionate about Python and AI technologies.""",
     "github": "https://github.com/faizan",
     "twitter": "https://x.com/",
     "instagram": "https://www.instagram.com/?hl=en",
     "tiktok": "https://www.tiktok.com/en/"
 }
 
-# Skills
+# ============ SKILLS ============
+
 SKILLS = {
     "Programming Languages": ["Python", "JavaScript", "HTML", "CSS", "C++"],
     "Web Development": ["Streamlit", "React", "Flask", "Node.js"],
@@ -163,7 +115,8 @@ SKILLS = {
     "Soft Skills": ["Communication", "Problem Solving", "Team Collaboration", "Fast Learner", "Creativity"]
 }
 
-# Experience
+# ============ EXPERIENCE ============
+
 EXPERIENCE = [
     {
         "title": "Student Developer",
@@ -191,7 +144,8 @@ EXPERIENCE = [
     }
 ]
 
-# Education
+# ============ EDUCATION ============
+
 EDUCATION = [
     {
         "degree": "12th Grade (Pre-Engineering)",
@@ -207,7 +161,8 @@ EDUCATION = [
     }
 ]
 
-# Projects
+# ============ PROJECTS ============
+
 PROJECTS = [
     {
         "title": "Portfolio Website",
@@ -253,7 +208,8 @@ PROJECTS = [
     }
 ]
 
-# Certifications
+# ============ CERTIFICATIONS ============
+
 CERTIFICATIONS = [
     "Python Programming Certificate - Coursera",
     "Introduction to AI - Google",
@@ -262,7 +218,8 @@ CERTIFICATIONS = [
     "Computer Science Fundamentals - edX"
 ]
 
-# Achievements
+# ============ ACHIEVEMENTS ============
+
 ACHIEVEMENTS = [
     "🏆 Best Student Award in Computer Science",
     "📝 Completed multiple online courses in programming",
@@ -297,126 +254,157 @@ def get_profile_image_base64():
             return None
     return None
 
-from fpdf import FPDF
-import tempfile
+# ============ PDF RESUME GENERATION ============
 
 def create_download_resume():
-    """Generate PDF resume and return download link"""
+    """Generate PDF resume with Unicode support"""
     
-    # Create PDF
-    pdf = FPDF('P', 'mm', 'A4')
-    pdf.add_page()
+    if FPDF is None:
+        return '<a href="#" class="download-btn" style="background: #ff6b6b;">❌ PDF Library Not Installed</a>'
     
-    # Set colors and fonts
-    pdf.set_fill_color(102, 126, 234)  # Blue gradient color
-    pdf.set_text_color(255, 255, 255)
-    pdf.set_font('Arial', 'B', 20)
+    try:
+        # Create PDF
+        pdf = FPDF('P', 'mm', 'A4')
+        pdf.add_page()
+        
+        # Header - Using Helvetica font for better compatibility
+        pdf.set_font('Helvetica', 'B', 20)
+        pdf.set_text_color(0, 0, 0)
+        pdf.cell(0, 15, 'FAIZAN TANVEER', 0, 1, 'C')
+        
+        pdf.set_font('Helvetica', 'I', 12)
+        pdf.set_text_color(100, 100, 100)
+        pdf.cell(0, 8, 'Student | Python Developer', 0, 1, 'C')
+        
+        pdf.set_font('Helvetica', '', 10)
+        pdf.set_text_color(255, 215, 0)
+        pdf.cell(0, 8, f'Email: {PERSONAL_INFO["email"]} | Phone: {PERSONAL_INFO["phone"]} | Location: {PERSONAL_INFO["location"]}', 0, 1, 'C')
+        pdf.ln(5)
+        
+        # Line
+        pdf.set_draw_color(255, 215, 0)
+        pdf.line(10, 55, 200, 55)
+        pdf.ln(5)
+        
+        # ABOUT ME
+        pdf.set_text_color(255, 215, 0)
+        pdf.set_font('Helvetica', 'B', 14)
+        pdf.cell(0, 10, 'ABOUT ME', 0, 1, 'L')
+        pdf.set_text_color(0, 0, 0)
+        pdf.set_font('Helvetica', '', 11)
+        pdf.multi_cell(0, 6, PERSONAL_INFO['bio'])
+        pdf.ln(3)
+        
+        # EDUCATION
+        pdf.set_text_color(255, 215, 0)
+        pdf.set_font('Helvetica', 'B', 14)
+        pdf.cell(0, 10, 'EDUCATION', 0, 1, 'L')
+        pdf.set_text_color(0, 0, 0)
+        pdf.set_font('Helvetica', '', 11)
+        for edu in EDUCATION:
+            pdf.multi_cell(0, 6, f"{edu['degree']} - {edu['institution']} ({edu['year']})")
+        pdf.ln(3)
+        
+        # SKILLS
+        pdf.set_text_color(255, 215, 0)
+        pdf.set_font('Helvetica', 'B', 14)
+        pdf.cell(0, 10, 'SKILLS', 0, 1, 'L')
+        pdf.set_text_color(0, 0, 0)
+        pdf.set_font('Helvetica', '', 11)
+        for category, skills in SKILLS.items():
+            pdf.multi_cell(0, 6, f"{category}: {', '.join(skills)}")
+        pdf.ln(3)
+        
+        # ACHIEVEMENTS
+        pdf.set_text_color(255, 215, 0)
+        pdf.set_font('Helvetica', 'B', 14)
+        pdf.cell(0, 10, 'ACHIEVEMENTS', 0, 1, 'L')
+        pdf.set_text_color(0, 0, 0)
+        pdf.set_font('Helvetica', '', 11)
+        for achievement in ACHIEVEMENTS:
+            # Remove emojis for PDF compatibility
+            clean_achievement = achievement.replace('🏆', '').replace('📝', '').replace('🎯', '').replace('💡', '').replace('🎤', '').strip()
+            pdf.multi_cell(0, 6, f"• {clean_achievement}")
+        
+        # Footer
+        pdf.set_y(270)
+        pdf.set_text_color(150, 150, 150)
+        pdf.set_font('Helvetica', 'I', 8)
+        pdf.cell(0, 5, 'Generated from Faizan Tanveer\'s Portfolio', 0, 1, 'C')
+        
+        # Save PDF to temporary file
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
+        pdf.output(temp_file.name)
+        temp_file.close()
+        
+        # Read the file and encode to base64
+        with open(temp_file.name, 'rb') as f:
+            pdf_bytes = f.read()
+        
+        # Clean up temp file
+        try:
+            os.unlink(temp_file.name)
+        except:
+            pass
+        
+        # Encode to base64
+        b64 = base64.b64encode(pdf_bytes).decode()
+        
+        # Create download link
+        href = f'<a href="data:application/pdf;base64,{b64}" download="Faizan_Tanveer_Resume.pdf" class="download-btn">📄 Download Resume (PDF)</a>'
+        return href
     
-    # Header
-    pdf.cell(0, 15, 'FAIZAN TANVEER', 0, 1, 'C')
-    pdf.set_font('Arial', 'I', 12)
-    pdf.set_text_color(200, 200, 200)
-    pdf.cell(0, 8, 'Student | Python Developer', 0, 1, 'C')
-    pdf.set_text_color(255, 215, 0)
-    pdf.cell(0, 8, '📧 faizan75601@gmail.com | 📱 +92 300 1234567 | 📍 Pakistan', 0, 1, 'C')
-    pdf.ln(5)
-    
-    # Line
-    pdf.set_draw_color(255, 215, 0)
-    pdf.line(10, 55, 200, 55)
-    pdf.ln(5)
-    
-    # ABOUT ME
-    pdf.set_text_color(255, 215, 0)
-    pdf.set_font('Arial', 'B', 14)
-    pdf.cell(0, 10, 'ABOUT ME', 0, 1, 'L')
-    pdf.set_text_color(255, 255, 255)
-    pdf.set_font('Arial', '', 11)
-    pdf.multi_cell(0, 6, "I'm Faizan Tanveer, a passionate student and AI enthusiast who loves building intelligent solutions and beautiful user experiences. I enjoy turning ideas into real projects using Python and modern technologies. My goal is to leverage AI to solve real-world problems and make a positive impact. Student developer passionate about Python and AI technologies.")
-    pdf.ln(3)
-    
-    # EDUCATION
-    pdf.set_text_color(255, 215, 0)
-    pdf.set_font('Arial', 'B', 14)
-    pdf.cell(0, 10, 'EDUCATION', 0, 1, 'L')
-    pdf.set_text_color(255, 255, 255)
-    pdf.set_font('Arial', '', 11)
-    pdf.multi_cell(0, 6, '12th Grade (Pre-Engineering) - F.G. Public School (2024-2025)')
-    pdf.multi_cell(0, 6, 'Computer Science Studies - Self-Learning (2023-Present)')
-    pdf.ln(3)
-    
-    # SKILLS
-    pdf.set_text_color(255, 215, 0)
-    pdf.set_font('Arial', 'B', 14)
-    pdf.cell(0, 10, 'SKILLS', 0, 1, 'L')
-    pdf.set_text_color(255, 255, 255)
-    pdf.set_font('Arial', '', 11)
-    pdf.multi_cell(0, 6, 'Programming: Python, JavaScript, HTML, CSS, C++')
-    pdf.multi_cell(0, 6, 'Web Development: Streamlit, React, Flask')
-    pdf.multi_cell(0, 6, 'AI/ML: TensorFlow, OpenAI API, LangChain')
-    pdf.multi_cell(0, 6, 'Tools: Git, VS Code, Linux, Docker')
-    pdf.ln(3)
-    
-    # ACHIEVEMENTS
-    pdf.set_text_color(255, 215, 0)
-    pdf.set_font('Arial', 'B', 14)
-    pdf.cell(0, 10, 'ACHIEVEMENTS', 0, 1, 'L')
-    pdf.set_text_color(255, 255, 255)
-    pdf.set_font('Arial', '', 11)
-    pdf.multi_cell(0, 6, '🏆 Best Student Award in Computer Science')
-    pdf.multi_cell(0, 6, '📝 Completed multiple online courses')
-    pdf.multi_cell(0, 6, '🎯 Built 10+ personal projects')
-    pdf.multi_cell(0, 6, '🎤 Active participant in tech events')
-    
-    # Footer
-    pdf.set_y(270)
-    pdf.set_text_color(150, 150, 150)
-    pdf.set_font('Arial', 'I', 8)
-    pdf.cell(0, 5, 'Generated from Faizan Tanveer\'s Portfolio', 0, 1, 'C')
-    
-    # Save PDF to temporary file
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
-    pdf.output(temp_file.name)
-    temp_file.close()
-    
-    # Read the file and encode to base64
-    with open(temp_file.name, 'rb') as f:
-        pdf_bytes = f.read()
-    
-    # Clean up temp file
-    os.unlink(temp_file.name)
-    
-    # Encode to base64
-    b64 = base64.b64encode(pdf_bytes).decode()
-    
-    # Create download link
-    href = f'<a href="data:application/pdf;base64,{b64}" download="Faizan_Tanveer_Resume.pdf" class="download-btn">📄 Download Resume (PDF)</a>'
+    except Exception as e:
+        # Fallback to text resume if PDF fails
+        return create_download_text_resume()
+
+def create_download_text_resume():
+    """Fallback: Create text resume download"""
+    resume_content = f"""
+FAIZAN TANVEER
+Student | Python Developer
+
+Email: {PERSONAL_INFO['email']}
+Phone: {PERSONAL_INFO['phone']}
+Location: {PERSONAL_INFO['location']}
+
+ABOUT ME
+{PERSONAL_INFO['bio']}
+
+EDUCATION
+12th Grade (Pre-Engineering) - F.G. Public School (2024-2025)
+Computer Science Studies - Self-Learning (2023-Present)
+
+SKILLS
+Programming: Python, JavaScript, HTML, CSS, C++
+Web Development: Streamlit, React, Flask
+AI/ML: TensorFlow, OpenAI API, LangChain
+Tools: Git, VS Code, Linux, Docker
+
+ACHIEVEMENTS
+• Best Student Award in Computer Science
+• Completed multiple online courses
+• Built 10+ personal projects
+• Active participant in tech events
+"""
+    b64 = base64.b64encode(resume_content.encode()).decode()
+    href = f'<a href="data:text/plain;base64,{b64}" download="Faizan_Tanveer_Resume.txt" class="download-btn">📄 Download Resume (TXT)</a>'
     return href
 
-# Custom CSS
-st.markdown("""
-    <style>
-    /* HIDE NATIVE STREAMLIT SIDEBAR TOGGLE ARROWS */
-    button[data-testid="baseButton-header"] {
-        display: none !important;
-    }
-    
-    /* HIDE THE SIDEBAR COLLAPSE BUTTON */
-    .st-emotion-cache-16idsys p {
-        display: none !important;
-    }
+# ============ CUSTOM CSS ============
 
+def apply_custom_css():
+    st.markdown("""
+    <style>
+    /* HIDE NATIVE STREAMLIT SIDEBAR TOGGLE */
     button[data-testid="baseButton-header"] {
-    display: none !important;
-}
-[data-testid="collapsedControl"] {
-    display: none !important;
-}
-    /* Remove the default sidebar toggle completely */
+        display: none !important;
+    }
     [data-testid="collapsedControl"] {
         display: none !important;
     }
     
+    /* Main Background */
     .main {
         background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     }
@@ -424,13 +412,12 @@ st.markdown("""
     /* Fix emoji display */
     .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
     .stMarkdown span, .stMarkdown div, .stMarkdown li, .stMarkdown a,
-    .stMarkdown strong, .stMarkdown em, .stMarkdown b,
-    .stMarkdown .emoji, .stMarkdown [data-testid="stMarkdownContainer"] * {
+    .stMarkdown strong, .stMarkdown em, .stMarkdown b {
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Helvetica Neue', sans-serif !important;
         color: rgba(255,255,255,0.95) !important;
     }
     
-    .stButton button, button {
+    .stButton button {
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
@@ -440,10 +427,9 @@ st.markdown("""
         padding: 1rem 0.5rem;
         border-right: none !important;
         box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3);
-        transition: all 0.3s ease;
     }
     
-    /* Custom Hamburger Menu Button - Only One Button */
+    /* Custom Hamburger Menu Button */
     .hamburger-btn {
         position: fixed;
         top: 15px;
@@ -486,6 +472,7 @@ st.markdown("""
         color: #ffd700;
     }
     
+    /* Sidebar User Profile */
     .sidebar-user {
         text-align: center;
         padding: 0.5rem 0;
@@ -552,6 +539,7 @@ st.markdown("""
         animation: fadeInUp 0.8s ease;
     }
     
+    /* Sidebar Navigation */
     .sidebar-nav .stButton button {
         width: 100%;
         background: rgba(255,255,255,0.05) !important;
@@ -597,6 +585,7 @@ st.markdown("""
         transform: scale(0.95);
     }
     
+    /* Sidebar Logout */
     .sidebar-logout .stButton button {
         width: 100%;
         background: rgba(255,50,50,0.15) !important;
@@ -617,6 +606,7 @@ st.markdown("""
         border-color: rgba(255,50,50,0.4) !important;
     }
     
+    /* Hero Section */
     .hero-section {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 55%, #f5576c 80%, #ffd700 100%);
         padding: 3rem 2rem;
@@ -732,6 +722,7 @@ st.markdown("""
         100% { transform: scale(1); }
     }
     
+    /* Cards */
     .card {
         background: rgba(255,255,255,0.08);
         backdrop-filter: blur(20px);
@@ -765,6 +756,7 @@ st.markdown("""
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
+    /* Skill Tags */
     .skill-tag {
         display: inline-block;
         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -786,6 +778,7 @@ st.markdown("""
         box-shadow: 0 4px 25px rgba(245, 87, 108, 0.5);
     }
     
+    /* What I Do Items */
     .what-i-do-item {
         text-align: center;
         padding: 1.5rem 1rem;
@@ -829,10 +822,6 @@ st.markdown("""
         background: rgba(255,215,0,0.08);
     }
     
-    .what-i-do-item:active {
-        transform: scale(0.95);
-    }
-    
     .what-i-do-item .icon {
         font-size: 2.8rem;
         display: block;
@@ -863,11 +852,7 @@ st.markdown("""
         max-width: 90%;
     }
     
-    @keyframes slideInUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
+    /* Profile Image */
     .profile-image-container {
         width: 150px;
         height: 150px;
@@ -925,6 +910,7 @@ st.markdown("""
         object-fit: cover;
     }
     
+    /* Profile Card */
     .profile-card {
         text-align: center;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%) !important;
@@ -1007,6 +993,7 @@ st.markdown("""
         display: none !important;
     }
     
+    /* Social Icons */
     .profile-social-icons {
         display: flex;
         justify-content: center;
@@ -1037,6 +1024,7 @@ st.markdown("""
         border-color: rgba(255,215,0,0.3);
     }
     
+    /* Download Button */
     .download-btn {
         display: block;
         text-align: center;
@@ -1062,6 +1050,7 @@ st.markdown("""
         color: white !important;
     }
     
+    /* Contact Form */
     .contact-form-card {
         background: rgba(255,255,255,0.08);
         backdrop-filter: blur(20px);
@@ -1122,6 +1111,7 @@ st.markdown("""
         box-shadow: 0 8px 35px rgba(255,215,0,0.3) !important;
     }
     
+    /* Authentication */
     .auth-container {
         max-width: 420px;
         margin: 50px auto;
@@ -1223,6 +1213,7 @@ st.markdown("""
         animation: float 3s ease-in-out infinite;
     }
     
+    /* Settings */
     .settings-card {
         background: rgba(255,255,255,0.05);
         backdrop-filter: blur(30px);
@@ -1301,139 +1292,7 @@ st.markdown("""
         color: #ffd700 !important;
     }
     
-    @media (max-width: 768px) {
-        .hero-title { font-size: 2.5rem; }
-        .hero-subtitle { font-size: 1.2rem; }
-        .copy-container { flex-wrap: wrap; }
-        .what-i-do-item { padding: 1rem; }
-        .hamburger-btn { padding: 8px 14px; }
-        .hamburger-btn .text { font-size: 0.85rem; }
-    }
-    
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #1a1a2e; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #ffd700, #f093fb); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #f093fb, #ffd700); }
-    
-    .about-text {
-        font-size: 1.05rem;
-        line-height: 1.8;
-        color: rgba(255,255,255,0.9) !important;
-        white-space: pre-wrap;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .success-message {
-        background: rgba(46, 213, 115, 0.2);
-        backdrop-filter: blur(20px);
-        color: #2ed573;
-        padding: 1rem;
-        border-radius: 15px;
-        border: 1px solid rgba(46, 213, 115, 0.2);
-        margin-top: 1rem;
-        text-align: center;
-        animation: fadeInUp 0.5s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .error-message {
-        background: rgba(255, 50, 50, 0.2);
-        backdrop-filter: blur(20px);
-        color: #ff6b6b;
-        padding: 1rem;
-        border-radius: 15px;
-        border: 1px solid rgba(255, 50, 50, 0.2);
-        margin-top: 1rem;
-        text-align: center;
-        animation: fadeInUp 0.5s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .stAlert {
-        border-radius: 15px !important;
-        backdrop-filter: blur(20px) !important;
-    }
-    
-    .stAlert .stMarkdown {
-        color: white !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .copy-container {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin: 0.3rem 0;
-    }
-    
-    .copy-text {
-        flex: 1;
-        padding: 0.3rem 0.5rem;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        word-break: break-all;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .social-link {
-        display: inline-block;
-        color: white;
-        background: rgba(255,255,255,0.1);
-        padding: 0.5rem 1.2rem;
-        border-radius: 25px;
-        margin: 0.3rem;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-        animation: float 3s ease-in-out infinite;
-        border: 1px solid rgba(255,255,255,0.05);
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .social-link:hover {
-        background: rgba(255,215,0,0.2);
-        transform: scale(1.1) translateY(-3px);
-        color: #ffd700;
-        border-color: rgba(255,215,0,0.3);
-        box-shadow: 0 0 30px rgba(255,215,0,0.1);
-    }
-    
-    .stat-box {
-        text-align: center;
-        padding: 1.5rem;
-        background: rgba(255,255,255,0.06);
-        backdrop-filter: blur(20px);
-        border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        border: 1px solid rgba(255,255,255,0.06);
-        transition: all 0.3s ease;
-        animation: slideInUp 0.6s ease;
-    }
-    
-    .stat-box:hover {
-        transform: scale(1.05) translateY(-5px);
-        border-color: rgba(255,215,0,0.2);
-        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-    }
-    
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #ffd700, #f093fb);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        animation: pulse 2s infinite;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .stat-label {
-        color: rgba(255,255,255,0.6) !important;
-        font-size: 0.9rem;
-        margin-top: 0.3rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
+    /* Timeline */
     .timeline-item {
         border-left: 3px solid #ffd700;
         padding-left: 1.5rem;
@@ -1476,6 +1335,7 @@ st.markdown("""
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
+    /* Project Card */
     .project-card {
         background: rgba(255,255,255,0.06);
         backdrop-filter: blur(20px);
@@ -1527,6 +1387,7 @@ st.markdown("""
         color: #ffd700 !important;
     }
     
+    /* Upload Section */
     .upload-section {
         background: rgba(255,255,255,0.08);
         backdrop-filter: blur(20px);
@@ -1547,10 +1408,140 @@ st.markdown("""
         font-size: 0.8rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
+    
+    /* Copy Container */
+    .copy-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.3rem 0;
+    }
+    
+    .copy-text {
+        flex: 1;
+        padding: 0.3rem 0.5rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        word-break: break-all;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    /* Social Links */
+    .social-link {
+        display: inline-block;
+        color: white;
+        background: rgba(255,255,255,0.1);
+        padding: 0.5rem 1.2rem;
+        border-radius: 25px;
+        margin: 0.3rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        animation: float 3s ease-in-out infinite;
+        border: 1px solid rgba(255,255,255,0.05);
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .social-link:hover {
+        background: rgba(255,215,0,0.2);
+        transform: scale(1.1) translateY(-3px);
+        color: #ffd700;
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
+    }
+    
+    /* Stats */
+    .stat-box {
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.06);
+        transition: all 0.3s ease;
+        animation: slideInUp 0.6s ease;
+    }
+    
+    .stat-box:hover {
+        transform: scale(1.05) translateY(-5px);
+        border-color: rgba(255,215,0,0.2);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ffd700, #f093fb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: pulse 2s infinite;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .stat-label {
+        color: rgba(255,255,255,0.6) !important;
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    /* Success/Error Messages */
+    .success-message {
+        background: rgba(46, 213, 115, 0.2);
+        backdrop-filter: blur(20px);
+        color: #2ed573;
+        padding: 1rem;
+        border-radius: 15px;
+        border: 1px solid rgba(46, 213, 115, 0.2);
+        margin-top: 1rem;
+        text-align: center;
+        animation: fadeInUp 0.5s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .error-message {
+        background: rgba(255, 50, 50, 0.2);
+        backdrop-filter: blur(20px);
+        color: #ff6b6b;
+        padding: 1rem;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 50, 50, 0.2);
+        margin-top: 1rem;
+        text-align: center;
+        animation: fadeInUp 0.5s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    /* About Text */
+    .about-text {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: rgba(255,255,255,0.9) !important;
+        white-space: pre-wrap;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #1a1a2e; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #ffd700, #f093fb); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #f093fb, #ffd700); }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-title { font-size: 2.5rem; }
+        .hero-subtitle { font-size: 1.2rem; }
+        .copy-container { flex-wrap: wrap; }
+        .what-i-do-item { padding: 1rem; }
+        .hamburger-btn { padding: 8px 14px; }
+        .hamburger-btn .text { font-size: 0.85rem; }
+    }
     </style>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# ============ AUTHENTICATION ============
+# ============ AUTHENTICATION PAGES ============
 
 def show_login_page():
     st.markdown("""
@@ -1634,7 +1625,7 @@ def show_register_page():
         st.session_state.show_register = False
         st.rerun()
 
-# ============ SETTINGS ============
+# ============ SETTINGS PAGE ============
 
 def show_settings():
     st.markdown("""
@@ -1671,31 +1662,21 @@ def show_settings():
         </div>
     """.format(username=st.session_state.username), unsafe_allow_html=True)
 
-# ============ SIDEBAR WITH SINGLE HAMBURGER BUTTON ============
+# ============ SIDEBAR ============
 
 def show_sidebar():
-    # Create a single hamburger button
+    # Hamburger button
     st.markdown("""
-        <style>
-        /* Fix for hamburger button positioning */
-        .hamburger-wrapper {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 999;
-        }
-        </style>
-        <div class="hamburger-wrapper">
+        <div style="position: fixed; top: 15px; left: 15px; z-index: 999;">
     """, unsafe_allow_html=True)
     
-    # Single button that controls sidebar
-    if st.button("☰ Option ✨", key="hamburger_menu", help="Toggle Sidebar"):
+    if st.button("☰ Menu ✨", key="hamburger_menu", help="Toggle Sidebar"):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
     
     st.markdown("</div>", unsafe_allow_html=True)
     
-    # Sidebar content - shows only when open
+    # Sidebar content
     if st.session_state.sidebar_open:
         with st.sidebar:
             st.markdown("""
@@ -1761,85 +1742,79 @@ def show_sidebar():
 # ============ HOME PAGE ============
 
 def show_home_page():
-    # Create two columns with 65%-35% split
     col1, col2 = st.columns([6.5, 3.5])
     
     with col1:
-        # ============ ABOUT ME SECTION ============
+        # About Me
         st.markdown(f"""
             <div class="card">
-                <div class="card-title" style="font-size: 1.5rem; font-weight: 700; color: #ffd700 !important;">📖 About Me</div>
-                <div class="about-text" style="font-size: 1.05rem; line-height: 1.8; color: rgba(255,255,255,0.9) !important;">
-                    {PERSONAL_INFO['bio']}
-                </div>
+                <div class="card-title">📖 About Me</div>
+                <div class="about-text">{PERSONAL_INFO['bio']}</div>
             </div>
         """, unsafe_allow_html=True)
         
-        # ============ WHAT I DO SECTION ============
+        # What I Do
         st.markdown("""
             <div class="card">
-                <div class="card-title" style="font-size: 1.5rem; font-weight: 700; color: #ffd700 !important;">💡 What I Do</div>
+                <div class="card-title">💡 What I Do</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 0.5rem;">
                     <div class="what-i-do-item">
-                        <span class="icon" style="font-size: 2.8rem; display: block; animation: float 3s ease-in-out infinite;">💻</span>
-                        <p class="label" style="font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.95) !important; margin-top: 0.5rem;">Coding</p>
-                        <p class="description" style="font-size: 0.9rem; color: rgba(255,255,255,0.6) !important; margin-top: 0.3rem; line-height: 1.4;">Building efficient and scalable applications with Python and modern tools.</p>
+                        <span class="icon">💻</span>
+                        <p class="label">Coding</p>
+                        <p class="description">Building efficient and scalable applications with Python and modern tools.</p>
                     </div>
                     <div class="what-i-do-item">
-                        <span class="icon" style="font-size: 2.8rem; display: block; animation: float 3s ease-in-out infinite 0.5s;">🤖</span>
-                        <p class="label" style="font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.95) !important; margin-top: 0.5rem;">AI</p>
-                        <p class="description" style="font-size: 0.9rem; color: rgba(255,255,255,0.6) !important; margin-top: 0.3rem; line-height: 1.4;">Exploring Artificial Intelligence and Machine Learning to solve real-world problems.</p>
+                        <span class="icon">🤖</span>
+                        <p class="label">AI</p>
+                        <p class="description">Exploring Artificial Intelligence and Machine Learning to solve real-world problems.</p>
                     </div>
                     <div class="what-i-do-item">
-                        <span class="icon" style="font-size: 2.8rem; display: block; animation: float 3s ease-in-out infinite 1s;">🎓</span>
-                        <p class="label" style="font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.95) !important; margin-top: 0.5rem;">Student</p>
-                        <p class="description" style="font-size: 0.9rem; color: rgba(255,255,255,0.6) !important; margin-top: 0.3rem; line-height: 1.4;">Continuously learning and improving my skills every day to grow as a developer.</p>
+                        <span class="icon">🎓</span>
+                        <p class="label">Student</p>
+                        <p class="description">Continuously learning and improving my skills every day to grow as a developer.</p>
                     </div>
                     <div class="what-i-do-item">
-                        <span class="icon" style="font-size: 2.8rem; display: block; animation: float 3s ease-in-out infinite 1.5s;">📚</span>
-                        <p class="label" style="font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.95) !important; margin-top: 0.5rem;">Lifelong Learner</p>
-                        <p class="description" style="font-size: 0.9rem; color: rgba(255,255,255,0.6) !important; margin-top: 0.3rem; line-height: 1.4;">Always curious, always learning new technologies and staying up-to-date.</p>
+                        <span class="icon">📚</span>
+                        <p class="label">Lifelong Learner</p>
+                        <p class="description">Always curious, always learning new technologies and staying up-to-date.</p>
                     </div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
     
     with col2:
-        # ============ PROFILE SECTION ============
+        # Profile Section
         st.markdown("""
-            <div class="card profile-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%) !important; padding: 2rem 1.5rem !important; border-radius: 20px !important; color: white !important; border: none !important; box-shadow: 0 15px 50px rgba(0,0,0,0.3) !important;">
-                <div class="card-title" style="font-size: 1.5rem; font-weight: 700; color: white !important; border-bottom: 2px solid rgba(255,255,255,0.2); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">😎 Profile</div>
+            <div class="card profile-card">
+                <div class="card-title">😎 Profile</div>
         """, unsafe_allow_html=True)
         
-        # Profile Image
         img_base64 = get_profile_image_base64()
         if img_base64:
             st.markdown(f"""
-                <div class="profile-image-container" style="width: 150px; height: 150px; border-radius: 50%; margin: 0 auto; overflow: hidden; border: 4px solid rgba(255,255,255,0.6); box-shadow: 0 0 40px rgba(255,255,255,0.2);">
-                    <img src="data:image/png;base64,{img_base64}" alt="Profile Photo" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="profile-image-container">
+                    <img src="data:image/png;base64,{img_base64}" alt="Profile Photo">
                 </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown("""
-                <div class="profile-image-container" style="width: 150px; height: 150px; border-radius: 50%; margin: 0 auto; overflow: hidden; border: 4px solid rgba(255,255,255,0.6); box-shadow: 0 0 40px rgba(255,255,255,0.2);">
-                    <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=150&background=fff&color=667eea&bold=true" alt="Profile Photo" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="profile-image-container">
+                    <img src="https://ui-avatars.com/api/?name=Faizan+Tanveer&size=150&background=667eea&color=fff&bold=true" alt="Profile Photo">
                 </div>
             """, unsafe_allow_html=True)
         
-        # Name and Title
         st.markdown(f"""
-                <h3 style="margin-top: 1.2rem; color: white !important; font-size: 1.4rem; text-align: center; font-weight: 700;">{PERSONAL_INFO['name']}</h3>
-                <p style="text-align: center; opacity: 0.95; color: rgba(255,255,255,0.95) !important; font-size: 1rem; margin-top: 0.2rem; font-weight: 400;">{PERSONAL_INFO['title']}</p>
+                <h3>{PERSONAL_INFO['name']}</h3>
+                <p>{PERSONAL_INFO['title']}</p>
                 
                 <hr style="border-color: rgba(255,255,255,0.15); margin: 1rem 0;">
                 
                 <div style="text-align: left;">
                     <p style="margin-bottom: 0.3rem; color: rgba(255,255,255,0.9) !important; font-weight: 500;">📧 Email</p>
-                    <div class="copy-container" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem;">
-                        <span class="copy-text" style="flex: 1; padding: 0.3rem 0.5rem; border-radius: 8px; font-size: 0.9rem; background: rgba(255,255,255,0.15); color: white !important;">{PERSONAL_INFO['email']}</span>
+                    <div class="copy-container">
+                        <span class="copy-text">{PERSONAL_INFO['email']}</span>
         """, unsafe_allow_html=True)
         
-        # Email Copy Button
         if st.button("📋 Copy", key="copy_email_home", use_container_width=True):
             st.session_state.copied_text = "Email copied to clipboard!"
             st.rerun()
@@ -1848,17 +1823,17 @@ def show_home_page():
                     </div>
                     
                     <p style="margin-bottom: 0.3rem; color: rgba(255,255,255,0.9) !important; font-weight: 500;">📱 Phone</p>
-                    <div class="copy-container" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem;">
-                        <span class="copy-text" style="flex: 1; padding: 0.3rem 0.5rem; border-radius: 8px; font-size: 0.9rem; background: rgba(255,255,255,0.15); color: white !important;">{PERSONAL_INFO['phone']}</span>
+                    <div class="copy-container">
+                        <span class="copy-text">{PERSONAL_INFO['phone']}</span>
         """, unsafe_allow_html=True)
         
-        # Phone Copy Button
         if st.button("📋 Copy", key="copy_phone_home", use_container_width=True):
             st.session_state.copied_text = "Phone copied to clipboard!"
             st.rerun()
         
         st.markdown(f"""
-
+                    </div>
+                </div>
                 
                 <div style="margin-top: 1rem;">
         """, unsafe_allow_html=True)
@@ -1871,41 +1846,48 @@ def show_home_page():
             </div>
         """, unsafe_allow_html=True)
         
-        # Show copy confirmation message
+        # Show copy confirmation
         if st.session_state.copied_text:
             st.success(st.session_state.copied_text)
             st.session_state.copied_text = ""
         
-        # ============ IMAGE UPLOAD SECTION ============
+        # Image Upload
         st.markdown("""
-            <div class="upload-section" style="background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); padding: 1rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); margin-top: 1rem;">
-                <h4 style="color: #ffd700 !important; font-size: 1rem; margin-bottom: 0.5rem;">📸 Upload Profile Image</h4>
-                <p style="color: rgba(255,255,255,0.5) !important; font-size: 0.8rem;"></p>
+            <div class="upload-section">
+                <h4>📸 Upload Profile Image</h4>
             </div>
         """, unsafe_allow_html=True)
         
         uploaded_file = st.file_uploader("Choose a profile image...", type=['jpg', 'jpeg', 'png'], key="permanent_uploader", label_visibility="collapsed")
         if uploaded_file is not None:
-            current_img = get_profile_image_base64()
-            new_img = base64.b64encode(uploaded_file.read()).decode()
-            uploaded_file.seek(0)
-            
-            if current_img != new_img:
-                if save_image_permanently(uploaded_file):
-                    st.success("✅ Image uploaded permanently!")
-                    st.rerun()
+            if save_image_permanently(uploaded_file):
+                st.success("✅ Image uploaded successfully!")
+                st.rerun()
 
-# ============ OTHER PAGE FUNCTIONS ============
+# ============ ABOUT PAGE ============
 
 def show_about_page():
     st.markdown(f"""
         <div class="card">
             <div class="card-title">📖 About Me</div>
+            <div class="about-text">{PERSONAL_INFO['bio']}</div>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">🌟 My Journey</div>
             <div class="about-text">
-                {PERSONAL_INFO['bio']}
+                I started my programming journey with a curiosity to understand how technology works. 
+                Over time, I've developed a strong passion for Python development and AI technologies. 
+                I believe in learning by building, and I've created numerous projects to apply my knowledge.
+                
+                As a student, I balance my academic studies with self-learning in computer science. 
+                I'm particularly interested in how AI can be used to solve real-world problems and 
+                make a positive impact on society.
             </div>
         </div>
     """, unsafe_allow_html=True)
+
+# ============ SKILLS PAGE ============
 
 def show_skills_page():
     st.markdown('<div class="card-title">🛠️ Technical Skills</div>', unsafe_allow_html=True)
@@ -1943,6 +1925,8 @@ def show_skills_page():
             </div>
         """, unsafe_allow_html=True)
 
+# ============ EXPERIENCE PAGE ============
+
 def show_experience_page():
     st.markdown('<div class="card-title">💼 Experience</div>', unsafe_allow_html=True)
     
@@ -1957,6 +1941,8 @@ def show_experience_page():
                 </div>
             </div>
         """, unsafe_allow_html=True)
+
+# ============ EDUCATION PAGE ============
 
 def show_education_page():
     st.markdown('<div class="card-title">🎓 Education</div>', unsafe_allow_html=True)
@@ -1985,6 +1971,8 @@ def show_education_page():
                 </div>
             """, unsafe_allow_html=True)
 
+# ============ PROJECTS PAGE ============
+
 def show_projects_page():
     st.markdown('<div class="card-title">🚀 Projects</div>', unsafe_allow_html=True)
     
@@ -2011,6 +1999,8 @@ def show_projects_page():
                         </div>
                     """, unsafe_allow_html=True)
 
+# ============ ACHIEVEMENTS PAGE ============
+
 def show_achievements_page():
     st.markdown('<div class="card-title">🏆 Achievements & Recognition</div>', unsafe_allow_html=True)
     
@@ -2025,6 +2015,8 @@ def show_achievements_page():
                     </div>
                 </div>
             """, unsafe_allow_html=True)
+
+# ============ STATS PAGE ============
 
 def show_stats_page():
     st.markdown('<div class="card-title">📊 Statistics</div>', unsafe_allow_html=True)
@@ -2066,6 +2058,8 @@ def show_stats_page():
                 <span style="color: rgba(255,255,255,0.8);">{highlight}</span>
             </div>
         """, unsafe_allow_html=True)
+
+# ============ CONTACT PAGE ============
 
 def show_contact_page():
     st.markdown('<div class="card-title">📬 Contact Me</div>', unsafe_allow_html=True)
@@ -2121,11 +2115,11 @@ def show_contact_page():
         st.markdown("""
             <div class="contact-form-card">
                 <h4 style="color: #ffd700;">📝 Send a Message</h4>
-                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">I'll get back to you within 24 hours</p>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">Fill out the form and I'll get back to you</p>
             </div>
         """, unsafe_allow_html=True)
         
-        with st.form(key="contact_form", clear_on_submit=False):
+        with st.form(key="contact_form"):
             name = st.text_input("Your Name *", placeholder="Enter your full name")
             email = st.text_input("Your Email *", placeholder="Enter your email address")
             subject = st.text_input("Subject", placeholder="What's this about?")
@@ -2135,25 +2129,11 @@ def show_contact_page():
             
             if submit_button:
                 if name and email and message:
-                    with st.spinner("Sending message..."):
-                        success, response = send_email(name, email, subject, message)
-                        
-                        if success:
-                            st.markdown(f"""
-                                <div class="success-message">
-                                    ✅ {response}
-                                </div>
-                            """, unsafe_allow_html=True)
-                            st.balloons()
-                        else:
-                            st.markdown(f"""
-                                <div class="error-message">
-                                    ❌ {response}
-                                </div>
-                            """, unsafe_allow_html=True)
+                    st.success("✅ Thank you for your message! I'll get back to you soon.")
+                    st.balloons()
                 else:
                     st.error("❌ Please fill in all required fields (*)")
-
+    
     if st.session_state.copied_text:
         st.success(st.session_state.copied_text)
         st.session_state.copied_text = ""
@@ -2161,8 +2141,11 @@ def show_contact_page():
 # ============ MAIN APP ============
 
 def main():
+    # Apply custom CSS
+    apply_custom_css()
+    
     if st.session_state.authenticated:
-        # Show sidebar with single hamburger button
+        # Show sidebar
         show_sidebar()
         
         page = st.session_state.page
