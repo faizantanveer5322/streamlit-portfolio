@@ -364,38 +364,71 @@ def create_download_resume():
         # If PDF fails, fallback to text
         return create_download_text_resume()
 
-def create_download_text_resume():
-    """Fallback: Create text resume download"""
-    resume_content = f"""FAIZAN TANVEER
-Student | Python Developer
+from weasyprint import HTML
 
-Email: {PERSONAL_INFO['email']}
-Phone: {PERSONAL_INFO['phone']}
-Location: {PERSONAL_INFO['location']}
-
-ABOUT ME
-{PERSONAL_INFO['bio']}
-
-EDUCATION
-12th Grade (Pre-Engineering) - F.G. Public School (2024-2025)
-Computer Science Studies - Self-Learning (2023-Present)
-
-SKILLS
-Programming: Python, JavaScript, HTML, CSS, C++
-Web Development: Streamlit, React, Flask
-AI/ML: TensorFlow, OpenAI API, LangChain
-Tools: Git, VS Code, Linux, Docker
-
-ACHIEVEMENTS
-• Best Student Award in Computer Science
-• Completed multiple online courses
-• Built 10+ personal projects
-• Active participant in tech events
-
-Generated: {datetime.now().strftime("%Y-%m-%d %H:%M")}
-"""
-    b64 = base64.b64encode(resume_content.encode()).decode()
-    return f'<a href="data:text/plain;base64,{b64}" download="Faizan_Tanveer_Resume.txt" class="download-btn">📄 Download Resume (TXT)</a>'
+def create_download_resume():
+    """Generate PDF using HTML to PDF"""
+    try:
+        html_content = f"""
+        <html>
+        <head>
+        <style>
+            body {{ font-family: Arial, sans-serif; padding: 40px; }}
+            h1 {{ color: #667eea; text-align: center; font-size: 28px; }}
+            .subtitle {{ text-align: center; color: #666; font-size: 14px; }}
+            .contact {{ text-align: center; color: #ffd700; font-size: 12px; }}
+            h2 {{ color: #ffd700; border-bottom: 2px solid #ffd700; padding-bottom: 5px; font-size: 18px; }}
+            ul {{ list-style-type: none; padding: 0; }}
+            li {{ padding: 3px 0; font-size: 12px; }}
+            .footer {{ text-align: center; color: #999; font-size: 10px; margin-top: 40px; }}
+        </style>
+        </head>
+        <body>
+            <h1>FAIZAN TANVEER</h1>
+            <p class="subtitle">Student | Python Developer</p>
+            <p class="contact">Email: {PERSONAL_INFO['email']} | Phone: {PERSONAL_INFO['phone']} | Location: {PERSONAL_INFO['location']}</p>
+            
+            <h2>ABOUT ME</h2>
+            <p>{PERSONAL_INFO['bio']}</p>
+            
+            <h2>EDUCATION</h2>
+            <ul>
+                <li>12th Grade (Pre-Engineering) - F.G. Public School (2024-2025)</li>
+                <li>Computer Science Studies - Self-Learning (2023-Present)</li>
+            </ul>
+            
+            <h2>SKILLS</h2>
+            <ul>
+                <li>Programming: Python, JavaScript, HTML, CSS, C++</li>
+                <li>Web Development: Streamlit, React, Flask</li>
+                <li>AI/ML: TensorFlow, OpenAI API, LangChain</li>
+                <li>Tools: Git, VS Code, Linux, Docker</li>
+            </ul>
+            
+            <h2>ACHIEVEMENTS</h2>
+            <ul>
+                <li>Best Student Award in Computer Science</li>
+                <li>Completed multiple online courses</li>
+                <li>Built 10+ personal projects</li>
+                <li>Active participant in tech events</li>
+            </ul>
+            
+            <p class="footer">Generated from Faizan Tanveer's Portfolio</p>
+        </body>
+        </html>
+        """
+        
+        # Generate PDF
+        pdf_bytes = HTML(string=html_content).write_pdf()
+        
+        # Encode to base64
+        b64 = base64.b64encode(pdf_bytes).decode()
+        
+        return f'<a href="data:application/pdf;base64,{b64}" download="Faizan_Tanveer_Resume.pdf" class="download-btn">📄 Download Resume (PDF)</a>'
+        
+    except Exception as e:
+        # Fallback to text
+        return create_download_text_resume()
 
 # ============ APPLY CUSTOM CSS ============
 
