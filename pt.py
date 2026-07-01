@@ -399,6 +399,8 @@ st.markdown("""
         border-right: none !important;
         box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3);
         transition: all 0.3s ease;
+        margin-top: 0 !important;
+        padding-top: 0.5rem !important;
     }
     
     .sidebar-user {
@@ -650,6 +652,8 @@ st.markdown("""
         transition: all 0.4s ease;
         border: 1px solid rgba(255,255,255,0.08);
         animation: slideInLeft 0.6s ease;
+        height: 100% !important;
+        min-height: 420px !important;
     }
     
     .card:hover {
@@ -838,6 +842,8 @@ st.markdown("""
         position: relative;
         overflow: hidden;
         animation: slideInRight 0.6s ease;
+        height: 100% !important;
+        min-height: 420px !important;
     }
     
     .profile-card::before {
@@ -908,7 +914,8 @@ st.markdown("""
         display: none !important;
     }
     
-    .profile-social-icons {
+    /* REMOVED DIV - Social icons directly without div */
+    .social-icons-container {
         display: flex;
         justify-content: center;
         gap: 0.8rem;
@@ -916,7 +923,7 @@ st.markdown("""
         flex-wrap: wrap;
     }
     
-    .profile-social-icons a {
+    .social-icons-container a {
         color: white !important;
         font-size: 1.5rem;
         text-decoration: none;
@@ -931,12 +938,17 @@ st.markdown("""
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
-    .profile-social-icons a:hover {
+    .social-icons-container a:hover {
         transform: scale(1.3) rotate(-10deg) translateY(-5px);
         background: rgba(255,215,0,0.25);
         box-shadow: 0 0 40px rgba(255,215,0,0.2);
         border-color: rgba(255,215,0,0.3);
     }
+    
+    .social-icons-container a:nth-child(1) { animation-delay: 0s; }
+    .social-icons-container a:nth-child(2) { animation-delay: 0.5s; }
+    .social-icons-container a:nth-child(3) { animation-delay: 1s; }
+    .social-icons-container a:nth-child(4) { animation-delay: 1.5s; }
     
     .download-btn {
         display: block;
@@ -1552,14 +1564,7 @@ def show_settings():
 # ============ SIDEBAR WITH DOT MENU ============
 
 def show_sidebar():
-    # Dot menu button - TOP LEFT
-    st.markdown("""
-        <div class="dot-menu-btn" onclick="document.querySelector('[data-testid=\"stSidebar\"]').style.display='block'">
-            ⦿⦿⦿
-        </div>
-    """, unsafe_allow_html=True)
-    
-    # Sidebar toggle using button
+    # Sidebar toggle using button at top-left
     col1, col2, col3 = st.columns([1, 10, 1])
     with col1:
         if st.button("⦿⦿⦿", key="dot_menu", help="Toggle Sidebar"):
@@ -1638,7 +1643,7 @@ def show_home_page():
     
     with col1:
         st.markdown(f"""
-            <div class="card" style="height: 100%; min-height: 500px;">
+            <div class="card" style="height: 100%; min-height: 420px;">
                 <div class="card-title">📖 About Me</div>
                 <div class="about-text">
                     {PERSONAL_INFO['bio']}
@@ -1648,7 +1653,7 @@ def show_home_page():
     
     with col2:
         st.markdown("""
-            <div class="card profile-card" style="height: 100%; min-height: 500px;">
+            <div class="card profile-card" style="height: 100%; min-height: 420px;">
                 <div class="card-title">👤 Profile</div>
         """, unsafe_allow_html=True)
         
@@ -1699,11 +1704,12 @@ def show_home_page():
                     <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
                 </div>
                 
-                <div class="profile-social-icons" style="margin-top: 0.5rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub">🐙</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter">🐦</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram">📸</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" title="TikTok">🎵</a>
+                <!-- Social Icons - NO DIV -->
+                <div style="display: flex; justify-content: center; gap: 0.8rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub" style="color: white; font-size: 1.5rem; text-decoration: none; transition: all 0.4s ease; display: inline-block; background: rgba(255,255,255,0.1); padding: 0.3rem 0.6rem; border-radius: 10px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); animation: float 3s ease-in-out infinite;">🐙</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter" style="color: white; font-size: 1.5rem; text-decoration: none; transition: all 0.4s ease; display: inline-block; background: rgba(255,255,255,0.1); padding: 0.3rem 0.6rem; border-radius: 10px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); animation: float 3s ease-in-out infinite; animation-delay: 0.5s;">🐦</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram" style="color: white; font-size: 1.5rem; text-decoration: none; transition: all 0.4s ease; display: inline-block; background: rgba(255,255,255,0.1); padding: 0.3rem 0.6rem; border-radius: 10px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); animation: float 3s ease-in-out infinite; animation-delay: 1s;">📸</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" title="TikTok" style="color: white; font-size: 1.5rem; text-decoration: none; transition: all 0.4s ease; display: inline-block; background: rgba(255,255,255,0.1); padding: 0.3rem 0.6rem; border-radius: 10px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); animation: float 3s ease-in-out infinite; animation-delay: 1.5s;">🎵</a>
                 </div>
             </div>
         """, unsafe_allow_html=True)
