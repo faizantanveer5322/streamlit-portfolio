@@ -339,7 +339,13 @@ st.markdown("""
     .st-emotion-cache-16idsys p {
         display: none !important;
     }
-    
+
+    button[data-testid="baseButton-header"] {
+    display: none !important;
+}
+[data-testid="collapsedControl"] {
+    display: none !important;
+}
     /* Remove the default sidebar toggle completely */
     [data-testid="collapsedControl"] {
         display: none !important;
