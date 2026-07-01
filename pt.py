@@ -20,7 +20,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Create images folder if it doesn't exist
+# Create images folder if it doesn't exist (auto-creates on GitHub too)
 if not os.path.exists("images"):
     os.makedirs("images")
 
@@ -28,15 +28,11 @@ if not os.path.exists("images"):
 USERS_FILE = "users.json"
 
 # ============ PERMANENT IMAGE STORAGE ============
-# The image is saved to disk permanently
 PROFILE_IMAGE_PATH = "images/profile_image.png"
 
-# ============ EMAIL SETUP - GMAIL ============
-# IMPORTANT: Enable "Less secure apps" at:
-# https://myaccount.google.com/lesssecureapps
-
+# ============ EMAIL SETUP ============
 EMAIL_SENDER = "faizan75601@gmail.com"
-EMAIL_PASSWORD = "YOUR_GMAIL_PASSWORD"  # Your Gmail password
+EMAIL_PASSWORD = "YOUR_GMAIL_PASSWORD"  # Replace with your password
 EMAIL_RECEIVER = "faizan75601@gmail.com"
 # ============ END EMAIL SETUP ============
 
@@ -281,19 +277,16 @@ ACHIEVEMENTS = [
     "🎤 Active participant in school tech events"
 ]
 
-# ============ IMAGE FUNCTIONS - PERMANENT STORAGE ============
+# ============ IMAGE FUNCTIONS ============
 
 def save_image_permanently(uploaded_file):
     """Save uploaded image permanently to disk"""
     if uploaded_file is not None:
         try:
             image = Image.open(uploaded_file)
-            # Convert to RGB if necessary
             if image.mode in ('RGBA', 'LA', 'P'):
                 image = image.convert('RGB')
-            # Resize for consistency
             image = image.resize((500, 500))
-            # Save permanently
             image.save(PROFILE_IMAGE_PATH, 'PNG', optimize=True)
             return True
         except Exception as e:
@@ -311,12 +304,6 @@ def get_profile_image_base64():
         except:
             return None
     return None
-
-def image_exists():
-    """Check if image exists permanently"""
-    return os.path.exists(PROFILE_IMAGE_PATH)
-
-# ============ END IMAGE FUNCTIONS ============
 
 def create_download_resume():
     resume_content = f"""
@@ -350,52 +337,22 @@ ACHIEVEMENTS
     href = f'<a href="data:text/plain;base64,{b64}" download="Faizan_Tanveer_Resume.txt" class="download-btn">📄 Download Resume</a>'
     return href
 
-# Custom CSS - FIXED EMOJI DISPLAY IN DARK MODE
+# Custom CSS
 st.markdown("""
     <style>
-    /* Global Styles */
     .main {
         background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     }
     
-    /* Fix emoji display - Force color for all emojis */
     .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
-    .stMarkdown span, .stMarkdown div, .stMarkdown li, .stMarkdown a,
-    .stMarkdown strong, .stMarkdown em, .stMarkdown b {
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Helvetica Neue', sans-serif !important;
-    }
-    
-    /* Force emoji colors in dark mode */
-    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
-    .stMarkdown p, .stMarkdown span, .stMarkdown div {
-        color: rgba(255,255,255,0.95) !important;
-    }
-    
-    /* Hero title emoji fix */
-    .hero-title {
-        font-size: 4rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        text-shadow: 0 0 40px rgba(0,0,0,0.3);
-        animation: fadeInDown 1s ease;
-        background: linear-gradient(to right, #fff, #ffd700);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+    .stMarkdown span, .stMarkdown div, .stMarkdown li, .stMarkdown a {
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
-    }
-    
-    .hero-title .emoji {
-        -webkit-text-fill-color: initial !important;
-        color: #fff !important;
     }
     
     .stButton button, button {
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-        color: white !important;
     }
     
-    /* Sidebar Styling */
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #1a0533 100%) !important;
         padding: 1rem 0.5rem;
@@ -524,22 +481,6 @@ st.markdown("""
         transform: scale(0.95);
     }
     
-    .sidebar-nav .stButton button:nth-child(1) { animation-delay: 0.05s; }
-    .sidebar-nav .stButton button:nth-child(2) { animation-delay: 0.1s; }
-    .sidebar-nav .stButton button:nth-child(3) { animation-delay: 0.15s; }
-    .sidebar-nav .stButton button:nth-child(4) { animation-delay: 0.2s; }
-    .sidebar-nav .stButton button:nth-child(5) { animation-delay: 0.25s; }
-    .sidebar-nav .stButton button:nth-child(6) { animation-delay: 0.3s; }
-    .sidebar-nav .stButton button:nth-child(7) { animation-delay: 0.35s; }
-    .sidebar-nav .stButton button:nth-child(8) { animation-delay: 0.4s; }
-    .sidebar-nav .stButton button:nth-child(9) { animation-delay: 0.45s; }
-    .sidebar-nav .stButton button:nth-child(10) { animation-delay: 0.5s; }
-    
-    @keyframes slideInLeft {
-        from { opacity: 0; transform: translateX(-30px); }
-        to { opacity: 1; transform: translateX(0); }
-    }
-    
     .sidebar-logout .stButton button {
         width: 100%;
         background: rgba(255,50,50,0.15) !important;
@@ -560,7 +501,6 @@ st.markdown("""
         border-color: rgba(255,50,50,0.4) !important;
     }
     
-    /* Hero Section */
     .hero-section {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 55%, #f5576c 80%, #ffd700 100%);
         padding: 3rem 2rem;
@@ -618,7 +558,7 @@ st.markdown("""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }
     
     .hero-subtitle {
@@ -670,7 +610,6 @@ st.markdown("""
         100% { transform: scale(1); }
     }
     
-    /* Cards */
     .card {
         background: rgba(255,255,255,0.08);
         backdrop-filter: blur(20px);
@@ -968,11 +907,6 @@ st.markdown("""
         box-shadow: 0 0 40px rgba(255,215,0,0.2);
         border-color: rgba(255,215,0,0.3);
     }
-    
-    .profile-social-icons a:nth-child(1) { animation-delay: 0s; }
-    .profile-social-icons a:nth-child(2) { animation-delay: 0.5s; }
-    .profile-social-icons a:nth-child(3) { animation-delay: 1s; }
-    .profile-social-icons a:nth-child(4) { animation-delay: 1.5s; }
     
     .download-btn {
         display: block;
@@ -1461,6 +1395,26 @@ st.markdown("""
     .project-content a:hover {
         color: #ffd700 !important;
     }
+    
+    .upload-section {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(20px);
+        padding: 1.5rem;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.08);
+        margin-top: 1rem;
+    }
+    
+    .upload-section h4 {
+        color: #ffd700 !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .upload-section p {
+        color: rgba(255,255,255,0.5) !important;
+        font-size: 0.85rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -1593,7 +1547,6 @@ def show_sidebar():
             <div class="sidebar-user">
         """, unsafe_allow_html=True)
         
-        # Display profile image from permanent storage
         img_base64 = get_profile_image_base64()
         if img_base64:
             st.markdown(f"""
@@ -1616,7 +1569,6 @@ def show_sidebar():
             <div class="sidebar-nav">
         """, unsafe_allow_html=True)
         
-        # Navigation items
         nav_items = [
             {"key": "home", "icon": "🏠", "label": "Home"},
             {"key": "about", "icon": "👤", "label": "About Me"},
@@ -1654,8 +1606,6 @@ def show_sidebar():
 # ============ PAGE FUNCTIONS ============
 
 def show_home_page():
-    """Display Home page with About Me and Profile side by side"""
-    
     col1, col2 = st.columns([2, 1])
     
     with col1:
@@ -1702,7 +1652,6 @@ def show_home_page():
                 <div class="card-title">👤 Profile</div>
         """, unsafe_allow_html=True)
         
-        # Display profile image from permanent storage
         img_base64 = get_profile_image_base64()
         if img_base64:
             st.markdown(f"""
@@ -1765,19 +1714,26 @@ def show_home_page():
         
         st.markdown(create_download_resume(), unsafe_allow_html=True)
         
-        # Image Upload Section - Upload to permanent storage
+        # Image Upload Section - NO RERUN to prevent blinking
         st.markdown("""
-            <div class="upload-section" style="background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); margin-top: 1rem;">
-                <h4 style="color: #ffd700;">📸 Upload Profile Image</h4>
-                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">Image will be saved permanently</p>
+            <div class="upload-section">
+                <h4>📸 Upload Profile Image</h4>
+                <p>Image will be saved permanently</p>
             </div>
         """, unsafe_allow_html=True)
         
         uploaded_file = st.file_uploader("Choose a profile image...", type=['jpg', 'jpeg', 'png'], key="permanent_uploader")
         if uploaded_file is not None:
-            if save_image_permanently(uploaded_file):
-                st.success("✅ Image uploaded permanently!")
-                st.rerun()
+            # Check if image is already saved to avoid re-saving
+            current_img = get_profile_image_base64()
+            new_img = base64.b64encode(uploaded_file.read()).decode()
+            uploaded_file.seek(0)  # Reset file pointer
+            
+            # Only save if it's a new image
+            if current_img != new_img:
+                if save_image_permanently(uploaded_file):
+                    st.success("✅ Image uploaded permanently!")
+                    # No st.rerun() - prevents blinking
 
 def show_about_page():
     st.markdown(f"""
@@ -2048,10 +2004,10 @@ def main():
         
         page = st.session_state.page
         
-        # Hero Section with fixed emoji display
+        # Hero Section
         st.markdown(f"""
             <div class="hero-section">
-                <div class="hero-title"><span class="emoji">👋</span> {PERSONAL_INFO['name']}</div>
+                <div class="hero-title">👋 {PERSONAL_INFO['name']}</div>
                 <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
                 <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
                 <div style="margin-top: 1.5rem;">
