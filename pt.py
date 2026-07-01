@@ -15,7 +15,7 @@ from email.mime.multipart import MIMEMultipart
 # Page configuration
 st.set_page_config(
     page_title="Faizan Tanveer | Portfolio",
-    page_icon="💻",
+    page_icon="👨‍💻",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -27,16 +27,18 @@ if not os.path.exists("images"):
 # Create users file if it doesn't exist
 USERS_FILE = "users.json"
 
-# Get the path for profile image
+# ============ PERMANENT IMAGE STORAGE ============
+# The image is saved to disk permanently
 PROFILE_IMAGE_PATH = "images/profile_image.png"
-PROFILE_IMAGE_PATH_JPG = "images/profile_image.jpg"
 
-
+# ============ EMAIL SETUP - GMAIL ============
+# IMPORTANT: Enable "Less secure apps" at:
+# https://myaccount.google.com/lesssecureapps
 
 EMAIL_SENDER = "faizan75601@gmail.com"
-EMAIL_PASSWORD = "YOUR_APP_PASSWORD_HERE"  # Replace with your App Password
+EMAIL_PASSWORD = "YOUR_GMAIL_PASSWORD"  # Your Gmail password
 EMAIL_RECEIVER = "faizan75601@gmail.com"
-
+# ============ END EMAIL SETUP ============
 
 # User authentication functions
 def hash_password(password):
@@ -77,16 +79,14 @@ def change_password(username, old_password, new_password):
         return True
     return False
 
-# Email sending function - FIXED
+# Email sending function
 def send_email(name, email, subject, message):
     try:
-        # Create message
         msg = MIMEMultipart()
         msg['From'] = EMAIL_SENDER
         msg['To'] = EMAIL_RECEIVER
         msg['Subject'] = f"Portfolio Contact: {subject}"
 
-        # Email body
         body = f"""
 📬 New Message from Portfolio Contact Form
 
@@ -106,7 +106,6 @@ Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
         
         msg.attach(MIMEText(body, 'plain'))
 
-        # Send email using Gmail SMTP
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.set_debuglevel(0)
         server.ehlo()
@@ -119,17 +118,13 @@ Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
         return True, "✅ Message sent successfully! I'll get back to you soon."
         
     except smtplib.SMTPAuthenticationError as e:
-        return False, """❌ Authentication Error: Please check your email credentials.
+        return False, """❌ Authentication Error: 
+
+💡 SOLUTION:
+1. Go to: https://myaccount.google.com/lesssecureapps
+2. Turn ON "Allow less secure apps"
+3. Make sure your email and password are correct"""
         
-💡 Solution:
-1. Go to https://myaccount.google.com/apppasswords
-2. Enable 2-Step Verification first
-3. Generate an App Password for "Mail" and "Other"
-4. Copy the 16-character password
-5. Replace EMAIL_PASSWORD in the code with this password"""
-        
-    except smtplib.SMTPException as e:
-        return False, f"❌ SMTP Error: {str(e)}"
     except Exception as e:
         return False, f"❌ Failed to send message. Error: {str(e)}"
 
@@ -145,1113 +140,11 @@ if 'page' not in st.session_state:
 if 'copied_text' not in st.session_state:
     st.session_state.copied_text = ""
 
-# Custom CSS with emoji support
-st.markdown("""
-    <style>
-    /* Global Styles */
-    .main {
-        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-    }
-    
-    /* Fix emoji display */
-    .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
-    .stMarkdown span, .stMarkdown div, .stMarkdown li, .stMarkdown a {
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Helvetica Neue', sans-serif !important;
-    }
-    
-    /* Ensure emojis show in buttons */
-    .stButton button, button, .st-emotion-cache-1y4p8pa {
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
-    }
-    
-    /* Sidebar Styling */
-    section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #1a0533 100%) !important;
-        padding: 1rem 0.5rem;
-        border-right: none !important;
-        box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3);
-        animation: sidebarGlow 4s ease-in-out infinite;
-    }
-    
-    @keyframes sidebarGlow {
-        0%, 100% { box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3); }
-        50% { box-shadow: 4px 0 50px rgba(200, 100, 255, 0.5); }
-    }
-    
-    section[data-testid="stSidebar"] .stMarkdown {
-        color: white !important;
-    }
-    
-    /* Sidebar user info */
-    .sidebar-user {
-        text-align: center;
-        padding: 0.5rem 0;
-        animation: userSlideIn 0.8s ease;
-    }
-    
-    @keyframes userSlideIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .sidebar-user .avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        margin: 0 auto;
-        overflow: hidden;
-        border: 3px solid rgba(255, 215, 0, 0.6);
-        box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
-        background: rgba(255,255,255,0.1);
-        animation: avatarPulse 3s ease-in-out infinite;
-        transition: all 0.4s ease;
-    }
-    
-    .sidebar-user .avatar:hover {
-        transform: scale(1.15) rotate(10deg);
-        border-color: #ffd700;
-        box-shadow: 0 0 60px rgba(255, 215, 0, 0.6);
-    }
-    
-    @keyframes avatarPulse {
-        0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); transform: scale(1); }
-        50% { box-shadow: 0 0 60px rgba(255, 215, 0, 0.5); transform: scale(1.05); }
-    }
-    
-    .sidebar-user .avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    .sidebar-user h3 {
-        color: #ffd700 !important;
-        margin-top: 0.5rem;
-        margin-bottom: 0.2rem;
-        font-size: 1.1rem;
-        text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-        animation: textGlow 3s ease-in-out infinite;
-        background: linear-gradient(to right, #ffd700, #f093fb);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-    
-    @keyframes textGlow {
-        0%, 100% { text-shadow: 0 0 20px rgba(255,215,0,0.2); }
-        50% { text-shadow: 0 0 50px rgba(255,215,0,0.5); }
-    }
-    
-    .sidebar-user p {
-        color: rgba(255,255,255,0.7) !important;
-        font-size: 0.8rem;
-        margin: 0;
-        animation: fadeInUp 0.8s ease;
-    }
-    
-    /* Sidebar navigation */
-    .sidebar-nav .stButton button {
-        width: 100%;
-        background: rgba(255,255,255,0.05) !important;
-        color: rgba(255,255,255,0.8) !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
-        border-radius: 12px !important;
-        padding: 0.6rem 1rem !important;
-        margin: 0.15rem 0 !important;
-        text-align: left !important;
-        font-weight: 500 !important;
-        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
-        backdrop-filter: blur(10px);
-        animation: slideInLeft 0.5s ease both;
-        position: relative;
-        overflow: hidden;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .sidebar-nav .stButton button::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent);
-        transition: left 0.6s ease;
-    }
-    
-    .sidebar-nav .stButton button:hover::before {
-        left: 100%;
-    }
-    
-    .sidebar-nav .stButton button:hover {
-        background: rgba(255,215,0,0.15) !important;
-        color: #ffd700 !important;
-        transform: translateX(10px) scale(1.03);
-        border-color: rgba(255,215,0,0.3) !important;
-        box-shadow: 0 0 40px rgba(255,215,0,0.15);
-    }
-    
-    .sidebar-nav .stButton button:active {
-        transform: scale(0.95);
-    }
-    
-    .sidebar-nav .stButton button:nth-child(1) { animation-delay: 0.05s; }
-    .sidebar-nav .stButton button:nth-child(2) { animation-delay: 0.1s; }
-    .sidebar-nav .stButton button:nth-child(3) { animation-delay: 0.15s; }
-    .sidebar-nav .stButton button:nth-child(4) { animation-delay: 0.2s; }
-    .sidebar-nav .stButton button:nth-child(5) { animation-delay: 0.25s; }
-    .sidebar-nav .stButton button:nth-child(6) { animation-delay: 0.3s; }
-    .sidebar-nav .stButton button:nth-child(7) { animation-delay: 0.35s; }
-    .sidebar-nav .stButton button:nth-child(8) { animation-delay: 0.4s; }
-    .sidebar-nav .stButton button:nth-child(9) { animation-delay: 0.45s; }
-    .sidebar-nav .stButton button:nth-child(10) { animation-delay: 0.5s; }
-    
-    @keyframes slideInLeft {
-        from { opacity: 0; transform: translateX(-30px); }
-        to { opacity: 1; transform: translateX(0); }
-    }
-    
-    /* Sidebar logout */
-    .sidebar-logout .stButton button {
-        width: 100%;
-        background: rgba(255,50,50,0.15) !important;
-        color: #ff6b6b !important;
-        border: 1px solid rgba(255,50,50,0.2) !important;
-        border-radius: 12px !important;
-        padding: 0.6rem !important;
-        font-weight: 500 !important;
-        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
-        backdrop-filter: blur(10px);
-        animation: slideInLeft 0.6s ease 0.55s both;
-    }
-    
-    .sidebar-logout .stButton button:hover {
-        background: rgba(255,50,50,0.25) !important;
-        transform: scale(1.05) translateX(5px);
-        box-shadow: 0 0 40px rgba(255,50,50,0.3);
-        border-color: rgba(255,50,50,0.4) !important;
-    }
-    
-    /* Hero Section */
-    .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 55%, #f5576c 80%, #ffd700 100%);
-        padding: 3rem 2rem;
-        border-radius: 20px;
-        margin-bottom: 2rem;
-        color: white;
-        text-align: center;
-        box-shadow: 0 10px 50px rgba(0,0,0,0.4);
-        animation: heroFadeIn 0.8s ease;
-        position: relative;
-        overflow: hidden;
-        background-size: 300% 300%;
-        animation: gradientShift 6s ease infinite;
-    }
-    
-    @keyframes gradientShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-    
-    .hero-section::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: rotateGradient 20s linear infinite;
-    }
-    
-    @keyframes heroFadeIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes rotateGradient {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    .hero-section * {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .hero-title {
-        font-size: 4rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        text-shadow: 0 0 40px rgba(0,0,0,0.3);
-        animation: fadeInDown 1s ease;
-        background: linear-gradient(to right, #fff, #ffd700);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .hero-subtitle {
-        font-size: 1.5rem;
-        opacity: 0.95;
-        font-weight: 300;
-        animation: fadeInUp 1s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .hero-email {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        margin-top: 0.5rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    @keyframes fadeInDown {
-        from { opacity: 0; transform: translateY(-30px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-    }
-    
-    @keyframes slideInRight {
-        from { opacity: 0; transform: translateX(30px); }
-        to { opacity: 1; transform: translateX(0); }
-    }
-    
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-    }
-    
-    @keyframes bounceIn {
-        0% { opacity: 0; transform: scale(0.3); }
-        50% { opacity: 1; transform: scale(1.05); }
-        70% { transform: scale(0.9); }
-        100% { transform: scale(1); }
-    }
-    
-    /* Cards */
-    .card {
-        background: rgba(255,255,255,0.08);
-        backdrop-filter: blur(20px);
-        padding: 1.5rem;
-        border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        margin-bottom: 1.5rem;
-        transition: all 0.4s ease;
-        border: 1px solid rgba(255,255,255,0.08);
-        animation: slideInLeft 0.6s ease;
-    }
-    
-    .card:hover {
-        transform: translateY(-8px) scale(1.01);
-        box-shadow: 0 15px 50px rgba(0,0,0,0.3);
-        border-color: rgba(255,215,0,0.2);
-    }
-    
-    .card-title {
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: #ffd700;
-        margin-bottom: 1rem;
-        border-bottom: 2px solid rgba(255,215,0,0.2);
-        padding-bottom: 0.5rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .card p, .card div, .card span, .card h4, .card h3 {
-        color: rgba(255,255,255,0.9) !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    /* Skill Tags */
-    .skill-tag {
-        display: inline-block;
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        color: white;
-        padding: 0.3rem 1rem;
-        border-radius: 20px;
-        margin: 0.2rem;
-        font-size: 0.9rem;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        animation: pulse 2s infinite;
-        box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
-        cursor: pointer;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .skill-tag:hover {
-        transform: scale(1.1) rotate(-2deg);
-        box-shadow: 0 4px 25px rgba(245, 87, 108, 0.5);
-    }
-    
-    /* What I Do Cards */
-    .what-i-do-item {
-        text-align: center;
-        padding: 1.5rem;
-        background: rgba(255,255,255,0.05);
-        backdrop-filter: blur(10px);
-        border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.05);
-        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        animation: slideInUp 0.6s ease;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .what-i-do-item::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
-        opacity: 0;
-        transition: opacity 0.6s ease;
-    }
-    
-    .what-i-do-item:hover::before {
-        opacity: 1;
-    }
-    
-    .what-i-do-item:hover {
-        transform: translateY(-10px) scale(1.05);
-        border-color: rgba(255,215,0,0.3);
-        box-shadow: 0 10px 40px rgba(255,215,0,0.15);
-        background: rgba(255,215,0,0.08);
-    }
-    
-    .what-i-do-item:active {
-        transform: scale(0.95);
-    }
-    
-    .what-i-do-item .icon {
-        font-size: 2.5rem;
-        display: block;
-        animation: float 3s ease-in-out infinite;
-        position: relative;
-        z-index: 1;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .what-i-do-item .label {
-        margin-top: 0.5rem;
-        font-weight: 600;
-        color: rgba(255,255,255,0.9) !important;
-        position: relative;
-        z-index: 1;
-        font-size: 1rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .what-i-do-item .description {
-        font-size: 0.85rem;
-        color: rgba(255,255,255,0.5) !important;
-        margin-top: 0.3rem;
-        position: relative;
-        z-index: 1;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    @keyframes slideInUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Profile Image - Enhanced Animation */
-    .profile-image-container {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        margin: 0 auto;
-        overflow: hidden;
-        border: 4px solid rgba(255,215,0,0.4);
-        box-shadow: 0 0 40px rgba(255,215,0,0.2);
-        background: rgba(255,255,255,0.1);
-        animation: profileFloat 3s ease-in-out infinite, profileGlow 4s ease-in-out infinite;
-        transition: all 0.5s ease;
-        position: relative;
-    }
-    
-    .profile-image-container::after {
-        content: '';
-        position: absolute;
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
-        border-radius: 50%;
-        background: linear-gradient(45deg, #ffd700, #f093fb, #667eea, #ffd700);
-        background-size: 400% 400%;
-        animation: borderGlow 4s linear infinite;
-        z-index: -1;
-        opacity: 0.6;
-    }
-    
-    @keyframes borderGlow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-    
-    .profile-image-container:hover {
-        transform: scale(1.1) rotate(5deg);
-        border-color: #ffd700;
-        box-shadow: 0 0 80px rgba(255,215,0,0.5);
-    }
-    
-    @keyframes profileFloat {
-        0%, 100% { transform: translateY(0px) scale(1); }
-        50% { transform: translateY(-15px) scale(1.02); }
-    }
-    
-    @keyframes profileGlow {
-        0%, 100% { box-shadow: 0 0 30px rgba(255,215,0,0.2); }
-        50% { box-shadow: 0 0 60px rgba(255,215,0,0.4); }
-    }
-    
-    .profile-image-container img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    /* Profile Card */
-    .profile-card {
-        text-align: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%) !important;
-        padding: 2rem 1.5rem !important;
-        border-radius: 20px !important;
-        color: white !important;
-        border: none !important;
-        box-shadow: 0 15px 50px rgba(0,0,0,0.3) !important;
-        transition: all 0.3s ease !important;
-        position: relative;
-        overflow: hidden;
-        animation: slideInRight 0.6s ease;
-    }
-    
-    .profile-card::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: rotateGradient 15s linear infinite;
-    }
-    
-    .profile-card * {
-        position: relative;
-        z-index: 1;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .profile-card .card-title {
-        color: white !important;
-        border-bottom-color: rgba(255,255,255,0.2) !important;
-    }
-    
-    .profile-card h3 {
-        color: white !important;
-    }
-    
-    .profile-card p {
-        color: rgba(255,255,255,0.9) !important;
-    }
-    
-    .profile-card .profile-image-container {
-        border-color: rgba(255,255,255,0.6) !important;
-        box-shadow: 0 0 40px rgba(255,255,255,0.1) !important;
-    }
-    
-    .profile-card .copy-text {
-        background: rgba(255,255,255,0.15) !important;
-        color: white !important;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.1);
-    }
-    
-    .profile-card .stButton button {
-        background: rgba(255,255,255,0.2) !important;
-        color: white !important;
-        border: 1px solid rgba(255,255,255,0.2) !important;
-        border-radius: 10px !important;
-        padding: 0.3rem 0.8rem !important;
-        font-size: 0.8rem !important;
-        font-weight: 500 !important;
-        transition: all 0.3s ease !important;
-        width: 100% !important;
-    }
-    
-    .profile-card .stButton button:hover {
-        background: rgba(255,255,255,0.35) !important;
-        transform: scale(1.05);
-        box-shadow: 0 0 30px rgba(255,255,255,0.1);
-    }
-    
-    .profile-card strong {
-        color: rgba(255,255,255,0.9) !important;
-    }
-    
-    .profile-card hr {
-        display: none !important;
-    }
-    
-    /* Social Icons */
-    .profile-social-icons {
-        display: flex;
-        justify-content: center;
-        gap: 0.8rem;
-        margin-top: 0.5rem;
-        flex-wrap: wrap;
-    }
-    
-    .profile-social-icons a {
-        color: white !important;
-        font-size: 1.5rem;
-        text-decoration: none;
-        transition: all 0.4s ease;
-        display: inline-block;
-        background: rgba(255,255,255,0.1);
-        padding: 0.3rem 0.6rem;
-        border-radius: 10px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.05);
-        animation: float 3s ease-in-out infinite;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .profile-social-icons a:hover {
-        transform: scale(1.3) rotate(-10deg) translateY(-5px);
-        background: rgba(255,215,0,0.25);
-        box-shadow: 0 0 40px rgba(255,215,0,0.2);
-        border-color: rgba(255,215,0,0.3);
-    }
-    
-    .profile-social-icons a:nth-child(1) { animation-delay: 0s; }
-    .profile-social-icons a:nth-child(2) { animation-delay: 0.5s; }
-    .profile-social-icons a:nth-child(3) { animation-delay: 1s; }
-    .profile-social-icons a:nth-child(4) { animation-delay: 1.5s; }
-    
-    /* Download Resume */
-    .download-btn {
-        display: block;
-        text-align: center;
-        padding: 0.8rem;
-        background: linear-gradient(135deg, #ffd700, #f093fb);
-        color: white !important;
-        border-radius: 25px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-        margin-top: 0.5rem;
-        animation: pulse 2s infinite;
-        box-shadow: 0 4px 25px rgba(255,215,0,0.3);
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .download-btn:hover {
-        transform: scale(1.05);
-        box-shadow: 0 8px 40px rgba(255,215,0,0.4);
-        color: white !important;
-    }
-    
-    /* Contact form */
-    .contact-form-card {
-        background: rgba(255,255,255,0.08);
-        backdrop-filter: blur(20px);
-        padding: 1.5rem;
-        border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        border: 1px solid rgba(255,255,255,0.08);
-        animation: slideInRight 0.6s ease;
-    }
-    
-    .contact-form-card h4 {
-        color: #ffd700 !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .contact-form-card .stTextInput input,
-    .contact-form-card .stTextArea textarea {
-        border-radius: 12px !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        background: rgba(255,255,255,0.05) !important;
-        color: white !important;
-        padding: 0.6rem 1rem !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .contact-form-card .stTextInput input:focus,
-    .contact-form-card .stTextArea textarea:focus {
-        border-color: #ffd700 !important;
-        box-shadow: 0 0 30px rgba(255,215,0,0.1) !important;
-    }
-    
-    .contact-form-card .stTextInput input::placeholder,
-    .contact-form-card .stTextArea textarea::placeholder {
-        color: rgba(255,255,255,0.3) !important;
-    }
-    
-    .contact-form-card .stTextInput label,
-    .contact-form-card .stTextArea label {
-        color: rgba(255,255,255,0.7) !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .contact-form-card .stButton button {
-        width: 100%;
-        background: linear-gradient(135deg, #ffd700, #f093fb) !important;
-        color: white !important;
-        border: none !important;
-        padding: 0.7rem !important;
-        border-radius: 15px !important;
-        font-weight: 600 !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 4px 25px rgba(255,215,0,0.2) !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .contact-form-card .stButton button:hover {
-        transform: scale(1.02) !important;
-        box-shadow: 0 8px 35px rgba(255,215,0,0.3) !important;
-    }
-    
-    /* Auth Container */
-    .auth-container {
-        max-width: 420px;
-        margin: 50px auto;
-        padding: 2.5rem;
-        background: rgba(255,255,255,0.05);
-        backdrop-filter: blur(30px);
-        border-radius: 30px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-        border: 1px solid rgba(255,255,255,0.06);
-        animation: bounceIn 0.8s ease;
-    }
-    
-    .auth-container h2 {
-        text-align: center;
-        color: #ffd700;
-        margin-bottom: 0.5rem;
-        font-size: 2rem;
-        animation: fadeInDown 0.8s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .auth-container .subtitle {
-        text-align: center;
-        color: rgba(255,255,255,0.6);
-        margin-bottom: 1.5rem;
-        font-size: 0.9rem;
-        animation: fadeInUp 0.8s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .auth-container .stButton button {
-        width: 100%;
-        background: linear-gradient(135deg, #ffd700, #f093fb);
-        color: white;
-        border: none;
-        padding: 0.7rem;
-        border-radius: 15px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        animation: pulse 2s infinite;
-        box-shadow: 0 4px 25px rgba(255,215,0,0.2);
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .auth-container .stButton button:hover {
-        transform: scale(1.02);
-        box-shadow: 0 8px 35px rgba(255,215,0,0.3);
-    }
-    
-    .auth-container .stTextInput input {
-        border-radius: 15px;
-        border: 1px solid rgba(255,255,255,0.1);
-        padding: 0.6rem 1rem;
-        background: rgba(255,255,255,0.05);
-        color: white;
-        transition: all 0.3s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .auth-container .stTextInput input:focus {
-        border-color: #ffd700;
-        box-shadow: 0 0 30px rgba(255,215,0,0.1);
-    }
-    
-    .auth-container .stTextInput input::placeholder {
-        color: rgba(255,255,255,0.3);
-    }
-    
-    .auth-container .stTextInput label {
-        color: rgba(255,255,255,0.7) !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .auth-switch {
-        text-align: center;
-        margin-top: 1.2rem;
-        color: rgba(255,255,255,0.6);
-        animation: fadeInUp 0.8s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .auth-switch a {
-        color: #ffd700;
-        text-decoration: none;
-        font-weight: 600;
-        cursor: pointer;
-        transition: color 0.3s ease;
-    }
-    
-    .auth-switch a:hover {
-        color: #f093fb;
-        text-decoration: underline;
-    }
-    
-    .auth-icon {
-        text-align: center;
-        font-size: 4rem;
-        margin-bottom: 0.5rem;
-        animation: float 3s ease-in-out infinite;
-    }
-    
-    /* Settings */
-    .settings-card {
-        background: rgba(255,255,255,0.05);
-        backdrop-filter: blur(30px);
-        padding: 2rem;
-        border-radius: 20px;
-        border: 1px solid rgba(255,255,255,0.06);
-        animation: slideInRight 0.6s ease;
-        max-width: 600px;
-        margin: 0 auto;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    }
-    
-    .settings-card h2 {
-        color: #ffd700 !important;
-        text-align: center;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .settings-card h3 {
-        color: rgba(255,255,255,0.9) !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .settings-card .stButton button {
-        width: 100%;
-        background: linear-gradient(135deg, #ffd700, #f093fb);
-        color: white;
-        border: none;
-        padding: 0.6rem;
-        border-radius: 15px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 25px rgba(255,215,0,0.2);
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .settings-card .stButton button:hover {
-        transform: scale(1.02);
-        box-shadow: 0 8px 35px rgba(255,215,0,0.3);
-    }
-    
-    .settings-card .stTextInput input {
-        border-radius: 15px;
-        border: 1px solid rgba(255,255,255,0.1);
-        padding: 0.6rem 1rem;
-        background: rgba(255,255,255,0.05);
-        color: white;
-        transition: all 0.3s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .settings-card .stTextInput input:focus {
-        border-color: #ffd700;
-        box-shadow: 0 0 30px rgba(255,215,0,0.1);
-    }
-    
-    .settings-card .stTextInput input::placeholder {
-        color: rgba(255,255,255,0.3);
-    }
-    
-    .settings-card .stTextInput label {
-        color: rgba(255,255,255,0.7) !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .settings-card hr {
-        border-color: rgba(255,255,255,0.1);
-    }
-    
-    .settings-card p {
-        color: rgba(255,255,255,0.6) !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .settings-card strong {
-        color: #ffd700 !important;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-        .hero-title { font-size: 2.5rem; }
-        .hero-subtitle { font-size: 1.2rem; }
-        .copy-container { flex-wrap: wrap; }
-        .what-i-do-item { padding: 1rem; }
-    }
-    
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #1a1a2e; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #ffd700, #f093fb); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #f093fb, #ffd700); }
-    
-    .about-text {
-        font-size: 1.05rem;
-        line-height: 1.8;
-        color: rgba(255,255,255,0.85) !important;
-        white-space: pre-wrap;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .success-message {
-        background: rgba(46, 213, 115, 0.2);
-        backdrop-filter: blur(20px);
-        color: #2ed573;
-        padding: 1rem;
-        border-radius: 15px;
-        border: 1px solid rgba(46, 213, 115, 0.2);
-        margin-top: 1rem;
-        text-align: center;
-        animation: fadeInUp 0.5s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .error-message {
-        background: rgba(255, 50, 50, 0.2);
-        backdrop-filter: blur(20px);
-        color: #ff6b6b;
-        padding: 1rem;
-        border-radius: 15px;
-        border: 1px solid rgba(255, 50, 50, 0.2);
-        margin-top: 1rem;
-        text-align: center;
-        animation: fadeInUp 0.5s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .stAlert {
-        border-radius: 15px !important;
-        backdrop-filter: blur(20px) !important;
-    }
-    
-    .stAlert .stMarkdown {
-        color: white !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .copy-container {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin: 0.3rem 0;
-    }
-    
-    .copy-text {
-        flex: 1;
-        padding: 0.3rem 0.5rem;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        word-break: break-all;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .social-link {
-        display: inline-block;
-        color: white;
-        background: rgba(255,255,255,0.1);
-        padding: 0.5rem 1.2rem;
-        border-radius: 25px;
-        margin: 0.3rem;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-        animation: float 3s ease-in-out infinite;
-        border: 1px solid rgba(255,255,255,0.05);
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .social-link:hover {
-        background: rgba(255,215,0,0.2);
-        transform: scale(1.1) translateY(-3px);
-        color: #ffd700;
-        border-color: rgba(255,215,0,0.3);
-        box-shadow: 0 0 30px rgba(255,215,0,0.1);
-    }
-    
-    .stat-box {
-        text-align: center;
-        padding: 1.5rem;
-        background: rgba(255,255,255,0.06);
-        backdrop-filter: blur(20px);
-        border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        border: 1px solid rgba(255,255,255,0.06);
-        transition: all 0.3s ease;
-        animation: slideInUp 0.6s ease;
-    }
-    
-    .stat-box:hover {
-        transform: scale(1.05) translateY(-5px);
-        border-color: rgba(255,215,0,0.2);
-        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-    }
-    
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #ffd700, #f093fb);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        animation: pulse 2s infinite;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .stat-label {
-        color: rgba(255,255,255,0.6) !important;
-        font-size: 0.9rem;
-        margin-top: 0.3rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    /* Experience Timeline */
-    .timeline-item {
-        border-left: 3px solid #ffd700;
-        padding-left: 1.5rem;
-        margin-bottom: 1.5rem;
-        position: relative;
-        animation: slideInRight 0.6s ease;
-    }
-    
-    .timeline-item::before {
-        content: "●";
-        position: absolute;
-        left: -0.7rem;
-        color: #ffd700;
-        font-size: 1.2rem;
-        animation: pulse 2s infinite;
-    }
-    
-    .timeline-title {
-        font-weight: 600;
-        color: #ffd700 !important;
-        font-size: 1.1rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .timeline-subtitle {
-        color: #f093fb !important;
-        font-weight: 500;
-        margin: 0.2rem 0;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .timeline-date {
-        color: rgba(255,255,255,0.5) !important;
-        font-size: 0.9rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .timeline-item div {
-        color: rgba(255,255,255,0.8) !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    /* Project Cards */
-    .project-card {
-        background: rgba(255,255,255,0.06);
-        backdrop-filter: blur(20px);
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        transition: all 0.4s ease;
-        height: 100%;
-        border: 1px solid rgba(255,255,255,0.06);
-        animation: slideInUp 0.6s ease;
-    }
-    
-    .project-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 0 15px 50px rgba(0,0,0,0.3);
-        border-color: rgba(255,215,0,0.2);
-    }
-    
-    .project-content {
-        padding: 1.5rem;
-    }
-    
-    .project-title {
-        font-weight: 600;
-        color: #ffd700 !important;
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .project-description {
-        color: rgba(255,255,255,0.7) !important;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .project-tech {
-        margin-top: 1rem;
-    }
-    
-    .project-content a {
-        color: #f093fb !important;
-        transition: color 0.3s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }
-    
-    .project-content a:hover {
-        color: #ffd700 !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
 # Personal Information
 PERSONAL_INFO = {
     "name": "Faizan Tanveer",
     "title": "Student | AI Enthusiast",
-    "email": "faizan75601@email.com",
+    "email": "faizan75601@gmail.com",
     "phone": "+92 300 4023123",
     "location": "Pakistan",
     "bio": """👋 Hi, I'm Faizan Tanveer! I'm a passionate student currently in Class 10 at Sheikh Zayed Public School.
@@ -1388,48 +281,42 @@ ACHIEVEMENTS = [
     "🎤 Active participant in school tech events"
 ]
 
-def get_image_path():
-    if os.path.exists(PROFILE_IMAGE_PATH):
-        return PROFILE_IMAGE_PATH
-    elif os.path.exists(PROFILE_IMAGE_PATH_JPG):
-        return PROFILE_IMAGE_PATH_JPG
-    return None
+# ============ IMAGE FUNCTIONS - PERMANENT STORAGE ============
 
-def save_uploaded_image(uploaded_file):
+def save_image_permanently(uploaded_file):
+    """Save uploaded image permanently to disk"""
     if uploaded_file is not None:
         try:
             image = Image.open(uploaded_file)
+            # Convert to RGB if necessary
             if image.mode in ('RGBA', 'LA', 'P'):
                 image = image.convert('RGB')
+            # Resize for consistency
             image = image.resize((500, 500))
-            
-            file_extension = uploaded_file.name.split('.')[-1].lower()
-            
-            if file_extension in ['jpg', 'jpeg']:
-                if os.path.exists(PROFILE_IMAGE_PATH):
-                    os.remove(PROFILE_IMAGE_PATH)
-                image.save(PROFILE_IMAGE_PATH_JPG, 'JPEG', quality=95, optimize=True)
-                return True
-            else:
-                if os.path.exists(PROFILE_IMAGE_PATH_JPG):
-                    os.remove(PROFILE_IMAGE_PATH_JPG)
-                image.save(PROFILE_IMAGE_PATH, 'PNG', optimize=True)
-                return True
+            # Save permanently
+            image.save(PROFILE_IMAGE_PATH, 'PNG', optimize=True)
+            return True
         except Exception as e:
             st.error(f"Error saving image: {e}")
             return False
     return False
 
 def get_profile_image_base64():
-    img_path = get_image_path()
-    if img_path:
+    """Get profile image as base64 from permanent storage"""
+    if os.path.exists(PROFILE_IMAGE_PATH):
         try:
-            with open(img_path, "rb") as f:
+            with open(PROFILE_IMAGE_PATH, "rb") as f:
                 img_bytes = f.read()
                 return base64.b64encode(img_bytes).decode()
         except:
             return None
     return None
+
+def image_exists():
+    """Check if image exists permanently"""
+    return os.path.exists(PROFILE_IMAGE_PATH)
+
+# ============ END IMAGE FUNCTIONS ============
 
 def create_download_resume():
     resume_content = f"""
@@ -1462,6 +349,1120 @@ ACHIEVEMENTS
     b64 = base64.b64encode(resume_content.encode()).decode()
     href = f'<a href="data:text/plain;base64,{b64}" download="Faizan_Tanveer_Resume.txt" class="download-btn">📄 Download Resume</a>'
     return href
+
+# Custom CSS - FIXED EMOJI DISPLAY IN DARK MODE
+st.markdown("""
+    <style>
+    /* Global Styles */
+    .main {
+        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    }
+    
+    /* Fix emoji display - Force color for all emojis */
+    .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
+    .stMarkdown span, .stMarkdown div, .stMarkdown li, .stMarkdown a,
+    .stMarkdown strong, .stMarkdown em, .stMarkdown b {
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Helvetica Neue', sans-serif !important;
+    }
+    
+    /* Force emoji colors in dark mode */
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
+    .stMarkdown p, .stMarkdown span, .stMarkdown div {
+        color: rgba(255,255,255,0.95) !important;
+    }
+    
+    /* Hero title emoji fix */
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 40px rgba(0,0,0,0.3);
+        animation: fadeInDown 1s ease;
+        background: linear-gradient(to right, #fff, #ffd700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
+    }
+    
+    .hero-title .emoji {
+        -webkit-text-fill-color: initial !important;
+        color: #fff !important;
+    }
+    
+    .stButton button, button {
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        color: white !important;
+    }
+    
+    /* Sidebar Styling */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #1a0533 100%) !important;
+        padding: 1rem 0.5rem;
+        border-right: none !important;
+        box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3);
+        animation: sidebarGlow 4s ease-in-out infinite;
+    }
+    
+    @keyframes sidebarGlow {
+        0%, 100% { box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3); }
+        50% { box-shadow: 4px 0 50px rgba(200, 100, 255, 0.5); }
+    }
+    
+    section[data-testid="stSidebar"] .stMarkdown {
+        color: white !important;
+    }
+    
+    .sidebar-user {
+        text-align: center;
+        padding: 0.5rem 0;
+        animation: userSlideIn 0.8s ease;
+    }
+    
+    @keyframes userSlideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .sidebar-user .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin: 0 auto;
+        overflow: hidden;
+        border: 3px solid rgba(255, 215, 0, 0.6);
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+        background: rgba(255,255,255,0.1);
+        animation: avatarPulse 3s ease-in-out infinite;
+        transition: all 0.4s ease;
+    }
+    
+    .sidebar-user .avatar:hover {
+        transform: scale(1.15) rotate(10deg);
+        border-color: #ffd700;
+        box-shadow: 0 0 60px rgba(255, 215, 0, 0.6);
+    }
+    
+    @keyframes avatarPulse {
+        0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); transform: scale(1); }
+        50% { box-shadow: 0 0 60px rgba(255, 215, 0, 0.5); transform: scale(1.05); }
+    }
+    
+    .sidebar-user .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .sidebar-user h3 {
+        color: #ffd700 !important;
+        margin-top: 0.5rem;
+        margin-bottom: 0.2rem;
+        font-size: 1.1rem;
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        animation: textGlow 3s ease-in-out infinite;
+        background: linear-gradient(to right, #ffd700, #f093fb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    @keyframes textGlow {
+        0%, 100% { text-shadow: 0 0 20px rgba(255,215,0,0.2); }
+        50% { text-shadow: 0 0 50px rgba(255,215,0,0.5); }
+    }
+    
+    .sidebar-user p {
+        color: rgba(255,255,255,0.7) !important;
+        font-size: 0.8rem;
+        margin: 0;
+        animation: fadeInUp 0.8s ease;
+    }
+    
+    .sidebar-nav .stButton button {
+        width: 100%;
+        background: rgba(255,255,255,0.05) !important;
+        color: rgba(255,255,255,0.8) !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 12px !important;
+        padding: 0.6rem 1rem !important;
+        margin: 0.15rem 0 !important;
+        text-align: left !important;
+        font-weight: 500 !important;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+        backdrop-filter: blur(10px);
+        animation: slideInLeft 0.5s ease both;
+        position: relative;
+        overflow: hidden;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .sidebar-nav .stButton button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent);
+        transition: left 0.6s ease;
+    }
+    
+    .sidebar-nav .stButton button:hover::before {
+        left: 100%;
+    }
+    
+    .sidebar-nav .stButton button:hover {
+        background: rgba(255,215,0,0.15) !important;
+        color: #ffd700 !important;
+        transform: translateX(10px) scale(1.03);
+        border-color: rgba(255,215,0,0.3) !important;
+        box-shadow: 0 0 40px rgba(255,215,0,0.15);
+    }
+    
+    .sidebar-nav .stButton button:active {
+        transform: scale(0.95);
+    }
+    
+    .sidebar-nav .stButton button:nth-child(1) { animation-delay: 0.05s; }
+    .sidebar-nav .stButton button:nth-child(2) { animation-delay: 0.1s; }
+    .sidebar-nav .stButton button:nth-child(3) { animation-delay: 0.15s; }
+    .sidebar-nav .stButton button:nth-child(4) { animation-delay: 0.2s; }
+    .sidebar-nav .stButton button:nth-child(5) { animation-delay: 0.25s; }
+    .sidebar-nav .stButton button:nth-child(6) { animation-delay: 0.3s; }
+    .sidebar-nav .stButton button:nth-child(7) { animation-delay: 0.35s; }
+    .sidebar-nav .stButton button:nth-child(8) { animation-delay: 0.4s; }
+    .sidebar-nav .stButton button:nth-child(9) { animation-delay: 0.45s; }
+    .sidebar-nav .stButton button:nth-child(10) { animation-delay: 0.5s; }
+    
+    @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .sidebar-logout .stButton button {
+        width: 100%;
+        background: rgba(255,50,50,0.15) !important;
+        color: #ff6b6b !important;
+        border: 1px solid rgba(255,50,50,0.2) !important;
+        border-radius: 12px !important;
+        padding: 0.6rem !important;
+        font-weight: 500 !important;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+        backdrop-filter: blur(10px);
+        animation: slideInLeft 0.6s ease 0.55s both;
+    }
+    
+    .sidebar-logout .stButton button:hover {
+        background: rgba(255,50,50,0.25) !important;
+        transform: scale(1.05) translateX(5px);
+        box-shadow: 0 0 40px rgba(255,50,50,0.3);
+        border-color: rgba(255,50,50,0.4) !important;
+    }
+    
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 55%, #f5576c 80%, #ffd700 100%);
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        color: white;
+        text-align: center;
+        box-shadow: 0 10px 50px rgba(0,0,0,0.4);
+        animation: heroFadeIn 0.8s ease;
+        position: relative;
+        overflow: hidden;
+        background-size: 300% 300%;
+        animation: gradientShift 6s ease infinite;
+    }
+    
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotateGradient 20s linear infinite;
+    }
+    
+    @keyframes heroFadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes rotateGradient {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .hero-section * {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 40px rgba(0,0,0,0.3);
+        animation: fadeInDown 1s ease;
+        background: linear-gradient(to right, #fff, #ffd700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.5rem;
+        opacity: 0.95;
+        font-weight: 300;
+        animation: fadeInUp 1s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        color: rgba(255,255,255,0.95) !important;
+    }
+    
+    .hero-email {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-top: 0.5rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        color: rgba(255,255,255,0.95) !important;
+    }
+    
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes bounceIn {
+        0% { opacity: 0; transform: scale(0.3); }
+        50% { opacity: 1; transform: scale(1.05); }
+        70% { transform: scale(0.9); }
+        100% { transform: scale(1); }
+    }
+    
+    /* Cards */
+    .card {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(20px);
+        padding: 1.5rem;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        margin-bottom: 1.5rem;
+        transition: all 0.4s ease;
+        border: 1px solid rgba(255,255,255,0.08);
+        animation: slideInLeft 0.6s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-8px) scale(1.01);
+        box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        border-color: rgba(255,215,0,0.2);
+    }
+    
+    .card-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #ffd700 !important;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid rgba(255,215,0,0.2);
+        padding-bottom: 0.5rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .card p, .card div, .card span, .card h4, .card h3 {
+        color: rgba(255,255,255,0.9) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .skill-tag {
+        display: inline-block;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        margin: 0.2rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        animation: pulse 2s infinite;
+        box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+        cursor: pointer;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .skill-tag:hover {
+        transform: scale(1.1) rotate(-2deg);
+        box-shadow: 0 4px 25px rgba(245, 87, 108, 0.5);
+    }
+    
+    .what-i-do-item {
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        animation: slideInUp 0.6s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .what-i-do-item::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.6s ease;
+    }
+    
+    .what-i-do-item:hover::before {
+        opacity: 1;
+    }
+    
+    .what-i-do-item:hover {
+        transform: translateY(-10px) scale(1.05);
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 10px 40px rgba(255,215,0,0.15);
+        background: rgba(255,215,0,0.08);
+    }
+    
+    .what-i-do-item:active {
+        transform: scale(0.95);
+    }
+    
+    .what-i-do-item .icon {
+        font-size: 2.5rem;
+        display: block;
+        animation: float 3s ease-in-out infinite;
+        position: relative;
+        z-index: 1;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .what-i-do-item .label {
+        margin-top: 0.5rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.9) !important;
+        position: relative;
+        z-index: 1;
+        font-size: 1rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .what-i-do-item .description {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.5) !important;
+        margin-top: 0.3rem;
+        position: relative;
+        z-index: 1;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    @keyframes slideInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .profile-image-container {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        margin: 0 auto;
+        overflow: hidden;
+        border: 4px solid rgba(255,215,0,0.4);
+        box-shadow: 0 0 40px rgba(255,215,0,0.2);
+        background: rgba(255,255,255,0.1);
+        animation: profileFloat 3s ease-in-out infinite, profileGlow 4s ease-in-out infinite;
+        transition: all 0.5s ease;
+        position: relative;
+    }
+    
+    .profile-image-container::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #ffd700, #f093fb, #667eea, #ffd700);
+        background-size: 400% 400%;
+        animation: borderGlow 4s linear infinite;
+        z-index: -1;
+        opacity: 0.6;
+    }
+    
+    @keyframes borderGlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    .profile-image-container:hover {
+        transform: scale(1.1) rotate(5deg);
+        border-color: #ffd700;
+        box-shadow: 0 0 80px rgba(255,215,0,0.5);
+    }
+    
+    @keyframes profileFloat {
+        0%, 100% { transform: translateY(0px) scale(1); }
+        50% { transform: translateY(-15px) scale(1.02); }
+    }
+    
+    @keyframes profileGlow {
+        0%, 100% { box-shadow: 0 0 30px rgba(255,215,0,0.2); }
+        50% { box-shadow: 0 0 60px rgba(255,215,0,0.4); }
+    }
+    
+    .profile-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .profile-card {
+        text-align: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%) !important;
+        padding: 2rem 1.5rem !important;
+        border-radius: 20px !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.3) !important;
+        transition: all 0.3s ease !important;
+        position: relative;
+        overflow: hidden;
+        animation: slideInRight 0.6s ease;
+    }
+    
+    .profile-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotateGradient 15s linear infinite;
+    }
+    
+    .profile-card * {
+        position: relative;
+        z-index: 1;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .profile-card .card-title {
+        color: white !important;
+        border-bottom-color: rgba(255,255,255,0.2) !important;
+    }
+    
+    .profile-card h3 {
+        color: white !important;
+    }
+    
+    .profile-card p {
+        color: rgba(255,255,255,0.9) !important;
+    }
+    
+    .profile-card .profile-image-container {
+        border-color: rgba(255,255,255,0.6) !important;
+        box-shadow: 0 0 40px rgba(255,255,255,0.1) !important;
+    }
+    
+    .profile-card .copy-text {
+        background: rgba(255,255,255,0.15) !important;
+        color: white !important;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .profile-card .stButton button {
+        background: rgba(255,255,255,0.2) !important;
+        color: white !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        border-radius: 10px !important;
+        padding: 0.3rem 0.8rem !important;
+        font-size: 0.8rem !important;
+        font-weight: 500 !important;
+        transition: all 0.3s ease !important;
+        width: 100% !important;
+    }
+    
+    .profile-card .stButton button:hover {
+        background: rgba(255,255,255,0.35) !important;
+        transform: scale(1.05);
+        box-shadow: 0 0 30px rgba(255,255,255,0.1);
+    }
+    
+    .profile-card strong {
+        color: rgba(255,255,255,0.9) !important;
+    }
+    
+    .profile-card hr {
+        display: none !important;
+    }
+    
+    .profile-social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .profile-social-icons a {
+        color: white !important;
+        font-size: 1.5rem;
+        text-decoration: none;
+        transition: all 0.4s ease;
+        display: inline-block;
+        background: rgba(255,255,255,0.1);
+        padding: 0.3rem 0.6rem;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.05);
+        animation: float 3s ease-in-out infinite;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .profile-social-icons a:hover {
+        transform: scale(1.3) rotate(-10deg) translateY(-5px);
+        background: rgba(255,215,0,0.25);
+        box-shadow: 0 0 40px rgba(255,215,0,0.2);
+        border-color: rgba(255,215,0,0.3);
+    }
+    
+    .profile-social-icons a:nth-child(1) { animation-delay: 0s; }
+    .profile-social-icons a:nth-child(2) { animation-delay: 0.5s; }
+    .profile-social-icons a:nth-child(3) { animation-delay: 1s; }
+    .profile-social-icons a:nth-child(4) { animation-delay: 1.5s; }
+    
+    .download-btn {
+        display: block;
+        text-align: center;
+        padding: 0.8rem;
+        background: linear-gradient(135deg, #ffd700, #f093fb);
+        color: white !important;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 0.5rem;
+        animation: pulse 2s infinite;
+        box-shadow: 0 4px 25px rgba(255,215,0,0.3);
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .download-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 40px rgba(255,215,0,0.4);
+        color: white !important;
+    }
+    
+    .contact-form-card {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(20px);
+        padding: 1.5rem;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.08);
+        animation: slideInRight 0.6s ease;
+    }
+    
+    .contact-form-card h4 {
+        color: #ffd700 !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .contact-form-card .stTextInput input,
+    .contact-form-card .stTextArea textarea {
+        border-radius: 12px !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        background: rgba(255,255,255,0.05) !important;
+        color: white !important;
+        padding: 0.6rem 1rem !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .contact-form-card .stTextInput input:focus,
+    .contact-form-card .stTextArea textarea:focus {
+        border-color: #ffd700 !important;
+        box-shadow: 0 0 30px rgba(255,215,0,0.1) !important;
+    }
+    
+    .contact-form-card .stTextInput input::placeholder,
+    .contact-form-card .stTextArea textarea::placeholder {
+        color: rgba(255,255,255,0.3) !important;
+    }
+    
+    .contact-form-card .stTextInput label,
+    .contact-form-card .stTextArea label {
+        color: rgba(255,255,255,0.7) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .contact-form-card .stButton button {
+        width: 100%;
+        background: linear-gradient(135deg, #ffd700, #f093fb) !important;
+        color: white !important;
+        border: none !important;
+        padding: 0.7rem !important;
+        border-radius: 15px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 25px rgba(255,215,0,0.2) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .contact-form-card .stButton button:hover {
+        transform: scale(1.02) !important;
+        box-shadow: 0 8px 35px rgba(255,215,0,0.3) !important;
+    }
+    
+    .auth-container {
+        max-width: 420px;
+        margin: 50px auto;
+        padding: 2.5rem;
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(30px);
+        border-radius: 30px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.06);
+        animation: bounceIn 0.8s ease;
+    }
+    
+    .auth-container h2 {
+        text-align: center;
+        color: #ffd700;
+        margin-bottom: 0.5rem;
+        font-size: 2rem;
+        animation: fadeInDown 0.8s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .auth-container .subtitle {
+        text-align: center;
+        color: rgba(255,255,255,0.6);
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        animation: fadeInUp 0.8s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .auth-container .stButton button {
+        width: 100%;
+        background: linear-gradient(135deg, #ffd700, #f093fb);
+        color: white;
+        border: none;
+        padding: 0.7rem;
+        border-radius: 15px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        animation: pulse 2s infinite;
+        box-shadow: 0 4px 25px rgba(255,215,0,0.2);
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .auth-container .stButton button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 35px rgba(255,215,0,0.3);
+    }
+    
+    .auth-container .stTextInput input {
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.6rem 1rem;
+        background: rgba(255,255,255,0.05);
+        color: white;
+        transition: all 0.3s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .auth-container .stTextInput input:focus {
+        border-color: #ffd700;
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
+    }
+    
+    .auth-container .stTextInput input::placeholder {
+        color: rgba(255,255,255,0.3);
+    }
+    
+    .auth-container .stTextInput label {
+        color: rgba(255,255,255,0.7) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .auth-switch {
+        text-align: center;
+        margin-top: 1.2rem;
+        color: rgba(255,255,255,0.6);
+        animation: fadeInUp 0.8s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .auth-switch a {
+        color: #ffd700;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+    
+    .auth-switch a:hover {
+        color: #f093fb;
+        text-decoration: underline;
+    }
+    
+    .auth-icon {
+        text-align: center;
+        font-size: 4rem;
+        margin-bottom: 0.5rem;
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    .settings-card {
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(30px);
+        padding: 2rem;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.06);
+        animation: slideInRight 0.6s ease;
+        max-width: 600px;
+        margin: 0 auto;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    
+    .settings-card h2 {
+        color: #ffd700 !important;
+        text-align: center;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .settings-card h3 {
+        color: rgba(255,255,255,0.9) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .settings-card .stButton button {
+        width: 100%;
+        background: linear-gradient(135deg, #ffd700, #f093fb);
+        color: white;
+        border: none;
+        padding: 0.6rem;
+        border-radius: 15px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 25px rgba(255,215,0,0.2);
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .settings-card .stButton button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 35px rgba(255,215,0,0.3);
+    }
+    
+    .settings-card .stTextInput input {
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.6rem 1rem;
+        background: rgba(255,255,255,0.05);
+        color: white;
+        transition: all 0.3s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .settings-card .stTextInput input:focus {
+        border-color: #ffd700;
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
+    }
+    
+    .settings-card .stTextInput input::placeholder {
+        color: rgba(255,255,255,0.3);
+    }
+    
+    .settings-card .stTextInput label {
+        color: rgba(255,255,255,0.7) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .settings-card hr {
+        border-color: rgba(255,255,255,0.1);
+    }
+    
+    .settings-card p {
+        color: rgba(255,255,255,0.6) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .settings-card strong {
+        color: #ffd700 !important;
+    }
+    
+    @media (max-width: 768px) {
+        .hero-title { font-size: 2.5rem; }
+        .hero-subtitle { font-size: 1.2rem; }
+        .copy-container { flex-wrap: wrap; }
+        .what-i-do-item { padding: 1rem; }
+    }
+    
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #1a1a2e; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #ffd700, #f093fb); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #f093fb, #ffd700); }
+    
+    .about-text {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: rgba(255,255,255,0.85) !important;
+        white-space: pre-wrap;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .success-message {
+        background: rgba(46, 213, 115, 0.2);
+        backdrop-filter: blur(20px);
+        color: #2ed573;
+        padding: 1rem;
+        border-radius: 15px;
+        border: 1px solid rgba(46, 213, 115, 0.2);
+        margin-top: 1rem;
+        text-align: center;
+        animation: fadeInUp 0.5s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .error-message {
+        background: rgba(255, 50, 50, 0.2);
+        backdrop-filter: blur(20px);
+        color: #ff6b6b;
+        padding: 1rem;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 50, 50, 0.2);
+        margin-top: 1rem;
+        text-align: center;
+        animation: fadeInUp 0.5s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .stAlert {
+        border-radius: 15px !important;
+        backdrop-filter: blur(20px) !important;
+    }
+    
+    .stAlert .stMarkdown {
+        color: white !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .copy-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.3rem 0;
+    }
+    
+    .copy-text {
+        flex: 1;
+        padding: 0.3rem 0.5rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        word-break: break-all;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .social-link {
+        display: inline-block;
+        color: white;
+        background: rgba(255,255,255,0.1);
+        padding: 0.5rem 1.2rem;
+        border-radius: 25px;
+        margin: 0.3rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        animation: float 3s ease-in-out infinite;
+        border: 1px solid rgba(255,255,255,0.05);
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .social-link:hover {
+        background: rgba(255,215,0,0.2);
+        transform: scale(1.1) translateY(-3px);
+        color: #ffd700;
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
+    }
+    
+    .stat-box {
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.06);
+        transition: all 0.3s ease;
+        animation: slideInUp 0.6s ease;
+    }
+    
+    .stat-box:hover {
+        transform: scale(1.05) translateY(-5px);
+        border-color: rgba(255,215,0,0.2);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ffd700, #f093fb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: pulse 2s infinite;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .stat-label {
+        color: rgba(255,255,255,0.6) !important;
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .timeline-item {
+        border-left: 3px solid #ffd700;
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        animation: slideInRight 0.6s ease;
+    }
+    
+    .timeline-item::before {
+        content: "●";
+        position: absolute;
+        left: -0.7rem;
+        color: #ffd700;
+        font-size: 1.2rem;
+        animation: pulse 2s infinite;
+    }
+    
+    .timeline-title {
+        font-weight: 600;
+        color: #ffd700 !important;
+        font-size: 1.1rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .timeline-subtitle {
+        color: #f093fb !important;
+        font-weight: 500;
+        margin: 0.2rem 0;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .timeline-date {
+        color: rgba(255,255,255,0.5) !important;
+        font-size: 0.9rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .timeline-item div {
+        color: rgba(255,255,255,0.8) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .project-card {
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        transition: all 0.4s ease;
+        height: 100%;
+        border: 1px solid rgba(255,255,255,0.06);
+        animation: slideInUp 0.6s ease;
+    }
+    
+    .project-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        border-color: rgba(255,215,0,0.2);
+    }
+    
+    .project-content {
+        padding: 1.5rem;
+    }
+    
+    .project-title {
+        font-weight: 600;
+        color: #ffd700 !important;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .project-description {
+        color: rgba(255,255,255,0.7) !important;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .project-tech {
+        margin-top: 1rem;
+    }
+    
+    .project-content a {
+        color: #f093fb !important;
+        transition: color 0.3s ease;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .project-content a:hover {
+        color: #ffd700 !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # ============ AUTHENTICATION ============
 
@@ -1592,6 +1593,7 @@ def show_sidebar():
             <div class="sidebar-user">
         """, unsafe_allow_html=True)
         
+        # Display profile image from permanent storage
         img_base64 = get_profile_image_base64()
         if img_base64:
             st.markdown(f"""
@@ -1614,7 +1616,7 @@ def show_sidebar():
             <div class="sidebar-nav">
         """, unsafe_allow_html=True)
         
-        # Navigation items with Home button first
+        # Navigation items
         nav_items = [
             {"key": "home", "icon": "🏠", "label": "Home"},
             {"key": "about", "icon": "👤", "label": "About Me"},
@@ -1654,7 +1656,6 @@ def show_sidebar():
 def show_home_page():
     """Display Home page with About Me and Profile side by side"""
     
-    # About Me and Profile side by side
     col1, col2 = st.columns([2, 1])
     
     with col1:
@@ -1667,7 +1668,6 @@ def show_home_page():
             </div>
         """, unsafe_allow_html=True)
         
-        # What I Do section
         st.markdown("""
             <div class="card">
                 <div class="card-title">💡 What I Do</div>
@@ -1699,9 +1699,10 @@ def show_home_page():
     with col2:
         st.markdown("""
             <div class="card profile-card">
-                <div class="card-title">😎 Profile</div>
+                <div class="card-title">👤 Profile</div>
         """, unsafe_allow_html=True)
         
+        # Display profile image from permanent storage
         img_base64 = get_profile_image_base64()
         if img_base64:
             st.markdown(f"""
@@ -1749,6 +1750,13 @@ def show_home_page():
                     <p style="margin: 0.2rem 0 0.5rem 0;">10th Grade</p>
                 </div>
                 
+                <div class="profile-social-icons" style="margin-top: 0.5rem;">
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" title="GitHub">🐙</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" title="Twitter">🐦</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" title="Instagram">📸</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" title="TikTok">🎵</a>
+                </div>
+            </div>
         """, unsafe_allow_html=True)
         
         if st.session_state.copied_text:
@@ -1756,6 +1764,20 @@ def show_home_page():
             st.session_state.copied_text = ""
         
         st.markdown(create_download_resume(), unsafe_allow_html=True)
+        
+        # Image Upload Section - Upload to permanent storage
+        st.markdown("""
+            <div class="upload-section" style="background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); margin-top: 1rem;">
+                <h4 style="color: #ffd700;">📸 Upload Profile Image</h4>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">Image will be saved permanently</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        uploaded_file = st.file_uploader("Choose a profile image...", type=['jpg', 'jpeg', 'png'], key="permanent_uploader")
+        if uploaded_file is not None:
+            if save_image_permanently(uploaded_file):
+                st.success("✅ Image uploaded permanently!")
+                st.rerun()
 
 def show_about_page():
     st.markdown(f"""
@@ -2024,13 +2046,12 @@ def main():
     if st.session_state.authenticated:
         show_sidebar()
         
-        # Show page based on navigation
         page = st.session_state.page
         
-        # Hero Section
+        # Hero Section with fixed emoji display
         st.markdown(f"""
             <div class="hero-section">
-                <div class="hero-title">👋 {PERSONAL_INFO['name']}</div>
+                <div class="hero-title"><span class="emoji">👋</span> {PERSONAL_INFO['name']}</div>
                 <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
                 <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
                 <div style="margin-top: 1.5rem;">
@@ -2071,7 +2092,7 @@ def main():
         st.markdown(f"""
             <div style="text-align: center; color: rgba(255,255,255,0.3); padding: 2rem 0;">
                 <p style="font-size: 0.9rem;">
-                    © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ BY FR56
+                    © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ using Streamlit
                 </p>
                 <p style="font-size: 0.8rem; opacity: 0.7;">
                     Student | AI Enthusiast | Lifelong Learner
