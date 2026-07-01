@@ -15,7 +15,7 @@ from email.mime.multipart import MIMEMultipart
 # Page configuration
 st.set_page_config(
     page_title="Faizan Tanveer | Portfolio",
-    page_icon="👨‍💻",
+    page_icon="💻",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -141,10 +141,10 @@ if 'sidebar_open' not in st.session_state:
 # Personal Information
 PERSONAL_INFO = {
     "name": "Faizan Tanveer",
-    "title": "Student | AI Enthusiast | Lifelong Learner",
-    "email": "faizantanveer@example.com",
+    "title": "Student | Python Developer ",
+    "email": "faizan75601@gmail.com",
     "phone": "+92 300 1234567",
-    "location": "Lahore, Pakistan",
+    "location": "Pakistan",
     "bio": """I'm Faizan Tanveer, a passionate student and AI enthusiast who loves building intelligent solutions and beautiful user experiences. I enjoy turning ideas into real projects using Python and modern technologies. My goal is to leverage AI to solve real-world problems and make a positive impact.""",
     "github": "https://github.com/faizan",
     "twitter": "https://x.com/",
@@ -298,7 +298,7 @@ def get_profile_image_base64():
 def create_download_resume():
     resume_content = f"""
 FAIZAN TANVEER
-Student | AI Enthusiast | Lifelong Learner
+Student | Python Developer
 
 Email: {PERSONAL_INFO['email']}
 Phone: {PERSONAL_INFO['phone']}
@@ -2071,7 +2071,7 @@ def main():
         # Hero Section - Fixed emoji display
         st.markdown(f"""
             <div class="hero-section">
-                <div class="hero-title"><span class="emoji-text">👋</span> Hi, I'm {PERSONAL_INFO['name']}</div>
+                <div class="hero-title"><span class="emoji-text">👋</span> {PERSONAL_INFO['name']}</div>
                 <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
                 <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
                 <div style="margin-top: 1.5rem;">
@@ -2112,7 +2112,7 @@ def main():
         st.markdown(f"""
             <div style="text-align: center; color: rgba(255,255,255,0.3); padding: 2rem 0;">
                 <p style="font-size: 0.9rem;">
-                    © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ using Streamlit
+                    © {datetime.now().year} {PERSONAL_INFO['name']} | Built with ❤️ BY FR 56
                 </p>
                 <p style="font-size: 0.8rem; opacity: 0.7;">
                     Student | AI Enthusiast | Lifelong Learner
