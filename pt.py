@@ -1702,7 +1702,7 @@ def show_home_page():
         # ============ PROFILE SECTION ============
         st.markdown("""
             <div class="card profile-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%) !important; padding: 2rem 1.5rem !important; border-radius: 20px !important; color: white !important; border: none !important; box-shadow: 0 15px 50px rgba(0,0,0,0.3) !important;">
-                <div class="card-title" style="font-size: 1.5rem; font-weight: 700; color: white !important; border-bottom: 2px solid rgba(255,255,255,0.2); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">👤 Profile</div>
+                <div class="card-title" style="font-size: 1.5rem; font-weight: 700; color: white !important; border-bottom: 2px solid rgba(255,255,255,0.2); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">😎 Profile</div>
         """, unsafe_allow_html=True)
         
         # Profile Image
