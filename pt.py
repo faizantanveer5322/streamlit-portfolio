@@ -1623,7 +1623,7 @@ def show_sidebar():
     """, unsafe_allow_html=True)
     
     # Single button that controls sidebar
-    if st.button("☰ Write", key="hamburger_menu", help="Toggle Sidebar"):
+    if st.button("☰ Option ✨", key="hamburger_menu", help="Toggle Sidebar"):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
     
