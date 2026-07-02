@@ -1874,7 +1874,7 @@ def show_sidebar():
     """, unsafe_allow_html=True)
     
     # Hidden button for functionality - EMPTY STRING for NO TEXT
-    if st.button("MENU", key="sidebar_arrow", help="Toggle Sidebar"):
+    if st.button("", key="sidebar_arrow", help="Toggle Sidebar"):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
     
@@ -2370,8 +2370,8 @@ def main():
         
         page = st.session_state.page
         
-       st.markdown(f"""
-           <div style="background: linear-gradient(135deg, #1a0533, #2d1b69, #4a2c8a, #ffd700); padding: 3rem 2rem; border-radius: 20px; margin-bottom: 2rem; text-align: center; box-shadow: 0 10px 50px rgba(255,215,0,0.3); border: 1px solid rgba(255,215,0,0.2);">
+        st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #1a0533, #2d1b69, #4a2c8a, #ffd700); padding: 3rem 2rem; border-radius: 20px; margin-bottom: 2rem; text-align: center; box-shadow: 0 10px 50px rgba(255,215,0,0.3); border: 1px solid rgba(255,215,0,0.2);">
                 <h1 style="font-size: 4.5rem; font-weight: 800; color: #ffd700; margin-bottom: 0.5rem; text-shadow: 0 0 40px rgba(255,215,0,0.3);">👋 {PERSONAL_INFO['name']}</h1>
                 <h2 style="font-size: 1.5rem; color: rgba(255,255,255,0.95); font-weight: 300;">{PERSONAL_INFO['title']}</h2>
                 <p style="font-size: 1.1rem; color: rgba(255,255,255,0.9);">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</p>
@@ -2382,7 +2382,7 @@ def main():
                     <a href="{PERSONAL_INFO['tiktok']}" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">🎵 TikTok</a>
                 </div>
             </div>
-         """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
         
         if page == "home":
             show_home_page()
