@@ -383,7 +383,7 @@ def create_download_resume():
         
         story = []
         
-        story.append(Paragraph('FAIZAN TANVEER', title_style))
+        story.append(heading('FAIZAN TANVEER', title_style))
         story.append(Paragraph('Student | Python Developer', subtitle_style))
         story.append(Paragraph(f'Email: {PERSONAL_INFO["email"]}  |  Phone: {PERSONAL_INFO["phone"]}  |  Location: {PERSONAL_INFO["location"]}', contact_style))
         story.append(Spacer(1, 12))
@@ -1855,7 +1855,7 @@ def show_sidebar():
     """, unsafe_allow_html=True)
     
     # Hidden button for functionality
-    arrow_label = "◀" if st.session_state.sidebar_open else "▶ MENU"
+    arrow_label = "◀ MENU " if st.session_state.sidebar_open else "▶ MENU"
     if st.button(arrow_label, key="sidebar_arrow", help="Toggle Sidebar", use_container_width=True):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
