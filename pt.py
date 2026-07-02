@@ -175,12 +175,12 @@ EXPERIENCE = [
     }
 ]
 
-# ============ EDUCATION ============
+# ============ EDUCATION - UPDATED ============
 
 EDUCATION = [
     {
-        "degree": "12th Grade (Pre-Engineering)",
-        "institution": "F.G. Public School",
+        "degree": "10th Grade (Pre-Engineering)",
+        "institution": "Sheikh Zayed Public School",
         "year": "2024 - 2025",
         "gpa": "Excellent"
     },
@@ -383,7 +383,7 @@ def create_download_resume():
         
         story = []
         
-        story.append(heading('FAIZAN TANVEER', title_style))
+        story.append(Paragraph('FAIZAN TANVEER', title_style))
         story.append(Paragraph('Student | Python Developer', subtitle_style))
         story.append(Paragraph(f'Email: {PERSONAL_INFO["email"]}  |  Phone: {PERSONAL_INFO["phone"]}  |  Location: {PERSONAL_INFO["location"]}', contact_style))
         story.append(Spacer(1, 12))
@@ -446,7 +446,7 @@ ABOUT ME
 {PERSONAL_INFO['bio']}
 
 EDUCATION
-12th Grade (Pre-Engineering) - F.G. Public School (2024-2025)
+10th Grade (Pre-Engineering) - Sheikh Zayed Public School (2024-2025)
 Computer Science Studies - Self-Learning (2023-Present)
 
 SKILLS
@@ -530,6 +530,7 @@ def apply_css():
         animation: arrowPulse 2s ease-in-out infinite, arrowFloat 3s ease-in-out infinite;
         transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         cursor: pointer;
+        border: none;
     }}
     
     .sidebar-arrow-wrapper:hover {{
@@ -562,6 +563,11 @@ def apply_css():
     @keyframes arrowRotate {{
         0%, 100% {{ transform: rotate(0deg); }}
         50% {{ transform: rotate(10deg); }}
+    }}
+    
+    /* Hide the actual Streamlit button */
+    .stButton button[key="sidebar_arrow"] {{
+        display: none !important;
     }}
     
     /* Sidebar User */
@@ -745,9 +751,10 @@ def apply_css():
     
     .hero-section * {{ position: relative; z-index: 1; }}
     
+    /* Bigger Hero Title */
     .hero-title {{
-        font-size: 3.5rem;
-        font-weight: 700;
+        font-size: 4.5rem !important;
+        font-weight: 800 !important;
         margin-bottom: 0.5rem;
         text-shadow: 0 0 40px rgba(255,215,0,0.3);
         animation: fadeInDown 1s ease, textGoldenGlow 3s ease-in-out infinite;
@@ -756,6 +763,7 @@ def apply_css():
         -webkit-text-fill-color: transparent;
         background-clip: text;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
+        letter-spacing: 2px;
     }}
     
     @keyframes textGoldenGlow {{
@@ -1643,7 +1651,7 @@ def apply_css():
     ::-webkit-scrollbar-thumb:hover {{ background: linear-gradient(135deg, #f093fb, #ffd700); }}
     
     @media (max-width: 768px) {{
-        .hero-title {{ font-size: 2.2rem; }}
+        .hero-title {{ font-size: 2.2rem !important; }}
         .hero-subtitle {{ font-size: 1rem; }}
         .copy-container {{ flex-wrap: wrap; }}
         .what-i-do-item {{ padding: 1rem; }}
@@ -1855,8 +1863,7 @@ def show_sidebar():
     """, unsafe_allow_html=True)
     
     # Hidden button for functionality
-    arrow_label = "◀ MENU " if st.session_state.sidebar_open else "▶ MENU"
-    if st.button(arrow_label, key="sidebar_arrow", help="Toggle Sidebar", use_container_width=True):
+    if st.button("", key="sidebar_arrow", help="Toggle Sidebar"):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
     
