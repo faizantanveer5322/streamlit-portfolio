@@ -1813,7 +1813,7 @@ def show_sidebar():
         </div>
     """, unsafe_allow_html=True)
     
-    if st.button("", key="sidebar_arrow", help="Toggle Sidebar"):
+    if st.button("MENU✨", key="sidebar_arrow", help="Toggle Sidebar"):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
     
