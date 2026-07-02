@@ -9,7 +9,6 @@ import hashlib
 import json
 import time
 import tempfile
-import requests
 
 # Try importing reportlab for PDF generation
 try:
@@ -25,6 +24,7 @@ try:
     REPORTLAB_AVAILABLE = True
 except ImportError:
     REPORTLAB_AVAILABLE = False
+    st.warning("⚠️ reportlab not installed. Installing...")
 
 # Page configuration
 st.set_page_config(
@@ -40,7 +40,6 @@ if not os.path.exists("images"):
 
 # Create users file if it doesn't exist
 USERS_FILE = "users.json"
-SETTINGS_FILE = "settings.json"
 
 # ============ PERMANENT IMAGE STORAGE ============
 PROFILE_IMAGE_PATH = "images/profile_image.png"
@@ -85,21 +84,6 @@ def change_password(username, old_password, new_password):
         return True
     return False
 
-# ============ SETTINGS FUNCTIONS ============
-
-def load_settings():
-    if os.path.exists(SETTINGS_FILE):
-        try:
-            with open(SETTINGS_FILE, 'r') as f:
-                return json.load(f)
-        except:
-            return {}
-    return {}
-
-def save_settings(settings):
-    with open(SETTINGS_FILE, 'w') as f:
-        json.dump(settings, f, indent=4)
-
 # ============ SESSION STATE INITIALIZATION ============
 
 if 'authenticated' not in st.session_state:
@@ -114,12 +98,6 @@ if 'copied_text' not in st.session_state:
     st.session_state.copied_text = ""
 if 'sidebar_open' not in st.session_state:
     st.session_state.sidebar_open = False
-if 'settings' not in st.session_state:
-    st.session_state.settings = load_settings()
-if 'font_size' not in st.session_state:
-    st.session_state.font_size = st.session_state.settings.get('font_size', 'medium')
-if 'theme' not in st.session_state:
-    st.session_state.theme = st.session_state.settings.get('theme', 'dark')
 
 # ============ PERSONAL INFORMATION ============
 
@@ -175,12 +153,12 @@ EXPERIENCE = [
     }
 ]
 
-# ============ EDUCATION - UPDATED ============
+# ============ EDUCATION ============
 
 EDUCATION = [
     {
-        "degree": "10th Grade (Pre-Engineering)",
-        "institution": "Sheikh Zayed Public School",
+        "degree": "12th Grade (Pre-Engineering)",
+        "institution": "F.G. Public School",
         "year": "2024 - 2025",
         "gpa": "Excellent"
     },
@@ -285,30 +263,20 @@ def get_profile_image_base64():
             return None
     return None
 
-# ============ WEATHER FUNCTION ============
-
-def get_weather():
-    try:
-        return {
-            "temperature": "31°C",
-            "condition": "☀️ Sunny",
-            "city": "Pakistan"
-        }
-    except:
-        return {
-            "temperature": "31°C",
-            "condition": "☀️ Sunny",
-            "city": "Pakistan"
-        }
-
-# ============ PDF RESUME GENERATION ============
+# ============ PDF RESUME GENERATION - FIXED WITH REPORTLAB ============
 
 def create_download_resume():
+    """Generate professional PDF resume using reportlab"""
+    
+    # If reportlab not available, fallback to text
     if not REPORTLAB_AVAILABLE:
         return create_download_text_resume()
     
     try:
+        # Create a BytesIO buffer
         buffer = io.BytesIO()
+        
+        # Create PDF document
         doc = SimpleDocTemplate(
             buffer,
             pagesize=A4,
@@ -318,8 +286,10 @@ def create_download_resume():
             bottomMargin=72
         )
         
+        # Styles
         styles = getSampleStyleSheet()
         
+        # Title Style
         title_style = ParagraphStyle(
             'CustomTitle',
             parent=styles['Heading1'],
@@ -330,6 +300,7 @@ def create_download_resume():
             fontName='Helvetica-Bold'
         )
         
+        # Subtitle Style
         subtitle_style = ParagraphStyle(
             'CustomSubtitle',
             parent=styles['Normal'],
@@ -340,6 +311,7 @@ def create_download_resume():
             fontName='Helvetica-Oblique'
         )
         
+        # Contact Style
         contact_style = ParagraphStyle(
             'ContactStyle',
             parent=styles['Normal'],
@@ -350,6 +322,7 @@ def create_download_resume():
             fontName='Helvetica'
         )
         
+        # Heading Style
         heading_style = ParagraphStyle(
             'CustomHeading',
             parent=styles['Heading2'],
@@ -360,6 +333,7 @@ def create_download_resume():
             fontName='Helvetica-Bold'
         )
         
+        # Body Style
         body_style = ParagraphStyle(
             'CustomBody',
             parent=styles['Normal'],
@@ -370,6 +344,7 @@ def create_download_resume():
             fontName='Helvetica'
         )
         
+        # List Style
         list_style = ParagraphStyle(
             'ListStyle',
             parent=styles['Normal'],
@@ -381,35 +356,44 @@ def create_download_resume():
             leftIndent=20
         )
         
+        # Build story
         story = []
         
+        # === HEADER ===
         story.append(Paragraph('FAIZAN TANVEER', title_style))
         story.append(Paragraph('Student | Python Developer', subtitle_style))
         story.append(Paragraph(f'Email: {PERSONAL_INFO["email"]}  |  Phone: {PERSONAL_INFO["phone"]}  |  Location: {PERSONAL_INFO["location"]}', contact_style))
         story.append(Spacer(1, 12))
         
+        # === DECORATIVE LINE ===
         story.append(Paragraph('_' * 80, styles['Normal']))
         story.append(Spacer(1, 8))
         
+        # === ABOUT ME ===
         story.append(Paragraph('ABOUT ME', heading_style))
         story.append(Paragraph(PERSONAL_INFO['bio'], body_style))
         story.append(Spacer(1, 4))
         
+        # === EDUCATION ===
         story.append(Paragraph('EDUCATION', heading_style))
         for edu in EDUCATION:
             story.append(Paragraph(f'• {edu["degree"]} - {edu["institution"]} ({edu["year"]})', list_style))
         story.append(Spacer(1, 4))
         
+        # === SKILLS ===
         story.append(Paragraph('SKILLS', heading_style))
         for category, skills in SKILLS.items():
             story.append(Paragraph(f'• {category}: {", ".join(skills)}', list_style))
         story.append(Spacer(1, 4))
         
+        # === ACHIEVEMENTS ===
         story.append(Paragraph('ACHIEVEMENTS', heading_style))
         for achievement in ACHIEVEMENTS:
+            # Remove emojis for PDF compatibility
             clean = achievement.replace('🏆', '').replace('📝', '').replace('🎯', '').replace('💡', '').replace('🎤', '').strip()
             story.append(Paragraph(f'• {clean}', list_style))
         
+        # === FOOTER ===
         story.append(Spacer(1, 20))
         footer_style = ParagraphStyle(
             'FooterStyle',
@@ -422,19 +406,26 @@ def create_download_resume():
         story.append(Paragraph(f'Generated from Faizan Tanveer\'s Portfolio', footer_style))
         story.append(Paragraph(f'Date: {datetime.now().strftime("%Y-%m-%d %H:%M")}', footer_style))
         
+        # Build PDF
         doc.build(story)
         buffer.seek(0)
         
+        # Get PDF bytes
         pdf_bytes = buffer.getvalue()
         buffer.close()
         
+        # Encode to base64
         b64 = base64.b64encode(pdf_bytes).decode()
+        
+        # Return download link
         return f'<a href="data:application/pdf;base64,{b64}" download="Faizan_Tanveer_Resume.pdf" class="download-btn">📄 Download Resume (PDF)</a>'
         
     except Exception as e:
+        # If PDF generation fails, fallback to text
         return create_download_text_resume()
 
 def create_download_text_resume():
+    """Fallback: Create text resume download"""
     resume_content = f"""FAIZAN TANVEER
 Student | Python Developer
 
@@ -446,7 +437,7 @@ ABOUT ME
 {PERSONAL_INFO['bio']}
 
 EDUCATION
-10th Grade (Pre-Engineering) - Sheikh Zayed Public School (2024-2025)
+12th Grade (Pre-Engineering) - F.G. Public School (2024-2025)
 Computer Science Studies - Self-Learning (2023-Present)
 
 SKILLS
@@ -469,120 +460,72 @@ Generated: {datetime.now().strftime("%Y-%m-%d %H:%M")}
 # ============ CUSTOM CSS ============
 
 def apply_css():
-    font_size_map = {
-        'small': '14px',
-        'medium': '16px',
-        'large': '18px',
-        'xlarge': '20px'
-    }
-    font_size = font_size_map.get(st.session_state.font_size, '16px')
-    
-    if st.session_state.theme == 'dark':
-        bg_gradient = "linear-gradient(135deg, #0f0c29, #302b63, #24243e)"
-        card_bg = "rgba(255,255,255,0.08)"
-        text_color = "rgba(255,255,255,0.95)"
-    else:
-        bg_gradient = "linear-gradient(135deg, #f5f7fa, #c3cfe2)"
-        card_bg = "rgba(255,255,255,0.7)"
-        text_color = "rgba(0,0,0,0.9)"
-    
-    st.markdown(f"""
+    st.markdown("""
     <style>
     /* Hide default sidebar toggle */
-    button[data-testid="baseButton-header"] {{ display: none !important; }}
-    [data-testid="collapsedControl"] {{ display: none !important; }}
+    button[data-testid="baseButton-header"] { display: none !important; }
+    [data-testid="collapsedControl"] { display: none !important; }
     
     /* Main background */
-    .main {{ background: {bg_gradient}; }}
-    
-    /* Font size */
-    .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
-    .stMarkdown span, .stMarkdown div, .stMarkdown li, .stMarkdown a,
-    .stMarkdown strong, .stMarkdown em, .stMarkdown b {{
-        font-size: {font_size} !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Helvetica Neue', sans-serif !important;
-        color: {text_color} !important;
-    }}
+    .main { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
     
     /* Sidebar */
-    section[data-testid="stSidebar"] {{
+    section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #1a0533 100%) !important;
         padding: 1rem 0.5rem;
         border-right: none !important;
-        box-shadow: 4px 0 30px rgba(255,215,0,0.3);
-        transition: all 0.3s ease;
-    }}
+        box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3);
+    }
     
-    /* Sidebar Arrow Button - FIXED: No Text, No Space */
-    .sidebar-arrow-wrapper {{
+    /* Hamburger Menu */
+    .hamburger-btn {
         position: fixed;
-        top: 20px;
-        left: 20px;
+        top: 15px;
+        left: 15px;
         z-index: 999;
-        background: linear-gradient(135deg, #ffd700, #f093fb);
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 12px;
+        padding: 10px 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         display: flex;
         align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 30px rgba(255,215,0,0.4);
-        animation: arrowPulse 2s ease-in-out infinite, arrowFloat 3s ease-in-out infinite;
-        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        cursor: pointer;
-        border: none;
-    }}
-    
-    .sidebar-arrow-wrapper:hover {{
-        transform: scale(1.15) rotate(15deg);
-        box-shadow: 0 8px 50px rgba(255,215,0,0.6);
-    }}
-    
-    .sidebar-arrow-wrapper:active {{
-        transform: scale(0.9);
-    }}
-    
-    @keyframes arrowPulse {{
-        0%, 100% {{ box-shadow: 0 4px 30px rgba(255,215,0,0.4); }}
-        50% {{ box-shadow: 0 8px 60px rgba(255,215,0,0.8); }}
-    }}
-    
-    @keyframes arrowFloat {{
-        0%, 100% {{ transform: translateY(0px); }}
-        50% {{ transform: translateY(-8px); }}
-    }}
-    
-    .sidebar-arrow-wrapper .arrow-icon {{
+        gap: 10px;
         color: white;
-        font-size: 1.5rem;
-        font-weight: bold;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        animation: arrowRotate 3s ease-in-out infinite;
-    }}
+        font-size: 1rem;
+        font-weight: 500;
+    }
     
-    @keyframes arrowRotate {{
-        0%, 100% {{ transform: rotate(0deg); }}
-        50% {{ transform: rotate(10deg); }}
-    }}
+    .hamburger-btn:hover {
+        background: rgba(255,215,0,0.15);
+        transform: scale(1.05);
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 4px 30px rgba(255,215,0,0.15);
+    }
     
-    /* Hide the actual Streamlit button */
-    .stButton button[key="sidebar_arrow"] {{
-        display: none !important;
-    }}
+    .hamburger-btn .icon { font-size: 1.5rem; line-height: 1; }
+    .hamburger-btn .text {
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        color: rgba(255,255,255,0.9);
+    }
+    .hamburger-btn:hover .text { color: #ffd700; }
     
     /* Sidebar User */
-    .sidebar-user {{
+    .sidebar-user {
         text-align: center;
         padding: 0.5rem 0;
         animation: userSlideIn 0.8s ease;
-    }}
+    }
     
-    @keyframes userSlideIn {{
-        from {{ opacity: 0; transform: translateY(-20px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
-    }}
+    @keyframes userSlideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     
-    .sidebar-user .avatar {{
+    .sidebar-user .avatar {
         width: 80px;
         height: 80px;
         border-radius: 50%;
@@ -593,26 +536,26 @@ def apply_css():
         background: rgba(255,255,255,0.1);
         animation: avatarPulse 3s ease-in-out infinite;
         transition: all 0.4s ease;
-    }}
+    }
     
-    .sidebar-user .avatar:hover {{
+    .sidebar-user .avatar:hover {
         transform: scale(1.15) rotate(10deg);
         border-color: #ffd700;
         box-shadow: 0 0 60px rgba(255, 215, 0, 0.6);
-    }}
+    }
     
-    @keyframes avatarPulse {{
-        0%, 100% {{ box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); transform: scale(1); }}
-        50% {{ box-shadow: 0 0 60px rgba(255, 215, 0, 0.5); transform: scale(1.05); }}
-    }}
+    @keyframes avatarPulse {
+        0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); transform: scale(1); }
+        50% { box-shadow: 0 0 60px rgba(255, 215, 0, 0.5); transform: scale(1.05); }
+    }
     
-    .sidebar-user .avatar img {{
+    .sidebar-user .avatar img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-    }}
+    }
     
-    .sidebar-user h3 {{
+    .sidebar-user h3 {
         color: #ffd700 !important;
         margin-top: 0.5rem;
         margin-bottom: 0.2rem;
@@ -623,64 +566,64 @@ def apply_css():
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-    }}
+    }
     
-    @keyframes textGlow {{
-        0%, 100% {{ text-shadow: 0 0 20px rgba(255,215,0,0.2); }}
-        50% {{ text-shadow: 0 0 50px rgba(255,215,0,0.5); }}
-    }}
+    @keyframes textGlow {
+        0%, 100% { text-shadow: 0 0 20px rgba(255,215,0,0.2); }
+        50% { text-shadow: 0 0 50px rgba(255,215,0,0.5); }
+    }
     
-    .sidebar-user p {{
+    .sidebar-user p {
         color: rgba(255,255,255,0.7) !important;
         font-size: 0.8rem;
         margin: 0;
         animation: fadeInUp 0.8s ease;
-    }}
+    }
     
     /* Sidebar Navigation */
-    .sidebar-nav .stButton button {{
+    .sidebar-nav .stButton button {
         width: 100%;
-        background: rgba(255,215,0,0.05) !important;
+        background: rgba(255,255,255,0.05) !important;
         color: rgba(255,255,255,0.8) !important;
-        border: 1px solid rgba(255,215,0,0.15) !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
         border-radius: 12px !important;
         padding: 0.6rem 1rem !important;
         margin: 0.15rem 0 !important;
         text-align: left !important;
         font-weight: 500 !important;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
         backdrop-filter: blur(10px);
         animation: slideInLeft 0.5s ease both;
         position: relative;
         overflow: hidden;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .sidebar-nav .stButton button::before {{
+    .sidebar-nav .stButton button::before {
         content: '';
         position: absolute;
         top: 0;
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,215,0,0.15), transparent);
+        background: linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent);
         transition: left 0.6s ease;
-    }}
+    }
     
-    .sidebar-nav .stButton button:hover::before {{ left: 100%; }}
+    .sidebar-nav .stButton button:hover::before { left: 100%; }
     
-    .sidebar-nav .stButton button:hover {{
+    .sidebar-nav .stButton button:hover {
         background: rgba(255,215,0,0.15) !important;
         color: #ffd700 !important;
-        transform: translateX(10px) scale(1.03) rotate(2deg) !important;
-        border-color: rgba(255,215,0,0.4) !important;
-        box-shadow: 0 0 40px rgba(255,215,0,0.2);
-    }}
+        transform: translateX(10px) scale(1.03);
+        border-color: rgba(255,215,0,0.3) !important;
+        box-shadow: 0 0 40px rgba(255,215,0,0.15);
+    }
     
-    .sidebar-nav .stButton button:active {{ transform: scale(0.95) !important; }}
+    .sidebar-nav .stButton button:active { transform: scale(0.95); }
     
     /* Sidebar Logout */
-    .sidebar-logout .stButton button {{
+    .sidebar-logout .stButton button {
         width: 100%;
         background: rgba(255,50,50,0.15) !important;
         color: #ff6b6b !important;
@@ -688,164 +631,151 @@ def apply_css():
         border-radius: 12px !important;
         padding: 0.6rem !important;
         font-weight: 500 !important;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
         backdrop-filter: blur(10px);
         animation: slideInLeft 0.6s ease 0.55s both;
-    }}
+    }
     
-    .sidebar-logout .stButton button:hover {{
+    .sidebar-logout .stButton button:hover {
         background: rgba(255,50,50,0.25) !important;
-        transform: scale(1.05) translateX(5px) rotate(-2deg) !important;
+        transform: scale(1.05) translateX(5px);
         box-shadow: 0 0 40px rgba(255,50,50,0.3);
         border-color: rgba(255,50,50,0.4) !important;
-    }}
+    }
     
-    /* Hero Section - Golden Theme */
-    .hero-section {{
-        background: linear-gradient(135deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #ffd700 100%);
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 55%, #f5576c 80%, #ffd700 100%);
         padding: 3rem 2rem;
         border-radius: 20px;
         margin-bottom: 2rem;
         color: white;
         text-align: center;
-        box-shadow: 0 10px 50px rgba(255,215,0,0.3);
-        animation: heroFadeIn 0.8s ease, goldenGlow 4s ease-in-out infinite;
+        box-shadow: 0 10px 50px rgba(0,0,0,0.4);
+        animation: heroFadeIn 0.8s ease;
         position: relative;
         overflow: hidden;
         background-size: 300% 300%;
-        animation: gradientShift 6s ease infinite, goldenGlow 4s ease-in-out infinite;
-        border: 1px solid rgba(255,215,0,0.2);
-    }}
+        animation: gradientShift 6s ease infinite;
+    }
     
-    @keyframes gradientShift {{
-        0% {{ background-position: 0% 50%; }}
-        50% {{ background-position: 100% 50%; }}
-        100% {{ background-position: 0% 50%; }}
-    }}
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
     
-    @keyframes goldenGlow {{
-        0%, 100% {{ box-shadow: 0 10px 50px rgba(255,215,0,0.3); }}
-        50% {{ box-shadow: 0 20px 80px rgba(255,215,0,0.6); }}
-    }}
-    
-    .hero-section::before {{
+    .hero-section::before {
         content: '';
         position: absolute;
         top: -50%;
         left: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(255,215,0,0.2) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
         animation: rotateGradient 20s linear infinite;
-    }}
+    }
     
-    @keyframes heroFadeIn {{
-        from {{ opacity: 0; transform: translateY(-20px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
-    }}
+    @keyframes heroFadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     
-    @keyframes rotateGradient {{
-        0% {{ transform: rotate(0deg); }}
-        100% {{ transform: rotate(360deg); }}
-    }}
+    @keyframes rotateGradient {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
     
-    .hero-section * {{ position: relative; z-index: 1; }}
+    .hero-section * { position: relative; z-index: 1; }
     
-    /* FIXED: Bigger Hero Title - Centered */
-    .hero-title {{
-        font-size: 4.5rem !important;
-        font-weight: 800 !important;
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 700;
         margin-bottom: 0.5rem;
-        text-shadow: 0 0 40px rgba(255,215,0,0.3);
-        animation: fadeInDown 1s ease, textGoldenGlow 3s ease-in-out infinite;
+        text-shadow: 0 0 40px rgba(0,0,0,0.3);
+        animation: fadeInDown 1s ease;
         background: linear-gradient(to right, #fff, #ffd700);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
-        letter-spacing: 2px;
-        text-align: center !important;
-    }}
+    }
     
-    @keyframes textGoldenGlow {{
-        0%, 100% {{ text-shadow: 0 0 30px rgba(255,215,0,0.2); }}
-        50% {{ text-shadow: 0 0 60px rgba(255,215,0,0.5); }}
-    }}
-    
-    .hero-title .emoji-text {{
+    .hero-title .emoji-text {
         -webkit-text-fill-color: initial !important;
         color: #fff !important;
         background: none !important;
-    }}
+    }
     
-    .hero-subtitle {{
+    .hero-subtitle {
         font-size: 1.5rem;
         opacity: 0.95;
         font-weight: 300;
         animation: fadeInUp 1s ease;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
         color: rgba(255,255,255,0.95) !important;
-    }}
+    }
     
-    .hero-email {{
+    .hero-email {
         font-size: 1.1rem;
         opacity: 0.9;
         margin-top: 0.5rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
         color: rgba(255,255,255,0.95) !important;
-    }}
+    }
     
-    @keyframes fadeInDown {{
-        from {{ opacity: 0; transform: translateY(-30px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
-    }}
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     
-    @keyframes fadeInUp {{
-        from {{ opacity: 0; transform: translateY(30px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
-    }}
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     
-    @keyframes pulse {{
-        0%, 100% {{ transform: scale(1); }}
-        50% {{ transform: scale(1.05); }}
-    }}
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
     
-    @keyframes slideInRight {{
-        from {{ opacity: 0; transform: translateX(30px); }}
-        to {{ opacity: 1; transform: translateX(0); }}
-    }}
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
     
-    @keyframes float {{
-        0%, 100% {{ transform: translateY(0px); }}
-        50% {{ transform: translateY(-10px); }}
-    }}
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
     
-    @keyframes bounceIn {{
-        0% {{ opacity: 0; transform: scale(0.3); }}
-        50% {{ opacity: 1; transform: scale(1.05); }}
-        70% {{ transform: scale(0.9); }}
-        100% {{ transform: scale(1); }}
-    }}
+    @keyframes bounceIn {
+        0% { opacity: 0; transform: scale(0.3); }
+        50% { opacity: 1; transform: scale(1.05); }
+        70% { transform: scale(0.9); }
+        100% { transform: scale(1); }
+    }
     
-    /* Cards - Without Hover Animations (Home Page will handle) */
-    .card {{
-        background: {card_bg};
+    /* Cards */
+    .card {
+        background: rgba(255,255,255,0.08);
         backdrop-filter: blur(20px);
         padding: 1.5rem;
         border-radius: 20px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         margin-bottom: 1.5rem;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255,215,0,0.1);
-        animation: slideInLeft 0.6s ease, cardGlow 4s ease-in-out infinite;
-    }}
+        transition: all 0.4s ease;
+        border: 1px solid rgba(255,255,255,0.08);
+        animation: slideInLeft 0.6s ease;
+    }
     
-    @keyframes cardGlow {{
-        0%, 100% {{ border-color: rgba(255,215,0,0.1); }}
-        50% {{ border-color: rgba(255,215,0,0.3); }}
-    }}
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        border-color: rgba(255,215,0,0.2);
+    }
     
-    .card-title {{
+    .card-title {
         font-size: 1.5rem;
         font-weight: 700;
         color: #ffd700 !important;
@@ -853,17 +783,17 @@ def apply_css():
         border-bottom: 2px solid rgba(255,215,0,0.2);
         padding-bottom: 0.5rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .card p, .card div, .card span, .card h4, .card h3 {{
-        color: {text_color} !important;
+    .card p, .card div, .card span, .card h4, .card h3 {
+        color: rgba(255,255,255,0.9) !important;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    /* Skill Tags - Without Hover Animation (Home Page will handle) */
-    .skill-tag {{
+    /* Skill Tags */
+    .skill-tag {
         display: inline-block;
-        background: linear-gradient(135deg, #ffd700 0%, #f093fb 100%);
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         color: white;
         padding: 0.3rem 1rem;
         border-radius: 20px;
@@ -872,20 +802,25 @@ def apply_css():
         font-weight: 500;
         transition: all 0.3s ease;
         animation: pulse 2s infinite;
-        box-shadow: 0 4px 15px rgba(255,215,0,0.3);
+        box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
         cursor: pointer;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    /* What I Do - Without Hover Animation (Home Page will handle) */
-    .what-i-do-item {{
+    .skill-tag:hover {
+        transform: scale(1.1) rotate(-2deg);
+        box-shadow: 0 4px 25px rgba(245, 87, 108, 0.5);
+    }
+    
+    /* What I Do */
+    .what-i-do-item {
         text-align: center;
         padding: 1.5rem 1rem;
-        background: rgba(255,215,0,0.05);
+        background: rgba(255,255,255,0.05);
         backdrop-filter: blur(10px);
         border-radius: 16px;
-        border: 1px solid rgba(255,215,0,0.1);
-        transition: all 0.3s ease;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         cursor: pointer;
         position: relative;
         overflow: hidden;
@@ -896,43 +831,49 @@ def apply_css():
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        animation: float 4s ease-in-out infinite;
-    }}
+    }
     
-    .what-i-do-item::before {{
+    .what-i-do-item::before {
         content: '';
         position: absolute;
         top: -50%;
         left: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
         opacity: 0;
         transition: opacity 0.6s ease;
-    }}
+    }
     
-    .what-i-do-item:hover::before {{ opacity: 1; }}
+    .what-i-do-item:hover::before { opacity: 1; }
     
-    .what-i-do-item .icon {{
+    .what-i-do-item:hover {
+        transform: translateY(-10px) scale(1.02);
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 10px 40px rgba(255,215,0,0.15);
+        background: rgba(255,215,0,0.08);
+    }
+    
+    .what-i-do-item .icon {
         font-size: 2.8rem;
         display: block;
         animation: float 3s ease-in-out infinite;
         position: relative;
         z-index: 1;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .what-i-do-item .label {{
+    .what-i-do-item .label {
         margin-top: 0.5rem;
         font-weight: 600;
-        color: {text_color} !important;
+        color: rgba(255,255,255,0.95) !important;
         position: relative;
         z-index: 1;
         font-size: 1.1rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .what-i-do-item .description {{
+    .what-i-do-item .description {
         font-size: 0.9rem;
         color: rgba(255,255,255,0.6) !important;
         margin-top: 0.3rem;
@@ -941,10 +882,10 @@ def apply_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
         line-height: 1.4;
         max-width: 90%;
-    }}
+    }
     
-    /* Profile Image - Without Hover Animation (Home Page will handle) */
-    .profile-image-container {{
+    /* Profile Image */
+    .profile-image-container {
         width: 150px;
         height: 150px;
         border-radius: 50%;
@@ -954,11 +895,11 @@ def apply_css():
         box-shadow: 0 0 40px rgba(255,215,0,0.2);
         background: rgba(255,255,255,0.1);
         animation: profileFloat 3s ease-in-out infinite, profileGlow 4s ease-in-out infinite;
-        transition: all 0.3s ease;
+        transition: all 0.5s ease;
         position: relative;
-    }}
+    }
     
-    .profile-image-container::after {{
+    .profile-image-container::after {
         content: '';
         position: absolute;
         top: -2px;
@@ -971,71 +912,72 @@ def apply_css():
         animation: borderGlow 4s linear infinite;
         z-index: -1;
         opacity: 0.6;
-    }}
+    }
     
-    @keyframes borderGlow {{
-        0% {{ background-position: 0% 50%; }}
-        50% {{ background-position: 100% 50%; }}
-        100% {{ background-position: 0% 50%; }}
-    }}
+    @keyframes borderGlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
     
-    @keyframes profileFloat {{
-        0%, 100% {{ transform: translateY(0px) scale(1); }}
-        50% {{ transform: translateY(-15px) scale(1.02); }}
-    }}
+    .profile-image-container:hover {
+        transform: scale(1.1) rotate(5deg);
+        border-color: #ffd700;
+        box-shadow: 0 0 80px rgba(255,215,0,0.5);
+    }
     
-    @keyframes profileGlow {{
-        0%, 100% {{ box-shadow: 0 0 30px rgba(255,215,0,0.2); }}
-        50% {{ box-shadow: 0 0 60px rgba(255,215,0,0.4); }}
-    }}
+    @keyframes profileFloat {
+        0%, 100% { transform: translateY(0px) scale(1); }
+        50% { transform: translateY(-15px) scale(1.02); }
+    }
     
-    .profile-image-container img {{
+    @keyframes profileGlow {
+        0%, 100% { box-shadow: 0 0 30px rgba(255,215,0,0.2); }
+        50% { box-shadow: 0 0 60px rgba(255,215,0,0.4); }
+    }
+    
+    .profile-image-container img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-    }}
+    }
     
     /* Profile Card */
-    .profile-card {{
+    .profile-card {
         text-align: center;
-        background: linear-gradient(135deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #ffd700 100%) !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%) !important;
         padding: 2rem 1.5rem !important;
         border-radius: 20px !important;
         color: white !important;
-        border: 1px solid rgba(255,215,0,0.3) !important;
-        box-shadow: 0 15px 50px rgba(255,215,0,0.3) !important;
+        border: none !important;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.3) !important;
         transition: all 0.3s ease !important;
         position: relative;
         overflow: hidden;
-        animation: slideInRight 0.6s ease, profileCardGlow 4s ease-in-out infinite;
-    }}
+        animation: slideInRight 0.6s ease;
+    }
     
-    @keyframes profileCardGlow {{
-        0%, 100% {{ box-shadow: 0 15px 50px rgba(255,215,0,0.3); }}
-        50% {{ box-shadow: 0 25px 80px rgba(255,215,0,0.5); }}
-    }}
-    
-    .profile-card::before {{
+    .profile-card::before {
         content: '';
         position: absolute;
         top: -50%;
         left: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(255,215,0,0.2) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
         animation: rotateGradient 15s linear infinite;
-    }}
+    }
     
-    .profile-card * {{ position: relative; z-index: 1; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
-    .profile-card .card-title {{ color: white !important; border-bottom-color: rgba(255,255,255,0.2) !important; }}
-    .profile-card h3 {{ color: white !important; }}
-    .profile-card p {{ color: rgba(255,255,255,0.9) !important; }}
-    .profile-card .profile-image-container {{ border-color: rgba(255,255,255,0.6) !important; box-shadow: 0 0 40px rgba(255,255,255,0.1) !important; }}
-    .profile-card .copy-text {{ background: rgba(255,255,255,0.15) !important; color: white !important; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }}
-    .profile-card hr {{ display: none !important; }}
-    .profile-card strong {{ color: rgba(255,255,255,0.9) !important; }}
+    .profile-card * { position: relative; z-index: 1; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
+    .profile-card .card-title { color: white !important; border-bottom-color: rgba(255,255,255,0.2) !important; }
+    .profile-card h3 { color: white !important; }
+    .profile-card p { color: rgba(255,255,255,0.9) !important; }
+    .profile-card .profile-image-container { border-color: rgba(255,255,255,0.6) !important; box-shadow: 0 0 40px rgba(255,255,255,0.1) !important; }
+    .profile-card .copy-text { background: rgba(255,255,255,0.15) !important; color: white !important; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    .profile-card hr { display: none !important; }
+    .profile-card strong { color: rgba(255,255,255,0.9) !important; }
     
-    .profile-card .stButton button {{
+    .profile-card .stButton button {
         background: rgba(255,255,255,0.2) !important;
         color: white !important;
         border: 1px solid rgba(255,255,255,0.2) !important;
@@ -1045,16 +987,16 @@ def apply_css():
         font-weight: 500 !important;
         transition: all 0.3s ease !important;
         width: 100% !important;
-    }}
+    }
     
-    .profile-card .stButton button:hover {{
+    .profile-card .stButton button:hover {
         background: rgba(255,255,255,0.35) !important;
         transform: scale(1.05);
         box-shadow: 0 0 30px rgba(255,255,255,0.1);
-    }}
+    }
     
-    /* Download Button - Without Hover Animation (Home Page will handle) */
-    .download-btn {{
+    /* Download Button */
+    .download-btn {
         display: block;
         text-align: center;
         padding: 0.8rem;
@@ -1071,94 +1013,55 @@ def apply_css():
         animation: pulse 2s infinite;
         box-shadow: 0 4px 25px rgba(255,215,0,0.3);
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .download-btn:hover {{
+    .download-btn:hover {
+        transform: scale(1.05);
         box-shadow: 0 8px 40px rgba(255,215,0,0.4);
         color: white !important;
-    }}
-    
-    /* Date/Time/Weather Widget */
-    .datetime-widget {{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,215,0,0.02));
-        backdrop-filter: blur(20px);
-        padding: 0.8rem 1.5rem;
-        border-radius: 15px;
-        border: 1px solid rgba(255,215,0,0.15);
-        margin-bottom: 1rem;
-        animation: slideInRight 0.6s ease, widgetGlow 4s ease-in-out infinite;
-    }}
-    
-    @keyframes widgetGlow {{
-        0%, 100% {{ border-color: rgba(255,215,0,0.15); }}
-        50% {{ border-color: rgba(255,215,0,0.3); }}
-    }}
-    
-    .datetime-widget .item {{
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: rgba(255,255,255,0.8);
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .datetime-widget .item .icon {{
-        font-size: 1.2rem;
-        animation: float 3s ease-in-out infinite;
-    }}
-    
-    .datetime-widget .item .value {{
-        font-weight: 500;
-        color: #ffd700;
-        animation: textGoldenGlow 3s ease-in-out infinite;
-    }}
+    }
     
     /* Contact Form */
-    .contact-form-card {{
-        background: rgba(255,215,0,0.05);
+    .contact-form-card {
+        background: rgba(255,255,255,0.08);
         backdrop-filter: blur(20px);
         padding: 1.5rem;
         border-radius: 20px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        border: 1px solid rgba(255,215,0,0.1);
-        animation: slideInRight 0.6s ease, cardGlow 4s ease-in-out infinite;
-    }}
+        border: 1px solid rgba(255,255,255,0.08);
+        animation: slideInRight 0.6s ease;
+    }
     
-    .contact-form-card h4 {{ color: #ffd700 !important; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
+    .contact-form-card h4 { color: #ffd700 !important; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
     
     .contact-form-card .stTextInput input,
-    .contact-form-card .stTextArea textarea {{
+    .contact-form-card .stTextArea textarea {
         border-radius: 12px !important;
-        border: 1px solid rgba(255,215,0,0.1) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
         background: rgba(255,255,255,0.05) !important;
         color: white !important;
         padding: 0.6rem 1rem !important;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-        transition: all 0.3s ease;
-    }}
+    }
     
     .contact-form-card .stTextInput input:focus,
-    .contact-form-card .stTextArea textarea:focus {{
+    .contact-form-card .stTextArea textarea:focus {
         border-color: #ffd700 !important;
         box-shadow: 0 0 30px rgba(255,215,0,0.1) !important;
-        transform: scale(1.02);
-    }}
+    }
     
     .contact-form-card .stTextInput input::placeholder,
-    .contact-form-card .stTextArea textarea::placeholder {{
+    .contact-form-card .stTextArea textarea::placeholder {
         color: rgba(255,255,255,0.3) !important;
-    }}
+    }
     
     .contact-form-card .stTextInput label,
-    .contact-form-card .stTextArea label {{
+    .contact-form-card .stTextArea label {
         color: rgba(255,255,255,0.7) !important;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .contact-form-card .stButton button {{
+    .contact-form-card .stButton button {
         width: 100%;
         background: linear-gradient(135deg, #ffd700, #f093fb) !important;
         color: white !important;
@@ -1169,69 +1072,62 @@ def apply_css():
         transition: all 0.3s ease !important;
         box-shadow: 0 4px 25px rgba(255,215,0,0.2) !important;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .contact-form-card .stButton button:hover {{
+    .contact-form-card .stButton button:hover {
         transform: scale(1.02) !important;
         box-shadow: 0 8px 35px rgba(255,215,0,0.3) !important;
-    }}
+    }
     
     /* Copy Container */
-    .copy-container {{
+    .copy-container {
         display: flex;
         align-items: center;
         gap: 0.5rem;
         margin: 0.3rem 0;
-    }}
+    }
     
-    .copy-text {{
+    .copy-text {
         flex: 1;
         padding: 0.3rem 0.5rem;
         border-radius: 8px;
         font-size: 0.9rem;
         word-break: break-all;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-        background: rgba(255,255,255,0.05);
-        transition: all 0.3s ease;
-    }}
-    
-    .copy-text:hover {{
-        transform: scale(1.02);
-        border-color: rgba(255,215,0,0.3);
-    }}
+    }
     
     /* Auth */
-    .auth-container {{
+    .auth-container {
         max-width: 420px;
         margin: 50px auto;
         padding: 2.5rem;
-        background: rgba(255,215,0,0.05);
+        background: rgba(255,255,255,0.05);
         backdrop-filter: blur(30px);
         border-radius: 30px;
-        box-shadow: 0 20px 60px rgba(255,215,0,0.1);
-        border: 1px solid rgba(255,215,0,0.1);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.06);
         animation: bounceIn 0.8s ease;
-    }}
+    }
     
-    .auth-container h2 {{
+    .auth-container h2 {
         text-align: center;
         color: #ffd700;
         margin-bottom: 0.5rem;
         font-size: 2rem;
         animation: fadeInDown 0.8s ease;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .auth-container .subtitle {{
+    .auth-container .subtitle {
         text-align: center;
         color: rgba(255,255,255,0.6);
         margin-bottom: 1.5rem;
         font-size: 0.9rem;
         animation: fadeInUp 0.8s ease;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .auth-container .stButton button {{
+    .auth-container .stButton button {
         width: 100%;
         background: linear-gradient(135deg, #ffd700, #f093fb);
         color: white;
@@ -1243,84 +1139,82 @@ def apply_css():
         animation: pulse 2s infinite;
         box-shadow: 0 4px 25px rgba(255,215,0,0.2);
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .auth-container .stButton button:hover {{
+    .auth-container .stButton button:hover {
         transform: scale(1.02);
         box-shadow: 0 8px 35px rgba(255,215,0,0.3);
-    }}
+    }
     
-    .auth-container .stTextInput input {{
+    .auth-container .stTextInput input {
         border-radius: 15px;
-        border: 1px solid rgba(255,215,0,0.1);
+        border: 1px solid rgba(255,255,255,0.1);
         padding: 0.6rem 1rem;
         background: rgba(255,255,255,0.05);
         color: white;
         transition: all 0.3s ease;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .auth-container .stTextInput input:focus {{
+    .auth-container .stTextInput input:focus {
         border-color: #ffd700;
         box-shadow: 0 0 30px rgba(255,215,0,0.1);
-        transform: scale(1.02);
-    }}
+    }
     
-    .auth-container .stTextInput input::placeholder {{
+    .auth-container .stTextInput input::placeholder {
         color: rgba(255,255,255,0.3);
-    }}
+    }
     
-    .auth-container .stTextInput label {{
+    .auth-container .stTextInput label {
         color: rgba(255,255,255,0.7) !important;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .auth-switch {{
+    .auth-switch {
         text-align: center;
         margin-top: 1.2rem;
         color: rgba(255,255,255,0.6);
         animation: fadeInUp 0.8s ease;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .auth-switch a {{
+    .auth-switch a {
         color: #ffd700;
         text-decoration: none;
         font-weight: 600;
         cursor: pointer;
         transition: color 0.3s ease;
-    }}
+    }
     
-    .auth-switch a:hover {{
+    .auth-switch a:hover {
         color: #f093fb;
         text-decoration: underline;
-        transform: scale(1.05);
-    }}
+    }
     
-    .auth-icon {{
+    .auth-icon {
         text-align: center;
         font-size: 4rem;
         margin-bottom: 0.5rem;
         animation: float 3s ease-in-out infinite;
-    }}
+    }
     
     /* Settings */
-    .settings-card {{
-        background: rgba(255,215,0,0.05);
+    .settings-card {
+        background: rgba(255,255,255,0.05);
         backdrop-filter: blur(30px);
         padding: 2rem;
         border-radius: 20px;
-        border: 1px solid rgba(255,215,0,0.1);
-        animation: slideInRight 0.6s ease, cardGlow 4s ease-in-out infinite;
+        border: 1px solid rgba(255,255,255,0.06);
+        animation: slideInRight 0.6s ease;
         max-width: 600px;
         margin: 0 auto;
-        box-shadow: 0 10px 40px rgba(255,215,0,0.05);
-    }}
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
     
-    .settings-card h2 {{ color: #ffd700 !important; text-align: center; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
-    .settings-card h3 {{ color: rgba(255,255,255,0.9) !important; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
+    .settings-card h2 { color: #ffd700 !important; text-align: center; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
+    .settings-card h3 { color: rgba(255,255,255,0.9) !important; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
     
-    .settings-card .stButton button {{
+    .settings-card .stButton button {
         width: 100%;
         background: linear-gradient(135deg, #ffd700, #f093fb);
         color: white;
@@ -1331,174 +1225,154 @@ def apply_css():
         transition: all 0.3s ease;
         box-shadow: 0 4px 25px rgba(255,215,0,0.2);
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .settings-card .stButton button:hover {{
+    .settings-card .stButton button:hover {
         transform: scale(1.02);
         box-shadow: 0 8px 35px rgba(255,215,0,0.3);
-    }}
+    }
     
-    .settings-card .stTextInput input {{
+    .settings-card .stTextInput input {
         border-radius: 15px;
-        border: 1px solid rgba(255,215,0,0.1);
+        border: 1px solid rgba(255,255,255,0.1);
         padding: 0.6rem 1rem;
         background: rgba(255,255,255,0.05);
         color: white;
         transition: all 0.3s ease;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .settings-card .stTextInput input:focus {{
+    .settings-card .stTextInput input:focus {
         border-color: #ffd700;
         box-shadow: 0 0 30px rgba(255,215,0,0.1);
-        transform: scale(1.02);
-    }}
+    }
     
-    .settings-card .stTextInput input::placeholder {{
+    .settings-card .stTextInput input::placeholder {
         color: rgba(255,255,255,0.3);
-    }}
+    }
     
-    .settings-card .stTextInput label {{
+    .settings-card .stTextInput label {
         color: rgba(255,255,255,0.7) !important;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .settings-card hr {{ border-color: rgba(255,215,0,0.1); }}
-    .settings-card p {{ color: rgba(255,255,255,0.6) !important; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
-    .settings-card strong {{ color: #ffd700 !important; }}
-    
-    .settings-card .stSelectbox label,
-    .settings-card .stSelectbox div {{
-        color: rgba(255,255,255,0.7) !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .settings-card .stSelectbox select {{
-        background: rgba(255,255,255,0.05) !important;
-        color: white !important;
-        border: 1px solid rgba(255,215,0,0.1) !important;
-        border-radius: 12px !important;
-        transition: all 0.3s ease;
-    }}
-    
-    .settings-card .stSelectbox select:hover {{
-        border-color: #ffd700 !important;
-        transform: scale(1.02);
-    }}
+    .settings-card hr { border-color: rgba(255,255,255,0.1); }
+    .settings-card p { color: rgba(255,255,255,0.6) !important; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
+    .settings-card strong { color: #ffd700 !important; }
     
     /* Timeline */
-    .timeline-item {{
+    .timeline-item {
         border-left: 3px solid #ffd700;
         padding-left: 1.5rem;
         margin-bottom: 1.5rem;
         position: relative;
         animation: slideInRight 0.6s ease;
-    }}
+    }
     
-    .timeline-item::before {{
+    .timeline-item::before {
         content: "●";
         position: absolute;
         left: -0.7rem;
         color: #ffd700;
         font-size: 1.2rem;
         animation: pulse 2s infinite;
-    }}
+    }
     
-    .timeline-title {{
+    .timeline-title {
         font-weight: 600;
         color: #ffd700 !important;
         font-size: 1.1rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .timeline-subtitle {{
+    .timeline-subtitle {
         color: #f093fb !important;
         font-weight: 500;
         margin: 0.2rem 0;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .timeline-date {{
+    .timeline-date {
         color: rgba(255,255,255,0.5) !important;
         font-size: 0.9rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .timeline-item div {{
+    .timeline-item div {
         color: rgba(255,255,255,0.8) !important;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    /* Project Card - Without Hover Animation (Home Page will handle) */
-    .project-card {{
-        background: rgba(255,215,0,0.05);
+    /* Project Card */
+    .project-card {
+        background: rgba(255,255,255,0.06);
         backdrop-filter: blur(20px);
         border-radius: 20px;
         overflow: hidden;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        transition: all 0.3s ease;
+        transition: all 0.4s ease;
         height: 100%;
-        border: 1px solid rgba(255,215,0,0.1);
-        animation: slideInUp 0.6s ease, cardGlow 4s ease-in-out infinite;
-    }}
+        border: 1px solid rgba(255,255,255,0.06);
+        animation: slideInUp 0.6s ease;
+    }
     
-    .project-content {{ padding: 1.5rem; }}
-    .project-title {{
+    .project-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        border-color: rgba(255,215,0,0.2);
+    }
+    
+    .project-content { padding: 1.5rem; }
+    .project-title {
         font-weight: 600;
         color: #ffd700 !important;
         font-size: 1.2rem;
         margin-bottom: 0.5rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    .project-description {{
+    }
+    .project-description {
         color: rgba(255,255,255,0.7) !important;
         font-size: 0.95rem;
         line-height: 1.5;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    .project-tech {{ margin-top: 1rem; }}
-    .project-content a {{ color: #f093fb !important; transition: all 0.3s ease; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
-    .project-content a:hover {{ color: #ffd700 !important; transform: scale(1.05) rotate(2deg); display: inline-block; }}
+    }
+    .project-tech { margin-top: 1rem; }
+    .project-content a { color: #f093fb !important; transition: color 0.3s ease; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
+    .project-content a:hover { color: #ffd700 !important; }
     
     /* Upload Section */
-    .upload-section {{
-        background: rgba(255,215,0,0.05);
+    .upload-section {
+        background: rgba(255,255,255,0.08);
         backdrop-filter: blur(20px);
         padding: 1rem;
         border-radius: 20px;
-        border: 1px solid rgba(255,215,0,0.1);
+        border: 1px solid rgba(255,255,255,0.08);
         margin-top: 1rem;
-        animation: cardGlow 4s ease-in-out infinite;
-        transition: all 0.3s ease;
-    }}
+    }
     
-    .upload-section:hover {{
-        border-color: rgba(255,215,0,0.3);
-        transform: scale(1.01);
-    }}
+    .upload-section h4 { color: #ffd700 !important; font-size: 1rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
+    .upload-section p { color: rgba(255,255,255,0.5) !important; font-size: 0.8rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }
     
-    .upload-section h4 {{ color: #ffd700 !important; font-size: 1rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
-    .upload-section p {{ color: rgba(255,255,255,0.5) !important; font-size: 0.8rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
-    
-    /* Stats - Without Hover Animation (Home Page will handle) */
-    .stat-box {{
+    /* Stats */
+    .stat-box {
         text-align: center;
         padding: 1.5rem;
-        background: rgba(255,215,0,0.05);
+        background: rgba(255,255,255,0.06);
         backdrop-filter: blur(20px);
         border-radius: 16px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        border: 1px solid rgba(255,215,0,0.1);
+        border: 1px solid rgba(255,255,255,0.06);
         transition: all 0.3s ease;
-        animation: slideInUp 0.6s ease, statGlow 4s ease-in-out infinite;
-    }}
+        animation: slideInUp 0.6s ease;
+    }
     
-    @keyframes statGlow {{
-        0%, 100% {{ border-color: rgba(255,215,0,0.1); }}
-        50% {{ border-color: rgba(255,215,0,0.3); }}
-    }}
+    .stat-box:hover {
+        transform: scale(1.05) translateY(-5px);
+        border-color: rgba(255,215,0,0.2);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
     
-    .stat-number {{
+    .stat-number {
         font-size: 2.5rem;
         font-weight: 700;
         background: linear-gradient(135deg, #ffd700, #f093fb);
@@ -1507,28 +1381,27 @@ def apply_css():
         background-clip: text;
         animation: pulse 2s infinite;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .stat-label {{
+    .stat-label {
         color: rgba(255,255,255,0.6) !important;
         font-size: 0.9rem;
         margin-top: 0.3rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .about-text {{
+    .about-text {
         font-size: 1.05rem;
         line-height: 1.8;
-        color: {text_color} !important;
+        color: rgba(255,255,255,0.9) !important;
         white-space: pre-wrap;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    /* Social Link - Without Hover Animation (Home Page will handle) */
-    .social-link {{
+    .social-link {
         display: inline-block;
         color: white;
-        background: rgba(255,215,0,0.1);
+        background: rgba(255,255,255,0.1);
         padding: 0.5rem 1.2rem;
         border-radius: 25px;
         margin: 0.3rem;
@@ -1536,18 +1409,49 @@ def apply_css():
         transition: all 0.3s ease;
         backdrop-filter: blur(10px);
         animation: float 3s ease-in-out infinite;
-        border: 1px solid rgba(255,215,0,0.1);
+        border: 1px solid rgba(255,255,255,0.05);
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .social-link:hover {{
+    .social-link:hover {
         background: rgba(255,215,0,0.2);
+        transform: scale(1.1) translateY(-3px);
         color: #ffd700;
         border-color: rgba(255,215,0,0.3);
         box-shadow: 0 0 30px rgba(255,215,0,0.1);
-    }}
+    }
     
-    .success-message {{
+    .profile-social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .profile-social-icons a {
+        color: white !important;
+        font-size: 1.5rem;
+        text-decoration: none;
+        transition: all 0.4s ease;
+        display: inline-block;
+        background: rgba(255,255,255,0.1);
+        padding: 0.3rem 0.6rem;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.05);
+        animation: float 3s ease-in-out infinite;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }
+    
+    .profile-social-icons a:hover {
+        transform: scale(1.3) rotate(-10deg) translateY(-5px);
+        background: rgba(255,215,0,0.25);
+        box-shadow: 0 0 40px rgba(255,215,0,0.2);
+        border-color: rgba(255,215,0,0.3);
+    }
+    
+    .success-message {
         background: rgba(46, 213, 115, 0.2);
         backdrop-filter: blur(20px);
         color: #2ed573;
@@ -1558,9 +1462,9 @@ def apply_css():
         text-align: center;
         animation: fadeInUp 0.5s ease;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
+    }
     
-    .error-message {{
+    .error-message {
         background: rgba(255, 50, 50, 0.2);
         backdrop-filter: blur(20px);
         color: #ff6b6b;
@@ -1571,137 +1475,23 @@ def apply_css():
         text-align: center;
         animation: fadeInUp 0.5s ease;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .profile-social-icons {{
-        display: flex;
-        justify-content: center;
-        gap: 0.8rem;
-        margin-top: 0.5rem;
-        flex-wrap: wrap;
-    }}
-    
-    .profile-social-icons a {{
-        color: white !important;
-        font-size: 1.5rem;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        display: inline-block;
-        background: rgba(255,255,255,0.1);
-        padding: 0.3rem 0.6rem;
-        border-radius: 10px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.05);
-        animation: float 3s ease-in-out infinite;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .profile-social-icons a:hover {{
-        background: rgba(255,215,0,0.25);
-        box-shadow: 0 0 40px rgba(255,215,0,0.2);
-        border-color: rgba(255,215,0,0.3);
-    }}
-    
-    /* ============ HOME PAGE SPECIFIC HOVER ANIMATIONS ============ */
-    /* These animations will ONLY work on home page because of home-page class */
-    .home-page .card:hover {{
-        transform: translateY(-8px) scale(1.01) rotate(1deg);
-        box-shadow: 0 15px 50px rgba(255,215,0,0.2);
-        border-color: rgba(255,215,0,0.4);
-    }}
-    
-    .home-page .skill-tag:hover {{
-        transform: scale(1.15) rotate(-5deg) !important;
-        box-shadow: 0 8px 35px rgba(255,215,0,0.5);
-    }}
-    
-    .home-page .download-btn:hover {{
-        transform: scale(1.05) rotate(2deg) !important;
-        box-shadow: 0 8px 40px rgba(255,215,0,0.4);
-        color: white !important;
-    }}
-    
-    .home-page .what-i-do-item:hover {{
-        transform: translateY(-10px) scale(1.03) rotate(2deg);
-        border-color: rgba(255,215,0,0.4);
-        box-shadow: 0 10px 40px rgba(255,215,0,0.2);
-        background: rgba(255,215,0,0.1);
-    }}
-    
-    .home-page .profile-image-container:hover {{
-        transform: scale(1.12) rotate(8deg) !important;
-        border-color: #ffd700;
-        box-shadow: 0 0 80px rgba(255,215,0,0.5);
-    }}
-    
-    .home-page .stat-box:hover {{
-        transform: scale(1.08) translateY(-5px) rotate(2deg);
-        border-color: rgba(255,215,0,0.3);
-        box-shadow: 0 10px 40px rgba(255,215,0,0.15);
-    }}
-    
-    .home-page .project-card:hover {{
-        transform: translateY(-10px) scale(1.02) rotate(1deg);
-        box-shadow: 0 15px 50px rgba(255,215,0,0.2);
-        border-color: rgba(255,215,0,0.3);
-    }}
-    
-    .home-page .social-link:hover {{
-        background: rgba(255,215,0,0.2);
-        transform: scale(1.15) translateY(-5px) rotate(5deg) !important;
-        color: #ffd700;
-        border-color: rgba(255,215,0,0.3);
-        box-shadow: 0 0 30px rgba(255,215,0,0.1);
-    }}
-    /* ============ END HOME PAGE SPECIFIC HOVER ANIMATIONS ============ */
+    }
     
     /* Scrollbar */
-    ::-webkit-scrollbar {{ width: 8px; height: 8px; }}
-    ::-webkit-scrollbar-track {{ background: #1a1a2e; border-radius: 10px; }}
-    ::-webkit-scrollbar-thumb {{ background: linear-gradient(135deg, #ffd700, #f093fb); border-radius: 10px; }}
-    ::-webkit-scrollbar-thumb:hover {{ background: linear-gradient(135deg, #f093fb, #ffd700); }}
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #1a1a2e; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #ffd700, #f093fb); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #f093fb, #ffd700); }
     
-    @media (max-width: 768px) {{
-        .hero-title {{ font-size: 2.2rem !important; }}
-        .hero-subtitle {{ font-size: 1rem; }}
-        .copy-container {{ flex-wrap: wrap; }}
-        .what-i-do-item {{ padding: 1rem; }}
-        .sidebar-arrow-wrapper {{ width: 40px; height: 40px; top: 15px; left: 15px; }}
-        .sidebar-arrow-wrapper .arrow-icon {{ font-size: 1.2rem; }}
-        .datetime-widget {{
-            flex-direction: column;
-            align-items: stretch;
-            gap: 0.5rem;
-            padding: 0.8rem 1rem;
-        }}
-        .datetime-widget .item {{
-            justify-content: center;
-        }}
-    }}
+    @media (max-width: 768px) {
+        .hero-title { font-size: 2.5rem; }
+        .hero-subtitle { font-size: 1.2rem; }
+        .copy-container { flex-wrap: wrap; }
+        .what-i-do-item { padding: 1rem; }
+        .hamburger-btn { padding: 8px 14px; }
+        .hamburger-btn .text { font-size: 0.85rem; }
+    }
     </style>
-    """, unsafe_allow_html=True)
-
-# ============ DATE/TIME/WIDGET ============
-
-def show_datetime_widget():
-    now = datetime.now()
-    weather = get_weather()
-    
-    st.markdown(f"""
-        <div class="datetime-widget">
-            <div class="item">
-                <span class="icon">📅</span>
-                <span class="value">{now.strftime("%A, %B %d, %Y")}</span>
-            </div>
-            <div class="item">
-                <span class="icon">🕐</span>
-                <span class="value">{now.strftime("%I:%M:%S %p")}</span>
-            </div>
-            <div class="item">
-                <span class="icon">🌡️</span>
-                <span class="value">{weather['temperature']} {weather['condition']}</span>
-            </div>
-        </div>
     """, unsafe_allow_html=True)
 
 # ============ AUTHENTICATION PAGES ============
@@ -1794,46 +1584,8 @@ def show_settings():
     st.markdown("""
         <div class="settings-card">
             <h2>⚙️ Settings</h2>
+            <h3>🔑 Change Password</h3>
     """, unsafe_allow_html=True)
-    
-    st.markdown("<h3>📝 Font Size</h3>", unsafe_allow_html=True)
-    font_size = st.selectbox(
-        "Select Font Size",
-        options=['small', 'medium', 'large', 'xlarge'],
-        index=['small', 'medium', 'large', 'xlarge'].index(st.session_state.font_size),
-        key="font_size_select"
-    )
-    if font_size != st.session_state.font_size:
-        st.session_state.font_size = font_size
-        st.session_state.settings['font_size'] = font_size
-        save_settings(st.session_state.settings)
-        st.rerun()
-    
-    st.markdown("<hr>", unsafe_allow_html=True)
-    
-    st.markdown("<h3>🎨 Theme</h3>", unsafe_allow_html=True)
-    theme = st.selectbox(
-        "Select Theme",
-        options=['dark', 'light'],
-        index=['dark', 'light'].index(st.session_state.theme),
-        key="theme_select"
-    )
-    if theme != st.session_state.theme:
-        st.session_state.theme = theme
-        st.session_state.settings['theme'] = theme
-        save_settings(st.session_state.settings)
-        st.rerun()
-    
-    st.markdown("<hr>", unsafe_allow_html=True)
-    
-    st.markdown("<h3>📅 Date & Time Settings</h3>", unsafe_allow_html=True)
-    st.info("Date and Time are automatically synced with your system time.")
-    st.caption(f"Current Date: {datetime.now().strftime('%A, %B %d, %Y')}")
-    st.caption(f"Current Time: {datetime.now().strftime('%I:%M:%S %p')}")
-    
-    st.markdown("<hr>", unsafe_allow_html=True)
-    
-    st.markdown("<h3>🔑 Change Password</h3>", unsafe_allow_html=True)
     
     with st.form("change_password_form"):
         old_password = st.text_input("Current Password", type="password", placeholder="Enter current password")
@@ -1863,22 +1615,21 @@ def show_settings():
         </div>
     """.format(username=st.session_state.username), unsafe_allow_html=True)
 
-# ============ SIDEBAR - FIXED: Only Arrow, No Text ============
+# ============ SIDEBAR ============
 
 def show_sidebar():
-    # Filled Golden Arrow Button - Only Arrow, No Text
+    # Hamburger button
     st.markdown("""
-        <div class="sidebar-arrow-wrapper" onclick="document.querySelector('[data-testid=\"stButton\"] button').click()">
-            <span class="arrow-icon">▶</span>
-        </div>
+        <div style="position: fixed; top: 15px; left: 15px; z-index: 999;">
     """, unsafe_allow_html=True)
     
-    # Hidden button for functionality - EMPTY STRING for NO TEXT
-    if st.button("", key="sidebar_arrow", help="Toggle Sidebar"):
+    if st.button("☰ Menu ✨", key="hamburger_menu", help="Toggle Sidebar"):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
     
-    # Sidebar content - Auto closes when navigation item is clicked
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Sidebar content
     if st.session_state.sidebar_open:
         with st.sidebar:
             st.markdown("""
@@ -1923,7 +1674,6 @@ def show_sidebar():
             for item in nav_items:
                 if st.button(f"{item['icon']} {item['label']}", key=f"nav_{item['key']}", use_container_width=True):
                     st.session_state.page = item["key"]
-                    st.session_state.sidebar_open = False
                     st.rerun()
             
             st.markdown("""
@@ -1936,7 +1686,6 @@ def show_sidebar():
                 st.session_state.authenticated = False
                 st.session_state.username = ""
                 st.session_state.page = "home"
-                st.session_state.sidebar_open = False
                 st.rerun()
             
             st.markdown("""
@@ -1946,14 +1695,10 @@ def show_sidebar():
 # ============ HOME PAGE ============
 
 def show_home_page():
-    # Add home-page class for hover animations (ONLY on home page)
-    st.markdown('<div class="home-page">', unsafe_allow_html=True)
-    
-    show_datetime_widget()
-    
     col1, col2 = st.columns([6.5, 3.5])
     
     with col1:
+        # About Me
         st.markdown(f"""
             <div class="card">
                 <div class="card-title">📖 About Me</div>
@@ -1961,6 +1706,7 @@ def show_home_page():
             </div>
         """, unsafe_allow_html=True)
         
+        # What I Do
         st.markdown("""
             <div class="card">
                 <div class="card-title">💡 What I Do</div>
@@ -1990,6 +1736,7 @@ def show_home_page():
         """, unsafe_allow_html=True)
     
     with col2:
+        # Profile Section
         st.markdown("""
             <div class="card profile-card">
                 <div class="card-title">😎 Profile</div>
@@ -2044,6 +1791,7 @@ def show_home_page():
                 <div style="margin-top: 1rem;">
         """, unsafe_allow_html=True)
         
+        # Download Resume Button - FIXED
         st.markdown(create_download_resume(), unsafe_allow_html=True)
         
         st.markdown("""
@@ -2051,10 +1799,12 @@ def show_home_page():
             </div>
         """, unsafe_allow_html=True)
         
+        # Show copy confirmation
         if st.session_state.copied_text:
             st.success(st.session_state.copied_text)
             st.session_state.copied_text = ""
         
+        # Image Upload
         st.markdown("""
             <div class="upload-section">
                 <h4>📸 Upload Profile Image</h4>
@@ -2066,15 +1816,10 @@ def show_home_page():
             if save_image_permanently(uploaded_file):
                 st.success("✅ Image uploaded successfully!")
                 st.rerun()
-    
-    # Close home-page div
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # ============ ABOUT PAGE ============
 
 def show_about_page():
-    show_datetime_widget()
-    
     st.markdown(f"""
         <div class="card">
             <div class="card-title">📖 About Me</div>
@@ -2098,8 +1843,6 @@ def show_about_page():
 # ============ SKILLS PAGE ============
 
 def show_skills_page():
-    show_datetime_widget()
-    
     st.markdown('<div class="card-title">🛠️ Technical Skills</div>', unsafe_allow_html=True)
     
     for category, skills in SKILLS.items():
@@ -2138,8 +1881,6 @@ def show_skills_page():
 # ============ EXPERIENCE PAGE ============
 
 def show_experience_page():
-    show_datetime_widget()
-    
     st.markdown('<div class="card-title">💼 Experience</div>', unsafe_allow_html=True)
     
     for exp in EXPERIENCE:
@@ -2157,8 +1898,6 @@ def show_experience_page():
 # ============ EDUCATION PAGE ============
 
 def show_education_page():
-    show_datetime_widget()
-    
     st.markdown('<div class="card-title">🎓 Education</div>', unsafe_allow_html=True)
     
     cols = st.columns(2)
@@ -2188,8 +1927,6 @@ def show_education_page():
 # ============ PROJECTS PAGE ============
 
 def show_projects_page():
-    show_datetime_widget()
-    
     st.markdown('<div class="card-title">🚀 Projects</div>', unsafe_allow_html=True)
     
     for i in range(0, len(PROJECTS), 3):
@@ -2218,8 +1955,6 @@ def show_projects_page():
 # ============ ACHIEVEMENTS PAGE ============
 
 def show_achievements_page():
-    show_datetime_widget()
-    
     st.markdown('<div class="card-title">🏆 Achievements & Recognition</div>', unsafe_allow_html=True)
     
     cols = st.columns(2)
@@ -2237,8 +1972,6 @@ def show_achievements_page():
 # ============ STATS PAGE ============
 
 def show_stats_page():
-    show_datetime_widget()
-    
     st.markdown('<div class="card-title">📊 Statistics</div>', unsafe_allow_html=True)
     
     col1, col2, col3, col4 = st.columns(4)
@@ -2282,8 +2015,6 @@ def show_stats_page():
 # ============ CONTACT PAGE ============
 
 def show_contact_page():
-    show_datetime_widget()
-    
     st.markdown('<div class="card-title">📬 Contact Me</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns([1, 1])
@@ -2363,27 +2094,31 @@ def show_contact_page():
 # ============ MAIN APP ============
 
 def main():
+    # Apply custom CSS
     apply_css()
     
     if st.session_state.authenticated:
+        # Show sidebar
         show_sidebar()
         
         page = st.session_state.page
         
+        # Hero Section
         st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #1a0533, #2d1b69, #4a2c8a, #ffd700); padding: 3rem 2rem; border-radius: 20px; margin-bottom: 2rem; text-align: center; box-shadow: 0 10px 50px rgba(255,215,0,0.3); border: 1px solid rgba(255,215,0,0.2);">
-                <h1 style="font-size: 4.5rem; font-weight: 800; color: #ffd700; margin-bottom: 0.5rem; text-shadow: 0 0 40px rgba(255,215,0,0.3);">👋 {PERSONAL_INFO['name']}</h1>
-                <h2 style="font-size: 1.5rem; color: rgba(255,255,255,0.95); font-weight: 300;">{PERSONAL_INFO['title']}</h2>
-                <p style="font-size: 1.1rem; color: rgba(255,255,255,0.9);">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</p>
+            <div class="hero-section">
+                <div class="hero-title"><span class="emoji-text">👋</span> {PERSONAL_INFO['name']}</div>
+                <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
+                <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
                 <div style="margin-top: 1.5rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">🐙 GitHub</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">🐦 Twitter</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">📸 Instagram</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">🎵 TikTok</a>
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-link">🐙 GitHub</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-link">🐦 Twitter</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-link">📸 Instagram</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-link">🎵 TikTok</a>
                 </div>
             </div>
         """, unsafe_allow_html=True)
         
+        # Page routing
         if page == "home":
             show_home_page()
         elif page == "about":
@@ -2407,6 +2142,7 @@ def main():
         else:
             show_home_page()
         
+        # Footer
         st.markdown("---")
         st.markdown(f"""
             <div style="text-align: center; color: rgba(255,255,255,0.3); padding: 2rem 0;">
