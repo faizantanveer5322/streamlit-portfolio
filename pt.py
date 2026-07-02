@@ -121,7 +121,7 @@ if 'font_size' not in st.session_state:
 if 'theme' not in st.session_state:
     st.session_state.theme = st.session_state.settings.get('theme', 'dark')
 
-# ============ PERSONAL INFORMATION (YOUR ORIGINAL DATA) ============
+# ============ PERSONAL INFORMATION ============
 
 PERSONAL_INFO = {
     "name": "Faizan Tanveer",
@@ -288,9 +288,7 @@ def get_profile_image_base64():
 # ============ WEATHER FUNCTION ============
 
 def get_weather():
-    """Get weather information"""
     try:
-        # Simple weather data (you can replace with actual API)
         return {
             "temperature": "31°C",
             "condition": "☀️ Sunny",
@@ -306,8 +304,6 @@ def get_weather():
 # ============ PDF RESUME GENERATION ============
 
 def create_download_resume():
-    """Generate professional PDF resume using reportlab"""
-    
     if not REPORTLAB_AVAILABLE:
         return create_download_text_resume()
     
@@ -439,7 +435,6 @@ def create_download_resume():
         return create_download_text_resume()
 
 def create_download_text_resume():
-    """Fallback: Create text resume download"""
     resume_content = f"""FAIZAN TANVEER
 Student | Python Developer
 
@@ -474,7 +469,6 @@ Generated: {datetime.now().strftime("%Y-%m-%d %H:%M")}
 # ============ CUSTOM CSS ============
 
 def apply_css():
-    # Get font size from settings
     font_size_map = {
         'small': '14px',
         'medium': '16px',
@@ -483,7 +477,6 @@ def apply_css():
     }
     font_size = font_size_map.get(st.session_state.font_size, '16px')
     
-    # Get theme from settings
     if st.session_state.theme == 'dark':
         bg_gradient = "linear-gradient(135deg, #0f0c29, #302b63, #24243e)"
         card_bg = "rgba(255,255,255,0.08)"
@@ -516,42 +509,59 @@ def apply_css():
         background: linear-gradient(180deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #1a0533 100%) !important;
         padding: 1rem 0.5rem;
         border-right: none !important;
-        box-shadow: 4px 0 30px rgba(100, 50, 200, 0.3);
+        box-shadow: 4px 0 30px rgba(255,215,0,0.3);
         transition: all 0.3s ease;
     }}
     
-    /* Sidebar Arrow Button - Only Arrow */
-    .sidebar-arrow {{
+    /* Sidebar Arrow Button - Filled with Golden Gradient */
+    .sidebar-arrow-wrapper {{
         position: fixed;
-        top: 15px;
-        left: 15px;
+        top: 20px;
+        left: 20px;
         z-index: 999;
-        background: rgba(255,215,0,0.15);
-        backdrop-filter: blur(10px);
-        border: 2px solid rgba(255,215,0,0.3);
+        background: linear-gradient(135deg, #ffd700, #f093fb);
         border-radius: 50%;
-        width: 45px;
-        height: 45px;
-        cursor: pointer;
-        transition: all 0.4s ease;
-        box-shadow: 0 4px 20px rgba(255,215,0,0.2);
+        width: 50px;
+        height: 50px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #ffd700;
-        font-size: 1.2rem;
-        font-weight: bold;
-    }}
-    
-    .sidebar-arrow:hover {{
-        background: rgba(255,215,0,0.25);
-        transform: scale(1.15) rotate(10deg);
-        border-color: #ffd700;
         box-shadow: 0 4px 30px rgba(255,215,0,0.4);
+        animation: arrowPulse 2s ease-in-out infinite, arrowFloat 3s ease-in-out infinite;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        cursor: pointer;
     }}
     
-    .sidebar-arrow:active {{
+    .sidebar-arrow-wrapper:hover {{
+        transform: scale(1.15) rotate(15deg);
+        box-shadow: 0 8px 50px rgba(255,215,0,0.6);
+    }}
+    
+    .sidebar-arrow-wrapper:active {{
         transform: scale(0.9);
+    }}
+    
+    @keyframes arrowPulse {{
+        0%, 100% {{ box-shadow: 0 4px 30px rgba(255,215,0,0.4); }}
+        50% {{ box-shadow: 0 8px 60px rgba(255,215,0,0.8); }}
+    }}
+    
+    @keyframes arrowFloat {{
+        0%, 100% {{ transform: translateY(0px); }}
+        50% {{ transform: translateY(-8px); }}
+    }}
+    
+    .sidebar-arrow-wrapper .arrow-icon {{
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        animation: arrowRotate 3s ease-in-out infinite;
+    }}
+    
+    @keyframes arrowRotate {{
+        0%, 100% {{ transform: rotate(0deg); }}
+        50% {{ transform: rotate(10deg); }}
     }}
     
     /* Sidebar User */
@@ -621,7 +631,7 @@ def apply_css():
         animation: fadeInUp 0.8s ease;
     }}
     
-    /* Sidebar Navigation - Golden Animation */
+    /* Sidebar Navigation - Golden with Rotate Animation on Hover */
     .sidebar-nav .stButton button {{
         width: 100%;
         background: rgba(255,215,0,0.05) !important;
@@ -632,7 +642,7 @@ def apply_css():
         margin: 0.15rem 0 !important;
         text-align: left !important;
         font-weight: 500 !important;
-        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
         backdrop-filter: blur(10px);
         animation: slideInLeft 0.5s ease both;
         position: relative;
@@ -656,12 +666,12 @@ def apply_css():
     .sidebar-nav .stButton button:hover {{
         background: rgba(255,215,0,0.15) !important;
         color: #ffd700 !important;
-        transform: translateX(10px) scale(1.03);
+        transform: translateX(10px) scale(1.03) rotate(2deg) !important;
         border-color: rgba(255,215,0,0.4) !important;
         box-shadow: 0 0 40px rgba(255,215,0,0.2);
     }}
     
-    .sidebar-nav .stButton button:active {{ transform: scale(0.95); }}
+    .sidebar-nav .stButton button:active {{ transform: scale(0.95) !important; }}
     
     /* Sidebar Logout */
     .sidebar-logout .stButton button {{
@@ -672,21 +682,21 @@ def apply_css():
         border-radius: 12px !important;
         padding: 0.6rem !important;
         font-weight: 500 !important;
-        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
         backdrop-filter: blur(10px);
         animation: slideInLeft 0.6s ease 0.55s both;
     }}
     
     .sidebar-logout .stButton button:hover {{
         background: rgba(255,50,50,0.25) !important;
-        transform: scale(1.05) translateX(5px);
+        transform: scale(1.05) translateX(5px) rotate(-2deg) !important;
         box-shadow: 0 0 40px rgba(255,50,50,0.3);
         border-color: rgba(255,50,50,0.4) !important;
     }}
     
-    /* Hero Section - Golden Animation */
+    /* Hero Section - Golden Theme */
     .hero-section {{
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 55%, #f5576c 80%, #ffd700 100%);
+        background: linear-gradient(135deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #ffd700 100%);
         padding: 3rem 2rem;
         border-radius: 20px;
         margin-bottom: 2rem;
@@ -698,6 +708,7 @@ def apply_css():
         overflow: hidden;
         background-size: 300% 300%;
         animation: gradientShift 6s ease infinite, goldenGlow 4s ease-in-out infinite;
+        border: 1px solid rgba(255,215,0,0.2);
     }}
     
     @keyframes gradientShift {{
@@ -735,7 +746,7 @@ def apply_css():
     .hero-section * {{ position: relative; z-index: 1; }}
     
     .hero-title {{
-        font-size: 4rem;
+        font-size: 3.5rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
         text-shadow: 0 0 40px rgba(255,215,0,0.3);
@@ -815,7 +826,7 @@ def apply_css():
         border-radius: 20px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         margin-bottom: 1.5rem;
-        transition: all 0.4s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         border: 1px solid rgba(255,215,0,0.1);
         animation: slideInLeft 0.6s ease, cardGlow 4s ease-in-out infinite;
     }}
@@ -826,7 +837,7 @@ def apply_css():
     }}
     
     .card:hover {{
-        transform: translateY(-5px);
+        transform: translateY(-8px) scale(1.01) rotate(1deg);
         box-shadow: 0 15px 50px rgba(255,215,0,0.2);
         border-color: rgba(255,215,0,0.4);
     }}
@@ -846,7 +857,7 @@ def apply_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
-    /* Skill Tags - Golden */
+    /* Skill Tags - Golden with Rotate on Hover */
     .skill-tag {{
         display: inline-block;
         background: linear-gradient(135deg, #ffd700 0%, #f093fb 100%);
@@ -856,7 +867,7 @@ def apply_css():
         margin: 0.2rem;
         font-size: 0.9rem;
         font-weight: 500;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         animation: pulse 2s infinite;
         box-shadow: 0 4px 15px rgba(255,215,0,0.3);
         cursor: pointer;
@@ -864,8 +875,8 @@ def apply_css():
     }}
     
     .skill-tag:hover {{
-        transform: scale(1.1) rotate(-2deg);
-        box-shadow: 0 4px 25px rgba(255,215,0,0.5);
+        transform: scale(1.15) rotate(-5deg) !important;
+        box-shadow: 0 8px 35px rgba(255,215,0,0.5);
     }}
     
     /* What I Do - Golden Animation */
@@ -876,7 +887,7 @@ def apply_css():
         backdrop-filter: blur(10px);
         border-radius: 16px;
         border: 1px solid rgba(255,215,0,0.1);
-        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         cursor: pointer;
         position: relative;
         overflow: hidden;
@@ -905,7 +916,7 @@ def apply_css():
     .what-i-do-item:hover::before {{ opacity: 1; }}
     
     .what-i-do-item:hover {{
-        transform: translateY(-10px) scale(1.02);
+        transform: translateY(-10px) scale(1.03) rotate(2deg);
         border-color: rgba(255,215,0,0.4);
         box-shadow: 0 10px 40px rgba(255,215,0,0.2);
         background: rgba(255,215,0,0.1);
@@ -952,7 +963,7 @@ def apply_css():
         box-shadow: 0 0 40px rgba(255,215,0,0.2);
         background: rgba(255,255,255,0.1);
         animation: profileFloat 3s ease-in-out infinite, profileGlow 4s ease-in-out infinite;
-        transition: all 0.5s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         position: relative;
     }}
     
@@ -978,7 +989,7 @@ def apply_css():
     }}
     
     .profile-image-container:hover {{
-        transform: scale(1.1) rotate(5deg);
+        transform: scale(1.12) rotate(8deg) !important;
         border-color: #ffd700;
         box-shadow: 0 0 80px rgba(255,215,0,0.5);
     }}
@@ -1002,13 +1013,13 @@ def apply_css():
     /* Profile Card */
     .profile-card {{
         text-align: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%) !important;
+        background: linear-gradient(135deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #ffd700 100%) !important;
         padding: 2rem 1.5rem !important;
         border-radius: 20px !important;
         color: white !important;
-        border: none !important;
+        border: 1px solid rgba(255,215,0,0.3) !important;
         box-shadow: 0 15px 50px rgba(255,215,0,0.3) !important;
-        transition: all 0.3s ease !important;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
         position: relative;
         overflow: hidden;
         animation: slideInRight 0.6s ease, profileCardGlow 4s ease-in-out infinite;
@@ -1017,6 +1028,11 @@ def apply_css():
     @keyframes profileCardGlow {{
         0%, 100% {{ box-shadow: 0 15px 50px rgba(255,215,0,0.3); }}
         50% {{ box-shadow: 0 25px 80px rgba(255,215,0,0.5); }}
+    }}
+    
+    .profile-card:hover {{
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 25px 80px rgba(255,215,0,0.5);
     }}
     
     .profile-card::before {{
@@ -1047,13 +1063,13 @@ def apply_css():
         padding: 0.3rem 0.8rem !important;
         font-size: 0.8rem !important;
         font-weight: 500 !important;
-        transition: all 0.3s ease !important;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
         width: 100% !important;
     }}
     
     .profile-card .stButton button:hover {{
         background: rgba(255,255,255,0.35) !important;
-        transform: scale(1.05);
+        transform: scale(1.05) rotate(2deg) !important;
         box-shadow: 0 0 30px rgba(255,255,255,0.1);
     }}
     
@@ -1067,7 +1083,7 @@ def apply_css():
         border-radius: 25px;
         text-decoration: none;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         border: none;
         cursor: pointer;
         width: 100%;
@@ -1078,7 +1094,7 @@ def apply_css():
     }}
     
     .download-btn:hover {{
-        transform: scale(1.05);
+        transform: scale(1.05) rotate(2deg) !important;
         box-shadow: 0 8px 40px rgba(255,215,0,0.4);
         color: white !important;
     }}
@@ -1088,7 +1104,7 @@ def apply_css():
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: rgba(255,215,0,0.08);
+        background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,215,0,0.02));
         backdrop-filter: blur(20px);
         padding: 0.8rem 1.5rem;
         border-radius: 15px;
@@ -1112,11 +1128,13 @@ def apply_css():
     
     .datetime-widget .item .icon {{
         font-size: 1.2rem;
+        animation: float 3s ease-in-out infinite;
     }}
     
     .datetime-widget .item .value {{
         font-weight: 500;
         color: #ffd700;
+        animation: textGoldenGlow 3s ease-in-out infinite;
     }}
     
     /* Contact Form */
@@ -1127,7 +1145,7 @@ def apply_css():
         border-radius: 20px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         border: 1px solid rgba(255,215,0,0.1);
-        animation: slideInRight 0.6s ease;
+        animation: slideInRight 0.6s ease, cardGlow 4s ease-in-out infinite;
     }}
     
     .contact-form-card h4 {{ color: #ffd700 !important; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
@@ -1140,12 +1158,14 @@ def apply_css():
         color: white !important;
         padding: 0.6rem 1rem !important;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        transition: all 0.3s ease;
     }}
     
     .contact-form-card .stTextInput input:focus,
     .contact-form-card .stTextArea textarea:focus {{
         border-color: #ffd700 !important;
         box-shadow: 0 0 30px rgba(255,215,0,0.1) !important;
+        transform: scale(1.02);
     }}
     
     .contact-form-card .stTextInput input::placeholder,
@@ -1167,13 +1187,13 @@ def apply_css():
         padding: 0.7rem !important;
         border-radius: 15px !important;
         font-weight: 600 !important;
-        transition: all 0.3s ease !important;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
         box-shadow: 0 4px 25px rgba(255,215,0,0.2) !important;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
     .contact-form-card .stButton button:hover {{
-        transform: scale(1.02) !important;
+        transform: scale(1.03) rotate(2deg) !important;
         box-shadow: 0 8px 35px rgba(255,215,0,0.3) !important;
     }}
     
@@ -1192,9 +1212,16 @@ def apply_css():
         font-size: 0.9rem;
         word-break: break-all;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+        background: rgba(255,255,255,0.05);
+        transition: all 0.3s ease;
     }}
     
-    /* Auth - Golden */
+    .copy-text:hover {{
+        transform: scale(1.02);
+        border-color: rgba(255,215,0,0.3);
+    }}
+    
+    /* Auth */
     .auth-container {{
         max-width: 420px;
         margin: 50px auto;
@@ -1233,14 +1260,14 @@ def apply_css():
         padding: 0.7rem;
         border-radius: 15px;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         animation: pulse 2s infinite;
         box-shadow: 0 4px 25px rgba(255,215,0,0.2);
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
     .auth-container .stButton button:hover {{
-        transform: scale(1.02);
+        transform: scale(1.03) rotate(2deg) !important;
         box-shadow: 0 8px 35px rgba(255,215,0,0.3);
     }}
     
@@ -1257,6 +1284,7 @@ def apply_css():
     .auth-container .stTextInput input:focus {{
         border-color: #ffd700;
         box-shadow: 0 0 30px rgba(255,215,0,0.1);
+        transform: scale(1.02);
     }}
     
     .auth-container .stTextInput input::placeholder {{
@@ -1287,6 +1315,7 @@ def apply_css():
     .auth-switch a:hover {{
         color: #f093fb;
         text-decoration: underline;
+        transform: scale(1.05);
     }}
     
     .auth-icon {{
@@ -1296,14 +1325,14 @@ def apply_css():
         animation: float 3s ease-in-out infinite;
     }}
     
-    /* Settings - Golden */
+    /* Settings */
     .settings-card {{
         background: rgba(255,215,0,0.05);
         backdrop-filter: blur(30px);
         padding: 2rem;
         border-radius: 20px;
         border: 1px solid rgba(255,215,0,0.1);
-        animation: slideInRight 0.6s ease;
+        animation: slideInRight 0.6s ease, cardGlow 4s ease-in-out infinite;
         max-width: 600px;
         margin: 0 auto;
         box-shadow: 0 10px 40px rgba(255,215,0,0.05);
@@ -1320,13 +1349,13 @@ def apply_css():
         padding: 0.6rem;
         border-radius: 15px;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         box-shadow: 0 4px 25px rgba(255,215,0,0.2);
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
     .settings-card .stButton button:hover {{
-        transform: scale(1.02);
+        transform: scale(1.03) rotate(2deg) !important;
         box-shadow: 0 8px 35px rgba(255,215,0,0.3);
     }}
     
@@ -1343,6 +1372,7 @@ def apply_css():
     .settings-card .stTextInput input:focus {{
         border-color: #ffd700;
         box-shadow: 0 0 30px rgba(255,215,0,0.1);
+        transform: scale(1.02);
     }}
     
     .settings-card .stTextInput input::placeholder {{
@@ -1369,9 +1399,15 @@ def apply_css():
         color: white !important;
         border: 1px solid rgba(255,215,0,0.1) !important;
         border-radius: 12px !important;
+        transition: all 0.3s ease;
     }}
     
-    /* Timeline - Golden */
+    .settings-card .stSelectbox select:hover {{
+        border-color: #ffd700 !important;
+        transform: scale(1.02);
+    }}
+    
+    /* Timeline */
     .timeline-item {{
         border-left: 3px solid #ffd700;
         padding-left: 1.5rem;
@@ -1414,21 +1450,21 @@ def apply_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
-    /* Project Card - Golden */
+    /* Project Card */
     .project-card {{
         background: rgba(255,215,0,0.05);
         backdrop-filter: blur(20px);
         border-radius: 20px;
         overflow: hidden;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        transition: all 0.4s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         height: 100%;
         border: 1px solid rgba(255,215,0,0.1);
         animation: slideInUp 0.6s ease, cardGlow 4s ease-in-out infinite;
     }}
     
     .project-card:hover {{
-        transform: translateY(-10px) scale(1.02);
+        transform: translateY(-10px) scale(1.02) rotate(1deg);
         box-shadow: 0 15px 50px rgba(255,215,0,0.2);
         border-color: rgba(255,215,0,0.3);
     }}
@@ -1448,8 +1484,8 @@ def apply_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     .project-tech {{ margin-top: 1rem; }}
-    .project-content a {{ color: #f093fb !important; transition: color 0.3s ease; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
-    .project-content a:hover {{ color: #ffd700 !important; }}
+    .project-content a {{ color: #f093fb !important; transition: all 0.3s ease; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
+    .project-content a:hover {{ color: #ffd700 !important; transform: scale(1.05) rotate(2deg); display: inline-block; }}
     
     /* Upload Section */
     .upload-section {{
@@ -1459,12 +1495,19 @@ def apply_css():
         border-radius: 20px;
         border: 1px solid rgba(255,215,0,0.1);
         margin-top: 1rem;
+        animation: cardGlow 4s ease-in-out infinite;
+        transition: all 0.3s ease;
+    }}
+    
+    .upload-section:hover {{
+        border-color: rgba(255,215,0,0.3);
+        transform: scale(1.01);
     }}
     
     .upload-section h4 {{ color: #ffd700 !important; font-size: 1rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
     .upload-section p {{ color: rgba(255,255,255,0.5) !important; font-size: 0.8rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
     
-    /* Stats - Golden */
+    /* Stats */
     .stat-box {{
         text-align: center;
         padding: 1.5rem;
@@ -1473,7 +1516,7 @@ def apply_css():
         border-radius: 16px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         border: 1px solid rgba(255,215,0,0.1);
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         animation: slideInUp 0.6s ease, statGlow 4s ease-in-out infinite;
     }}
     
@@ -1483,7 +1526,7 @@ def apply_css():
     }}
     
     .stat-box:hover {{
-        transform: scale(1.05) translateY(-5px);
+        transform: scale(1.08) translateY(-5px) rotate(2deg);
         border-color: rgba(255,215,0,0.3);
         box-shadow: 0 10px 40px rgba(255,215,0,0.15);
     }}
@@ -1522,7 +1565,7 @@ def apply_css():
         border-radius: 25px;
         margin: 0.3rem;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         backdrop-filter: blur(10px);
         animation: float 3s ease-in-out infinite;
         border: 1px solid rgba(255,215,0,0.1);
@@ -1531,7 +1574,7 @@ def apply_css():
     
     .social-link:hover {{
         background: rgba(255,215,0,0.2);
-        transform: scale(1.1) translateY(-3px);
+        transform: scale(1.15) translateY(-5px) rotate(5deg) !important;
         color: #ffd700;
         border-color: rgba(255,215,0,0.3);
         box-shadow: 0 0 30px rgba(255,215,0,0.1);
@@ -1575,7 +1618,7 @@ def apply_css():
         color: white !important;
         font-size: 1.5rem;
         text-decoration: none;
-        transition: all 0.4s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         display: inline-block;
         background: rgba(255,255,255,0.1);
         padding: 0.3rem 0.6rem;
@@ -1587,7 +1630,7 @@ def apply_css():
     }}
     
     .profile-social-icons a:hover {{
-        transform: scale(1.3) rotate(-10deg) translateY(-5px);
+        transform: scale(1.4) rotate(-15deg) translateY(-8px) !important;
         background: rgba(255,215,0,0.25);
         box-shadow: 0 0 40px rgba(255,215,0,0.2);
         border-color: rgba(255,215,0,0.3);
@@ -1600,11 +1643,12 @@ def apply_css():
     ::-webkit-scrollbar-thumb:hover {{ background: linear-gradient(135deg, #f093fb, #ffd700); }}
     
     @media (max-width: 768px) {{
-        .hero-title {{ font-size: 2.5rem; }}
-        .hero-subtitle {{ font-size: 1.2rem; }}
+        .hero-title {{ font-size: 2.2rem; }}
+        .hero-subtitle {{ font-size: 1rem; }}
         .copy-container {{ flex-wrap: wrap; }}
         .what-i-do-item {{ padding: 1rem; }}
-        .sidebar-arrow {{ width: 40px; height: 40px; font-size: 1rem; }}
+        .sidebar-arrow-wrapper {{ width: 40px; height: 40px; top: 15px; left: 15px; }}
+        .sidebar-arrow-wrapper .arrow-icon {{ font-size: 1.2rem; }}
         .datetime-widget {{
             flex-direction: column;
             align-items: stretch;
@@ -1621,7 +1665,6 @@ def apply_css():
 # ============ DATE/TIME/WIDGET ============
 
 def show_datetime_widget():
-    """Display date, time and weather widget"""
     now = datetime.now()
     weather = get_weather()
     
@@ -1734,7 +1777,6 @@ def show_settings():
             <h2>⚙️ Settings</h2>
     """, unsafe_allow_html=True)
     
-    # Font Size Settings
     st.markdown("<h3>📝 Font Size</h3>", unsafe_allow_html=True)
     font_size = st.selectbox(
         "Select Font Size",
@@ -1750,7 +1792,6 @@ def show_settings():
     
     st.markdown("<hr>", unsafe_allow_html=True)
     
-    # Theme Settings
     st.markdown("<h3>🎨 Theme</h3>", unsafe_allow_html=True)
     theme = st.selectbox(
         "Select Theme",
@@ -1766,7 +1807,6 @@ def show_settings():
     
     st.markdown("<hr>", unsafe_allow_html=True)
     
-    # Change Date/Time Settings
     st.markdown("<h3>📅 Date & Time Settings</h3>", unsafe_allow_html=True)
     st.info("Date and Time are automatically synced with your system time.")
     st.caption(f"Current Date: {datetime.now().strftime('%A, %B %d, %Y')}")
@@ -1774,7 +1814,6 @@ def show_settings():
     
     st.markdown("<hr>", unsafe_allow_html=True)
     
-    # Change Password
     st.markdown("<h3>🔑 Change Password</h3>", unsafe_allow_html=True)
     
     with st.form("change_password_form"):
@@ -1805,21 +1844,21 @@ def show_settings():
         </div>
     """.format(username=st.session_state.username), unsafe_allow_html=True)
 
-# ============ SIDEBAR - Arrow Only ============
+# ============ SIDEBAR - Filled Arrow Button ============
 
 def show_sidebar():
-    # Arrow button - Only arrow, no text
+    # Filled Golden Arrow Button
     st.markdown("""
-        <div style="position: fixed; top: 15px; left: 15px; z-index: 999;">
+        <div class="sidebar-arrow-wrapper" onclick="document.querySelector('[data-testid=\"stButton\"] button').click()">
+            <span class="arrow-icon">▶</span>
+        </div>
     """, unsafe_allow_html=True)
     
-    # Single arrow button
+    # Hidden button for functionality
     arrow_label = "◀" if st.session_state.sidebar_open else "▶"
-    if st.button(arrow_label, key="sidebar_arrow", help="Toggle Sidebar"):
+    if st.button(arrow_label, key="sidebar_arrow", help="Toggle Sidebar", use_container_width=True):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
-    
-    st.markdown("</div>", unsafe_allow_html=True)
     
     # Sidebar content - Auto closes when navigation item is clicked
     if st.session_state.sidebar_open:
@@ -1866,7 +1905,6 @@ def show_sidebar():
             for item in nav_items:
                 if st.button(f"{item['icon']} {item['label']}", key=f"nav_{item['key']}", use_container_width=True):
                     st.session_state.page = item["key"]
-                    # Auto close sidebar after navigation
                     st.session_state.sidebar_open = False
                     st.rerun()
             
@@ -1890,13 +1928,11 @@ def show_sidebar():
 # ============ HOME PAGE ============
 
 def show_home_page():
-    # Show Date/Time/Weather Widget
     show_datetime_widget()
     
     col1, col2 = st.columns([6.5, 3.5])
     
     with col1:
-        # About Me
         st.markdown(f"""
             <div class="card">
                 <div class="card-title">📖 About Me</div>
@@ -1904,7 +1940,6 @@ def show_home_page():
             </div>
         """, unsafe_allow_html=True)
         
-        # What I Do
         st.markdown("""
             <div class="card">
                 <div class="card-title">💡 What I Do</div>
@@ -1934,7 +1969,6 @@ def show_home_page():
         """, unsafe_allow_html=True)
     
     with col2:
-        # Profile Section
         st.markdown("""
             <div class="card profile-card">
                 <div class="card-title">😎 Profile</div>
@@ -1989,7 +2023,6 @@ def show_home_page():
                 <div style="margin-top: 1rem;">
         """, unsafe_allow_html=True)
         
-        # Download Resume Button
         st.markdown(create_download_resume(), unsafe_allow_html=True)
         
         st.markdown("""
@@ -1997,12 +2030,10 @@ def show_home_page():
             </div>
         """, unsafe_allow_html=True)
         
-        # Show copy confirmation
         if st.session_state.copied_text:
             st.success(st.session_state.copied_text)
             st.session_state.copied_text = ""
         
-        # Image Upload
         st.markdown("""
             <div class="upload-section">
                 <h4>📸 Upload Profile Image</h4>
@@ -2308,16 +2339,13 @@ def show_contact_page():
 # ============ MAIN APP ============
 
 def main():
-    # Apply custom CSS
     apply_css()
     
     if st.session_state.authenticated:
-        # Show sidebar
         show_sidebar()
         
         page = st.session_state.page
         
-        # Hero Section
         st.markdown(f"""
             <div class="hero-section">
                 <div class="hero-title"><span class="emoji-text">👋</span> {PERSONAL_INFO['name']}</div>
@@ -2332,7 +2360,6 @@ def main():
             </div>
         """, unsafe_allow_html=True)
         
-        # Page routing
         if page == "home":
             show_home_page()
         elif page == "about":
@@ -2356,7 +2383,6 @@ def main():
         else:
             show_home_page()
         
-        # Footer
         st.markdown("---")
         st.markdown(f"""
             <div style="text-align: center; color: rgba(255,255,255,0.3); padding: 2rem 0;">
