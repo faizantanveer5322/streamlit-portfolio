@@ -1855,7 +1855,7 @@ def show_sidebar():
     """, unsafe_allow_html=True)
     
     # Hidden button for functionality
-    arrow_label = "◀" if st.session_state.sidebar_open else "▶"
+    arrow_label = "◀" if st.session_state.sidebar_open else "▶ MENU"
     if st.button(arrow_label, key="sidebar_arrow", help="Toggle Sidebar", use_container_width=True):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
