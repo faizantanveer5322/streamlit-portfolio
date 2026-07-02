@@ -513,7 +513,7 @@ def apply_css():
         transition: all 0.3s ease;
     }}
     
-    /* Sidebar Arrow Button - Filled with Golden Gradient */
+    /* Sidebar Arrow Button - Filled with Golden Gradient - FIXED: No Text, No Space */
     .sidebar-arrow-wrapper {{
         position: fixed;
         top: 20px;
@@ -751,7 +751,7 @@ def apply_css():
     
     .hero-section * {{ position: relative; z-index: 1; }}
     
-    /* Bigger Hero Title */
+    /* FIXED: Bigger Hero Title - Centered */
     .hero-title {{
         font-size: 4.5rem !important;
         font-weight: 800 !important;
@@ -764,6 +764,7 @@ def apply_css():
         background-clip: text;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
         letter-spacing: 2px;
+        text-align: center !important;
     }}
     
     @keyframes textGoldenGlow {{
@@ -826,7 +827,7 @@ def apply_css():
         100% {{ transform: scale(1); }}
     }}
     
-    /* Cards - Golden Border Animation */
+    /* Cards - Golden Border Animation - Rotate on Hover (Home Page Only) */
     .card {{
         background: {card_bg};
         backdrop-filter: blur(20px);
@@ -1852,17 +1853,17 @@ def show_settings():
         </div>
     """.format(username=st.session_state.username), unsafe_allow_html=True)
 
-# ============ SIDEBAR - Filled Arrow Button ============
+# ============ SIDEBAR - Filled Arrow Button (No Text, No Space) ============
 
 def show_sidebar():
-    # Filled Golden Arrow Button
+    # Filled Golden Arrow Button - Only Arrow, No Text
     st.markdown("""
         <div class="sidebar-arrow-wrapper" onclick="document.querySelector('[data-testid=\"stButton\"] button').click()">
             <span class="arrow-icon">▶</span>
         </div>
     """, unsafe_allow_html=True)
     
-    # Hidden button for functionality
+    # Hidden button for functionality - Empty string for no text
     if st.button("", key="sidebar_arrow", help="Toggle Sidebar"):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
