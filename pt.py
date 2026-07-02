@@ -1874,7 +1874,7 @@ def show_sidebar():
     """, unsafe_allow_html=True)
     
     # Hidden button for functionality - EMPTY STRING for NO TEXT
-    if st.button("", key="sidebar_arrow", help="Toggle Sidebar"):
+    if st.button("MENU", key="sidebar_arrow", help="Toggle Sidebar"):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
     
