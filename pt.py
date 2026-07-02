@@ -700,22 +700,19 @@ def apply_css():
         border-color: rgba(255,50,50,0.4) !important;
     }}
     
-    /* Hero Section - Golden Theme */
-    .hero-section {{
-        background: linear-gradient(135deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #ffd700 100%);
-        padding: 3rem 2rem;
-        border-radius: 20px;
-        margin-bottom: 2rem;
-        color: white;
-        text-align: center;
-        box-shadow: 0 10px 50px rgba(255,215,0,0.3);
-        animation: heroFadeIn 0.8s ease, goldenGlow 4s ease-in-out infinite;
-        position: relative;
-        overflow: hidden;
-        background-size: 300% 300%;
-        animation: gradientShift 6s ease infinite, goldenGlow 4s ease-in-out infinite;
-        border: 1px solid rgba(255,215,0,0.2);
-    }}
+ st.markdown(f"""
+            <div class="hero-section">
+                <div class="hero-title"><span class="emoji-text">👋</span> {PERSONAL_INFO['name']}</div>
+                <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
+                <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
+                <div style="margin-top: 1.5rem;">
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-link">🐙 GitHub</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-link">🐦 Twitter</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-link">📸 Instagram</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-link">🎵 TikTok</a>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
     
     @keyframes gradientShift {{
         0% {{ background-position: 0% 50%; }}
