@@ -513,7 +513,7 @@ def apply_css():
         transition: all 0.3s ease;
     }}
     
-    /* Sidebar Arrow Button - FIXED: No Text, No Space */
+    /* Sidebar Arrow Button - Filled Golden Gradient */
     .sidebar-arrow-wrapper {{
         position: fixed;
         top: 20px;
@@ -637,7 +637,7 @@ def apply_css():
         animation: fadeInUp 0.8s ease;
     }}
     
-    /* Sidebar Navigation */
+    /* Sidebar Navigation - Golden with Rotate on Hover */
     .sidebar-nav .stButton button {{
         width: 100%;
         background: rgba(255,215,0,0.05) !important;
@@ -751,7 +751,7 @@ def apply_css():
     
     .hero-section * {{ position: relative; z-index: 1; }}
     
-    /* FIXED: Bigger Hero Title - Centered */
+    /* Bigger Hero Title - Centered */
     .hero-title {{
         font-size: 4.5rem !important;
         font-weight: 800 !important;
@@ -827,7 +827,7 @@ def apply_css():
         100% {{ transform: scale(1); }}
     }}
     
-    /* Cards - Without Hover Animations (Home Page will handle) */
+    /* Cards - Golden Border with Rotate on Hover (Home Page will handle) */
     .card {{
         background: {card_bg};
         backdrop-filter: blur(20px);
@@ -860,7 +860,7 @@ def apply_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
-    /* Skill Tags - Without Hover Animation (Home Page will handle) */
+    /* Skill Tags - Golden with Rotate on Hover */
     .skill-tag {{
         display: inline-block;
         background: linear-gradient(135deg, #ffd700 0%, #f093fb 100%);
@@ -870,14 +870,19 @@ def apply_css():
         margin: 0.2rem;
         font-size: 0.9rem;
         font-weight: 500;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         animation: pulse 2s infinite;
         box-shadow: 0 4px 15px rgba(255,215,0,0.3);
         cursor: pointer;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
-    /* What I Do - Without Hover Animation (Home Page will handle) */
+    .skill-tag:hover {{
+        transform: scale(1.15) rotate(-5deg) !important;
+        box-shadow: 0 8px 35px rgba(255,215,0,0.5);
+    }}
+    
+    /* What I Do - Golden Animation */
     .what-i-do-item {{
         text-align: center;
         padding: 1.5rem 1rem;
@@ -885,7 +890,7 @@ def apply_css():
         backdrop-filter: blur(10px);
         border-radius: 16px;
         border: 1px solid rgba(255,215,0,0.1);
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         cursor: pointer;
         position: relative;
         overflow: hidden;
@@ -912,6 +917,13 @@ def apply_css():
     }}
     
     .what-i-do-item:hover::before {{ opacity: 1; }}
+    
+    .what-i-do-item:hover {{
+        transform: translateY(-10px) scale(1.03) rotate(2deg);
+        border-color: rgba(255,215,0,0.4);
+        box-shadow: 0 10px 40px rgba(255,215,0,0.2);
+        background: rgba(255,215,0,0.1);
+    }}
     
     .what-i-do-item .icon {{
         font-size: 2.8rem;
@@ -943,7 +955,7 @@ def apply_css():
         max-width: 90%;
     }}
     
-    /* Profile Image - Without Hover Animation (Home Page will handle) */
+    /* Profile Image - Golden Border */
     .profile-image-container {{
         width: 150px;
         height: 150px;
@@ -954,7 +966,7 @@ def apply_css():
         box-shadow: 0 0 40px rgba(255,215,0,0.2);
         background: rgba(255,255,255,0.1);
         animation: profileFloat 3s ease-in-out infinite, profileGlow 4s ease-in-out infinite;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         position: relative;
     }}
     
@@ -979,6 +991,12 @@ def apply_css():
         100% {{ background-position: 0% 50%; }}
     }}
     
+    .profile-image-container:hover {{
+        transform: scale(1.12) rotate(8deg) !important;
+        border-color: #ffd700;
+        box-shadow: 0 0 80px rgba(255,215,0,0.5);
+    }}
+    
     @keyframes profileFloat {{
         0%, 100% {{ transform: translateY(0px) scale(1); }}
         50% {{ transform: translateY(-15px) scale(1.02); }}
@@ -995,7 +1013,7 @@ def apply_css():
         object-fit: cover;
     }}
     
-    /* Profile Card */
+    /* Profile Card - Golden */
     .profile-card {{
         text-align: center;
         background: linear-gradient(135deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #ffd700 100%) !important;
@@ -1053,7 +1071,7 @@ def apply_css():
         box-shadow: 0 0 30px rgba(255,255,255,0.1);
     }}
     
-    /* Download Button - Without Hover Animation (Home Page will handle) */
+    /* Download Button - Golden */
     .download-btn {{
         display: block;
         text-align: center;
@@ -1063,7 +1081,7 @@ def apply_css():
         border-radius: 25px;
         text-decoration: none;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         border: none;
         cursor: pointer;
         width: 100%;
@@ -1074,11 +1092,12 @@ def apply_css():
     }}
     
     .download-btn:hover {{
+        transform: scale(1.05) rotate(2deg) !important;
         box-shadow: 0 8px 40px rgba(255,215,0,0.4);
         color: white !important;
     }}
     
-    /* Date/Time/Weather Widget */
+    /* Date/Time/Weather Widget - Golden */
     .datetime-widget {{
         display: flex;
         justify-content: space-between;
@@ -1166,13 +1185,13 @@ def apply_css():
         padding: 0.7rem !important;
         border-radius: 15px !important;
         font-weight: 600 !important;
-        transition: all 0.3s ease !important;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
         box-shadow: 0 4px 25px rgba(255,215,0,0.2) !important;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
     .contact-form-card .stButton button:hover {{
-        transform: scale(1.02) !important;
+        transform: scale(1.03) rotate(2deg) !important;
         box-shadow: 0 8px 35px rgba(255,215,0,0.3) !important;
     }}
     
@@ -1429,17 +1448,23 @@ def apply_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
-    /* Project Card - Without Hover Animation (Home Page will handle) */
+    /* Project Card */
     .project-card {{
         background: rgba(255,215,0,0.05);
         backdrop-filter: blur(20px);
         border-radius: 20px;
         overflow: hidden;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         height: 100%;
         border: 1px solid rgba(255,215,0,0.1);
         animation: slideInUp 0.6s ease, cardGlow 4s ease-in-out infinite;
+    }}
+    
+    .project-card:hover {{
+        transform: translateY(-10px) scale(1.02) rotate(1deg);
+        box-shadow: 0 15px 50px rgba(255,215,0,0.2);
+        border-color: rgba(255,215,0,0.3);
     }}
     
     .project-content {{ padding: 1.5rem; }}
@@ -1480,7 +1505,7 @@ def apply_css():
     .upload-section h4 {{ color: #ffd700 !important; font-size: 1rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
     .upload-section p {{ color: rgba(255,255,255,0.5) !important; font-size: 0.8rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
     
-    /* Stats - Without Hover Animation (Home Page will handle) */
+    /* Stats */
     .stat-box {{
         text-align: center;
         padding: 1.5rem;
@@ -1489,13 +1514,19 @@ def apply_css():
         border-radius: 16px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         border: 1px solid rgba(255,215,0,0.1);
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         animation: slideInUp 0.6s ease, statGlow 4s ease-in-out infinite;
     }}
     
     @keyframes statGlow {{
         0%, 100% {{ border-color: rgba(255,215,0,0.1); }}
         50% {{ border-color: rgba(255,215,0,0.3); }}
+    }}
+    
+    .stat-box:hover {{
+        transform: scale(1.08) translateY(-5px) rotate(2deg);
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 10px 40px rgba(255,215,0,0.15);
     }}
     
     .stat-number {{
@@ -1524,7 +1555,6 @@ def apply_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
-    /* Social Link - Without Hover Animation (Home Page will handle) */
     .social-link {{
         display: inline-block;
         color: white;
@@ -1533,7 +1563,7 @@ def apply_css():
         border-radius: 25px;
         margin: 0.3rem;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         backdrop-filter: blur(10px);
         animation: float 3s ease-in-out infinite;
         border: 1px solid rgba(255,215,0,0.1);
@@ -1542,6 +1572,7 @@ def apply_css():
     
     .social-link:hover {{
         background: rgba(255,215,0,0.2);
+        transform: scale(1.15) translateY(-5px) rotate(5deg) !important;
         color: #ffd700;
         border-color: rgba(255,215,0,0.3);
         box-shadow: 0 0 30px rgba(255,215,0,0.1);
@@ -1585,7 +1616,7 @@ def apply_css():
         color: white !important;
         font-size: 1.5rem;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         display: inline-block;
         background: rgba(255,255,255,0.1);
         padding: 0.3rem 0.6rem;
@@ -1597,13 +1628,14 @@ def apply_css():
     }}
     
     .profile-social-icons a:hover {{
+        transform: scale(1.4) rotate(-15deg) translateY(-8px) !important;
         background: rgba(255,215,0,0.25);
         box-shadow: 0 0 40px rgba(255,215,0,0.2);
         border-color: rgba(255,215,0,0.3);
     }}
     
     /* ============ HOME PAGE SPECIFIC HOVER ANIMATIONS ============ */
-    /* These animations will ONLY work on home page because of home-page class */
+    /* These animations will ONLY work on home page */
     .home-page .card:hover {{
         transform: translateY(-8px) scale(1.01) rotate(1deg);
         box-shadow: 0 15px 50px rgba(255,215,0,0.2);
@@ -2371,15 +2403,15 @@ def main():
         page = st.session_state.page
         
         st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #1a0533, #2d1b69, #4a2c8a, #ffd700); padding: 3rem 2rem; border-radius: 20px; margin-bottom: 2rem; text-align: center; box-shadow: 0 10px 50px rgba(255,215,0,0.3); border: 1px solid rgba(255,215,0,0.2);">
-                <h1 style="font-size: 4.5rem; font-weight: 800; color: #ffd700; margin-bottom: 0.5rem; text-shadow: 0 0 40px rgba(255,215,0,0.3);">👋 {PERSONAL_INFO['name']}</h1>
-                <h2 style="font-size: 1.5rem; color: rgba(255,255,255,0.95); font-weight: 300;">{PERSONAL_INFO['title']}</h2>
-                <p style="font-size: 1.1rem; color: rgba(255,255,255,0.9);">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</p>
+            <div class="hero-section">
+                <div class="hero-title"><span class="emoji-text">👋</span> {PERSONAL_INFO['name']}</div>
+                <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
+                <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
                 <div style="margin-top: 1.5rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">🐙 GitHub</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">🐦 Twitter</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">📸 Instagram</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">🎵 TikTok</a>
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-link">🐙 GitHub</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-link">🐦 Twitter</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-link">📸 Instagram</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-link">🎵 TikTok</a>
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -2433,4 +2465,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-                    
