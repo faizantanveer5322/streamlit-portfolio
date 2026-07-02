@@ -513,62 +513,62 @@ def apply_css():
         transition: all 0.3s ease;
     }}
     
-/* Sidebar Arrow Button - FIXED: No Text, No Space */
-.sidebar-arrow-wrapper {{
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 999;
-    background: linear-gradient(135deg, #ffd700, #f093fb);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 30px rgba(255,215,0,0.4);
-    animation: arrowPulse 2s ease-in-out infinite, arrowFloat 3s ease-in-out infinite;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    cursor: pointer;
-    border: none;
-}}
-
-.sidebar-arrow-wrapper:hover {{
-    transform: scale(1.15) rotate(15deg);
-    box-shadow: 0 8px 50px rgba(255,215,0,0.6);
-}
-
-.sidebar-arrow-wrapper:active {{
-    transform: scale(0.9);
-}
-
-@keyframes arrowPulse {{
-    0%, 100% {} box-shadow: 0 4px 30px rgba(255,215,0,0.4); }
-    50% {{ box-shadow: 0 8px 60px rgba(255,215,0,0.8); }
-}}
-
-@keyframes arrowFloat {
-    0%, 100% { transform: translateY(0px); }
-    50% {{ transform: translateY(-8px); }
-}
-
-.sidebar-arrow-wrapper .arrow-icon {{
-    color: white;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    animation: arrowRotate 3s ease-in-out infinite;
-}
-
-@keyframes arrowRotate {
-    0%, 100% { transform: rotate(0deg); }
-    50% {{ transform: rotate(10deg); }
-}
-
-/* Hide the actual Streamlit button */
-.stButton button[key="sidebar_arrow"] {
-    display:} none !important;}
-}}
+    /* Sidebar Arrow Button - FIXED: No Text, No Space */
+    .sidebar-arrow-wrapper {{
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 999;
+        background: linear-gradient(135deg, #ffd700, #f093fb);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 30px rgba(255,215,0,0.4);
+        animation: arrowPulse 2s ease-in-out infinite, arrowFloat 3s ease-in-out infinite;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        cursor: pointer;
+        border: none;
+    }}
+    
+    .sidebar-arrow-wrapper:hover {{
+        transform: scale(1.15) rotate(15deg);
+        box-shadow: 0 8px 50px rgba(255,215,0,0.6);
+    }}
+    
+    .sidebar-arrow-wrapper:active {{
+        transform: scale(0.9);
+    }}
+    
+    @keyframes arrowPulse {{
+        0%, 100% {{ box-shadow: 0 4px 30px rgba(255,215,0,0.4); }}
+        50% {{ box-shadow: 0 8px 60px rgba(255,215,0,0.8); }}
+    }}
+    
+    @keyframes arrowFloat {{
+        0%, 100% {{ transform: translateY(0px); }}
+        50% {{ transform: translateY(-8px); }}
+    }}
+    
+    .sidebar-arrow-wrapper .arrow-icon {{
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        animation: arrowRotate 3s ease-in-out infinite;
+    }}
+    
+    @keyframes arrowRotate {{
+        0%, 100% {{ transform: rotate(0deg); }}
+        50% {{ transform: rotate(10deg); }}
+    }}
+    
+    /* Hide the actual Streamlit button */
+    .stButton button[key="sidebar_arrow"] {{
+        display: none !important;
+    }}
     
     /* Sidebar User */
     .sidebar-user {{
@@ -752,21 +752,20 @@ def apply_css():
     .hero-section * {{ position: relative; z-index: 1; }}
     
     /* FIXED: Bigger Hero Title - Centered */
-/* FIXED: Bigger Hero Title - Centered */
-.hero-title {{
-    font-size: 4.5rem !important;
-    font-weight: 800 !important;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 0 40px rgba(255,215,0,0.3);
-    animation: fadeInDown 1s ease, textGoldenGlow 3s ease-in-out infinite;
-    background: linear-gradient(to right, #fff, #ffd700);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
-    letter-spacing: 2px;
-    text-align: center !important;
-}}
+    .hero-title {{
+        font-size: 4.5rem !important;
+        font-weight: 800 !important;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 40px rgba(255,215,0,0.3);
+        animation: fadeInDown 1s ease, textGoldenGlow 3s ease-in-out infinite;
+        background: linear-gradient(to right, #fff, #ffd700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
+        letter-spacing: 2px;
+        text-align: center !important;
+    }}
     
     @keyframes textGoldenGlow {{
         0%, 100% {{ text-shadow: 0 0 30px rgba(255,215,0,0.2); }}
@@ -828,7 +827,7 @@ def apply_css():
         100% {{ transform: scale(1); }}
     }}
     
-    /* Cards */
+    /* Cards - Without Hover Animations (Home Page will handle) */
     .card {{
         background: {card_bg};
         backdrop-filter: blur(20px);
@@ -836,7 +835,7 @@ def apply_css():
         border-radius: 20px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         margin-bottom: 1.5rem;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.3s ease;
         border: 1px solid rgba(255,215,0,0.1);
         animation: slideInLeft 0.6s ease, cardGlow 4s ease-in-out infinite;
     }}
@@ -844,12 +843,6 @@ def apply_css():
     @keyframes cardGlow {{
         0%, 100% {{ border-color: rgba(255,215,0,0.1); }}
         50% {{ border-color: rgba(255,215,0,0.3); }}
-    }}
-    
-    .card:hover {{
-        transform: translateY(-8px) scale(1.01) rotate(1deg);
-        box-shadow: 0 15px 50px rgba(255,215,0,0.2);
-        border-color: rgba(255,215,0,0.4);
     }}
     
     .card-title {{
@@ -867,7 +860,7 @@ def apply_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
-    /* Skill Tags */
+    /* Skill Tags - Without Hover Animation (Home Page will handle) */
     .skill-tag {{
         display: inline-block;
         background: linear-gradient(135deg, #ffd700 0%, #f093fb 100%);
@@ -877,19 +870,14 @@ def apply_css():
         margin: 0.2rem;
         font-size: 0.9rem;
         font-weight: 500;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.3s ease;
         animation: pulse 2s infinite;
         box-shadow: 0 4px 15px rgba(255,215,0,0.3);
         cursor: pointer;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
-    .skill-tag:hover {{
-        transform: scale(1.15) rotate(-5deg) !important;
-        box-shadow: 0 8px 35px rgba(255,215,0,0.5);
-    }}
-    
-    /* What I Do */
+    /* What I Do - Without Hover Animation (Home Page will handle) */
     .what-i-do-item {{
         text-align: center;
         padding: 1.5rem 1rem;
@@ -897,7 +885,7 @@ def apply_css():
         backdrop-filter: blur(10px);
         border-radius: 16px;
         border: 1px solid rgba(255,215,0,0.1);
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.3s ease;
         cursor: pointer;
         position: relative;
         overflow: hidden;
@@ -924,13 +912,6 @@ def apply_css():
     }}
     
     .what-i-do-item:hover::before {{ opacity: 1; }}
-    
-    .what-i-do-item:hover {{
-        transform: translateY(-10px) scale(1.03) rotate(2deg);
-        border-color: rgba(255,215,0,0.4);
-        box-shadow: 0 10px 40px rgba(255,215,0,0.2);
-        background: rgba(255,215,0,0.1);
-    }}
     
     .what-i-do-item .icon {{
         font-size: 2.8rem;
@@ -962,7 +943,7 @@ def apply_css():
         max-width: 90%;
     }}
     
-    /* Profile Image */
+    /* Profile Image - Without Hover Animation (Home Page will handle) */
     .profile-image-container {{
         width: 150px;
         height: 150px;
@@ -973,7 +954,7 @@ def apply_css():
         box-shadow: 0 0 40px rgba(255,215,0,0.2);
         background: rgba(255,255,255,0.1);
         animation: profileFloat 3s ease-in-out infinite, profileGlow 4s ease-in-out infinite;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.3s ease;
         position: relative;
     }}
     
@@ -996,12 +977,6 @@ def apply_css():
         0% {{ background-position: 0% 50%; }}
         50% {{ background-position: 100% 50%; }}
         100% {{ background-position: 0% 50%; }}
-    }}
-    
-    .profile-image-container:hover {{
-        transform: scale(1.12) rotate(8deg) !important;
-        border-color: #ffd700;
-        box-shadow: 0 0 80px rgba(255,215,0,0.5);
     }}
     
     @keyframes profileFloat {{
@@ -1029,7 +1004,7 @@ def apply_css():
         color: white !important;
         border: 1px solid rgba(255,215,0,0.3) !important;
         box-shadow: 0 15px 50px rgba(255,215,0,0.3) !important;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+        transition: all 0.3s ease !important;
         position: relative;
         overflow: hidden;
         animation: slideInRight 0.6s ease, profileCardGlow 4s ease-in-out infinite;
@@ -1038,11 +1013,6 @@ def apply_css():
     @keyframes profileCardGlow {{
         0%, 100% {{ box-shadow: 0 15px 50px rgba(255,215,0,0.3); }}
         50% {{ box-shadow: 0 25px 80px rgba(255,215,0,0.5); }}
-    }}
-    
-    .profile-card:hover {{
-        transform: translateY(-5px) scale(1.01);
-        box-shadow: 0 25px 80px rgba(255,215,0,0.5);
     }}
     
     .profile-card::before {{
@@ -1073,17 +1043,17 @@ def apply_css():
         padding: 0.3rem 0.8rem !important;
         font-size: 0.8rem !important;
         font-weight: 500 !important;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+        transition: all 0.3s ease !important;
         width: 100% !important;
     }}
     
     .profile-card .stButton button:hover {{
         background: rgba(255,255,255,0.35) !important;
-        transform: scale(1.05) rotate(2deg) !important;
+        transform: scale(1.05);
         box-shadow: 0 0 30px rgba(255,255,255,0.1);
     }}
     
-    /* Download Button */
+    /* Download Button - Without Hover Animation (Home Page will handle) */
     .download-btn {{
         display: block;
         text-align: center;
@@ -1093,7 +1063,7 @@ def apply_css():
         border-radius: 25px;
         text-decoration: none;
         font-weight: 600;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.3s ease;
         border: none;
         cursor: pointer;
         width: 100%;
@@ -1104,7 +1074,6 @@ def apply_css():
     }}
     
     .download-btn:hover {{
-        transform: scale(1.05) rotate(2deg) !important;
         box-shadow: 0 8px 40px rgba(255,215,0,0.4);
         color: white !important;
     }}
@@ -1197,13 +1166,13 @@ def apply_css():
         padding: 0.7rem !important;
         border-radius: 15px !important;
         font-weight: 600 !important;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+        transition: all 0.3s ease !important;
         box-shadow: 0 4px 25px rgba(255,215,0,0.2) !important;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
     .contact-form-card .stButton button:hover {{
-        transform: scale(1.03) rotate(2deg) !important;
+        transform: scale(1.02) !important;
         box-shadow: 0 8px 35px rgba(255,215,0,0.3) !important;
     }}
     
@@ -1270,14 +1239,14 @@ def apply_css():
         padding: 0.7rem;
         border-radius: 15px;
         font-weight: 600;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.3s ease;
         animation: pulse 2s infinite;
         box-shadow: 0 4px 25px rgba(255,215,0,0.2);
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
     .auth-container .stButton button:hover {{
-        transform: scale(1.03) rotate(2deg) !important;
+        transform: scale(1.02);
         box-shadow: 0 8px 35px rgba(255,215,0,0.3);
     }}
     
@@ -1359,13 +1328,13 @@ def apply_css():
         padding: 0.6rem;
         border-radius: 15px;
         font-weight: 600;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.3s ease;
         box-shadow: 0 4px 25px rgba(255,215,0,0.2);
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
     .settings-card .stButton button:hover {{
-        transform: scale(1.03) rotate(2deg) !important;
+        transform: scale(1.02);
         box-shadow: 0 8px 35px rgba(255,215,0,0.3);
     }}
     
@@ -1460,23 +1429,17 @@ def apply_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
-    /* Project Card */
+    /* Project Card - Without Hover Animation (Home Page will handle) */
     .project-card {{
         background: rgba(255,215,0,0.05);
         backdrop-filter: blur(20px);
         border-radius: 20px;
         overflow: hidden;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.3s ease;
         height: 100%;
         border: 1px solid rgba(255,215,0,0.1);
         animation: slideInUp 0.6s ease, cardGlow 4s ease-in-out infinite;
-    }}
-    
-    .project-card:hover {{
-        transform: translateY(-10px) scale(1.02) rotate(1deg);
-        box-shadow: 0 15px 50px rgba(255,215,0,0.2);
-        border-color: rgba(255,215,0,0.3);
     }}
     
     .project-content {{ padding: 1.5rem; }}
@@ -1517,7 +1480,7 @@ def apply_css():
     .upload-section h4 {{ color: #ffd700 !important; font-size: 1rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
     .upload-section p {{ color: rgba(255,255,255,0.5) !important; font-size: 0.8rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
     
-    /* Stats */
+    /* Stats - Without Hover Animation (Home Page will handle) */
     .stat-box {{
         text-align: center;
         padding: 1.5rem;
@@ -1526,19 +1489,13 @@ def apply_css():
         border-radius: 16px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         border: 1px solid rgba(255,215,0,0.1);
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.3s ease;
         animation: slideInUp 0.6s ease, statGlow 4s ease-in-out infinite;
     }}
     
     @keyframes statGlow {{
         0%, 100% {{ border-color: rgba(255,215,0,0.1); }}
         50% {{ border-color: rgba(255,215,0,0.3); }}
-    }}
-    
-    .stat-box:hover {{
-        transform: scale(1.08) translateY(-5px) rotate(2deg);
-        border-color: rgba(255,215,0,0.3);
-        box-shadow: 0 10px 40px rgba(255,215,0,0.15);
     }}
     
     .stat-number {{
@@ -1567,6 +1524,7 @@ def apply_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
+    /* Social Link - Without Hover Animation (Home Page will handle) */
     .social-link {{
         display: inline-block;
         color: white;
@@ -1575,7 +1533,7 @@ def apply_css():
         border-radius: 25px;
         margin: 0.3rem;
         text-decoration: none;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.3s ease;
         backdrop-filter: blur(10px);
         animation: float 3s ease-in-out infinite;
         border: 1px solid rgba(255,215,0,0.1);
@@ -1584,7 +1542,6 @@ def apply_css():
     
     .social-link:hover {{
         background: rgba(255,215,0,0.2);
-        transform: scale(1.15) translateY(-5px) rotate(5deg) !important;
         color: #ffd700;
         border-color: rgba(255,215,0,0.3);
         box-shadow: 0 0 30px rgba(255,215,0,0.1);
@@ -1628,7 +1585,7 @@ def apply_css():
         color: white !important;
         font-size: 1.5rem;
         text-decoration: none;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.3s ease;
         display: inline-block;
         background: rgba(255,255,255,0.1);
         padding: 0.3rem 0.6rem;
@@ -1640,11 +1597,63 @@ def apply_css():
     }}
     
     .profile-social-icons a:hover {{
-        transform: scale(1.4) rotate(-15deg) translateY(-8px) !important;
         background: rgba(255,215,0,0.25);
         box-shadow: 0 0 40px rgba(255,215,0,0.2);
         border-color: rgba(255,215,0,0.3);
     }}
+    
+    /* ============ HOME PAGE SPECIFIC HOVER ANIMATIONS ============ */
+    /* These animations will ONLY work on home page because of home-page class */
+    .home-page .card:hover {{
+        transform: translateY(-8px) scale(1.01) rotate(1deg);
+        box-shadow: 0 15px 50px rgba(255,215,0,0.2);
+        border-color: rgba(255,215,0,0.4);
+    }}
+    
+    .home-page .skill-tag:hover {{
+        transform: scale(1.15) rotate(-5deg) !important;
+        box-shadow: 0 8px 35px rgba(255,215,0,0.5);
+    }}
+    
+    .home-page .download-btn:hover {{
+        transform: scale(1.05) rotate(2deg) !important;
+        box-shadow: 0 8px 40px rgba(255,215,0,0.4);
+        color: white !important;
+    }}
+    
+    .home-page .what-i-do-item:hover {{
+        transform: translateY(-10px) scale(1.03) rotate(2deg);
+        border-color: rgba(255,215,0,0.4);
+        box-shadow: 0 10px 40px rgba(255,215,0,0.2);
+        background: rgba(255,215,0,0.1);
+    }}
+    
+    .home-page .profile-image-container:hover {{
+        transform: scale(1.12) rotate(8deg) !important;
+        border-color: #ffd700;
+        box-shadow: 0 0 80px rgba(255,215,0,0.5);
+    }}
+    
+    .home-page .stat-box:hover {{
+        transform: scale(1.08) translateY(-5px) rotate(2deg);
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 10px 40px rgba(255,215,0,0.15);
+    }}
+    
+    .home-page .project-card:hover {{
+        transform: translateY(-10px) scale(1.02) rotate(1deg);
+        box-shadow: 0 15px 50px rgba(255,215,0,0.2);
+        border-color: rgba(255,215,0,0.3);
+    }}
+    
+    .home-page .social-link:hover {{
+        background: rgba(255,215,0,0.2);
+        transform: scale(1.15) translateY(-5px) rotate(5deg) !important;
+        color: #ffd700;
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
+    }}
+    /* ============ END HOME PAGE SPECIFIC HOVER ANIMATIONS ============ */
     
     /* Scrollbar */
     ::-webkit-scrollbar {{ width: 8px; height: 8px; }}
@@ -1937,6 +1946,9 @@ def show_sidebar():
 # ============ HOME PAGE ============
 
 def show_home_page():
+    # Add home-page class for hover animations (ONLY on home page)
+    st.markdown('<div class="home-page">', unsafe_allow_html=True)
+    
     show_datetime_widget()
     
     col1, col2 = st.columns([6.5, 3.5])
@@ -2054,6 +2066,9 @@ def show_home_page():
             if save_image_permanently(uploaded_file):
                 st.success("✅ Image uploaded successfully!")
                 st.rerun()
+    
+    # Close home-page div
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ============ ABOUT PAGE ============
 
