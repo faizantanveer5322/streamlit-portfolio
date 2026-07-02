@@ -751,23 +751,17 @@ def apply_css():
     
     .hero-section * {{ position: relative; z-index: 1; }}
     
-    /* FIXED: Bigger Hero Title */
     .hero-title {{
-        font-size: 4rem !important;
-        font-weight: 800 !important;
+        font-size: 7rem;
+        font-weight: 700;
         margin-bottom: 0.5rem;
-        text-shadow: 0 0 40px rgba(255,215,0,0.3);
-        animation: fadeInDown 1s ease, textGoldenGlow 3s ease-in-out infinite;
+        text-shadow: 0 0 40px rgba(0,0,0,0.3);
+        animation: fadeInDown 1s ease;
         background: linear-gradient(to right, #fff, #ffd700);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
-        letter-spacing: 2px;
-        text-align: center !important;
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
     }}
     
     /* Fallback */
