@@ -484,7 +484,7 @@ def apply_css():
         'large': '7rem',
         'xlarge': '9rem'
     }
-    hero_size = hero_size_map.get(st.session_state.font_size, '7rem')
+ hero_size = '5rem'  
     
     # Subtitle size mapping
     subtitle_size_map = {
