@@ -33,6 +33,16 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+    st.markdown("""
+<style>
+.stApp {
+    font-size: 20px;
+}
+p {
+    font-size: 20px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # Create images folder if it doesn't exist
 if not os.path.exists("images"):
