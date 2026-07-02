@@ -477,13 +477,6 @@ def apply_css():
     }
     font_size = font_size_map.get(st.session_state.font_size, '16px')
     
-    # Hero title size mapping - responsive to font size changes
-    hero_size_map = {
-        'small': '3.5rem',
-        'medium': '5.5rem',
-        'large': '7rem',
-        'xlarge': '9rem'
-    }
  hero_size = '5rem'  
     
     # Subtitle size mapping
