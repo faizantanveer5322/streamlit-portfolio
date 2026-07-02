@@ -513,62 +513,62 @@ def apply_css():
         transition: all 0.3s ease;
     }}
     
-    /* Sidebar Arrow Button - FIXED: No Text, Golden Gradient */
-    .sidebar-arrow-wrapper {{
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        z-index: 999;
-        background: linear-gradient(135deg, #ffd700, #f093fb);
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 30px rgba(255,215,0,0.4);
-        animation: arrowPulse 2s ease-in-out infinite, arrowFloat 3s ease-in-out infinite;
-        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        cursor: pointer;
-        border: none;
-    }}
-    
-    .sidebar-arrow-wrapper:hover {{
-        transform: scale(1.15) rotate(15deg);
-        box-shadow: 0 8px 50px rgba(255,215,0,0.6);
-    }}
-    
-    .sidebar-arrow-wrapper:active {{
-        transform: scale(0.9);
-    }}
-    
-    @keyframes arrowPulse {{
-        0%, 100% {{ box-shadow: 0 4px 30px rgba(255,215,0,0.4); }}
-        50% {{ box-shadow: 0 8px 60px rgba(255,215,0,0.8); }}
-    }}
-    
-    @keyframes arrowFloat {{
-        0%, 100% {{ transform: translateY(0px); }}
-        50% {{ transform: translateY(-8px); }}
-    }}
-    
-    .sidebar-arrow-wrapper .arrow-icon {{
-        color: white;
-        font-size: 1.5rem;
-        font-weight: bold;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        animation: arrowRotate 3s ease-in-out infinite;
-    }}
-    
-    @keyframes arrowRotate {{
-        0%, 100% {{ transform: rotate(0deg); }}
-        50% {{ transform: rotate(10deg); }}
-    }}
-    
-    /* Hide the actual Streamlit button */
-    .stButton button[key="sidebar_arrow"] {{
-        display: none !important;
-    }}
+/* Sidebar Arrow Button - FIXED: No Text, No Space */
+.sidebar-arrow-wrapper {{
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 999;
+    background: linear-gradient(135deg, #ffd700, #f093fb);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 30px rgba(255,215,0,0.4);
+    animation: arrowPulse 2s ease-in-out infinite, arrowFloat 3s ease-in-out infinite;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    cursor: pointer;
+    border: none;
+}}
+
+.sidebar-arrow-wrapper:hover {{
+    transform: scale(1.15) rotate(15deg);
+    box-shadow: 0 8px 50px rgba(255,215,0,0.6);
+}
+
+.sidebar-arrow-wrapper:active {{
+    transform: scale(0.9);
+}
+
+@keyframes arrowPulse {{
+    0%, 100% {} box-shadow: 0 4px 30px rgba(255,215,0,0.4); }
+    50% {{ box-shadow: 0 8px 60px rgba(255,215,0,0.8); }
+}}
+
+@keyframes arrowFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% {{ transform: translateY(-8px); }
+}
+
+.sidebar-arrow-wrapper .arrow-icon {{
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    animation: arrowRotate 3s ease-in-out infinite;
+}
+
+@keyframes arrowRotate {
+    0%, 100% { transform: rotate(0deg); }
+    50% {{ transform: rotate(10deg); }
+}
+
+/* Hide the actual Streamlit button */
+.stButton button[key="sidebar_arrow"] {
+    display:} none !important;}
+}}
     
     /* Sidebar User */
     .sidebar-user {{
@@ -752,20 +752,21 @@ def apply_css():
     .hero-section * {{ position: relative; z-index: 1; }}
     
     /* FIXED: Bigger Hero Title - Centered */
-    .hero-title {{
-        font-size: 4.5rem !important;
-        font-weight: 800 !important;
-        margin-bottom: 0.5rem;
-        text-shadow: 0 0 40px rgba(255,215,0,0.3);
-        animation: fadeInDown 1s ease, textGoldenGlow 3s ease-in-out infinite;
-        background: linear-gradient(to right, #fff, #ffd700);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
-        letter-spacing: 2px;
-        text-align: center !important;
-    }}
+/* FIXED: Bigger Hero Title - Centered */
+.hero-title {{
+    font-size: 4.5rem !important;
+    font-weight: 800 !important;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 40px rgba(255,215,0,0.3);
+    animation: fadeInDown 1s ease, textGoldenGlow 3s ease-in-out infinite;
+    background: linear-gradient(to right, #fff, #ffd700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
+    letter-spacing: 2px;
+    text-align: center !important;
+}}
     
     @keyframes textGoldenGlow {{
         0%, 100% {{ text-shadow: 0 0 30px rgba(255,215,0,0.2); }}
