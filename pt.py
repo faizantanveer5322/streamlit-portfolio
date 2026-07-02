@@ -34,7 +34,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-
 # Create images folder if it doesn't exist
 if not os.path.exists("images"):
     os.makedirs("images")
@@ -384,7 +383,7 @@ def create_download_resume():
         
         story = []
         
-        story.append(heading('FAIZAN TANVEER', title_style))
+        story.append(Paragraph('FAIZAN TANVEER', title_style))
         story.append(Paragraph('Student | Python Developer', subtitle_style))
         story.append(Paragraph(f'Email: {PERSONAL_INFO["email"]}  |  Phone: {PERSONAL_INFO["phone"]}  |  Location: {PERSONAL_INFO["location"]}', contact_style))
         story.append(Spacer(1, 12))
@@ -1814,7 +1813,7 @@ def show_sidebar():
         </div>
     """, unsafe_allow_html=True)
     
-    if st.button("MENU✨", key="sidebar_arrow", help="Toggle Sidebar"):
+    if st.button("", key="sidebar_arrow", help="Toggle Sidebar"):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
     
