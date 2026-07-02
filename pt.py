@@ -753,7 +753,7 @@ def apply_css():
     
     /* FIXED: Bigger Hero Title */
     .hero-title {{
-        font-size: 5rem !important;
+        font-size: 4rem !important;
         font-weight: 800 !important;
         margin-bottom: 0.5rem;
         text-shadow: 0 0 40px rgba(255,215,0,0.3);
