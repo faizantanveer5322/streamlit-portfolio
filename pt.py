@@ -700,19 +700,22 @@ def apply_css():
         border-color: rgba(255,50,50,0.4) !important;
     }}
     
- st.markdown(f"""
-            <div class="hero-section">
-                <div class="hero-title"><span class="emoji-text">👋</span> {PERSONAL_INFO['name']}</div>
-                <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
-                <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
-                <div style="margin-top: 1.5rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-link">🐙 GitHub</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-link">🐦 Twitter</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-link">📸 Instagram</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-link">🎵 TikTok</a>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+    /* ============ HERO SECTION - FIXED ============ */
+    .hero-section {{
+        background: linear-gradient(135deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #ffd700 100%);
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        color: white;
+        text-align: center;
+        box-shadow: 0 10px 50px rgba(255,215,0,0.3);
+        animation: heroFadeIn 0.8s ease, goldenGlow 4s ease-in-out infinite;
+        position: relative;
+        overflow: hidden;
+        background-size: 300% 300%;
+        animation: gradientShift 6s ease infinite, goldenGlow 4s ease-in-out infinite;
+        border: 1px solid rgba(255,215,0,0.2);
+    }}
     
     @keyframes gradientShift {{
         0% {{ background-position: 0% 50%; }}
@@ -748,9 +751,9 @@ def apply_css():
     
     .hero-section * {{ position: relative; z-index: 1; }}
     
-    /* Bigger Hero Title - Centered */
+    /* FIXED: Bigger Hero Title */
     .hero-title {{
-        font-size: 4.5rem !important;
+        font-size: 5rem !important;
         font-weight: 800 !important;
         margin-bottom: 0.5rem;
         text-shadow: 0 0 40px rgba(255,215,0,0.3);
@@ -762,6 +765,18 @@ def apply_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
         letter-spacing: 2px;
         text-align: center !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }}
+    
+    /* Fallback */
+    @supports not (background-clip: text) {{
+        .hero-title {{
+            background: none !important;
+            -webkit-text-fill-color: #ffd700 !important;
+            color: #ffd700 !important;
+        }}
     }}
     
     @keyframes textGoldenGlow {{
@@ -824,7 +839,7 @@ def apply_css():
         100% {{ transform: scale(1); }}
     }}
     
-    /* Cards - Golden Border with Rotate on Hover (Home Page will handle) */
+    /* ============ CARDS - WITH HOVER EFFECTS ============ */
     .card {{
         background: {card_bg};
         backdrop-filter: blur(20px);
@@ -832,7 +847,7 @@ def apply_css():
         border-radius: 20px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         margin-bottom: 1.5rem;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         border: 1px solid rgba(255,215,0,0.1);
         animation: slideInLeft 0.6s ease, cardGlow 4s ease-in-out infinite;
     }}
@@ -840,6 +855,12 @@ def apply_css():
     @keyframes cardGlow {{
         0%, 100% {{ border-color: rgba(255,215,0,0.1); }}
         50% {{ border-color: rgba(255,215,0,0.3); }}
+    }}
+    
+    .card:hover {{
+        transform: translateY(-8px) scale(1.01) rotate(1deg);
+        box-shadow: 0 15px 50px rgba(255,215,0,0.2);
+        border-color: rgba(255,215,0,0.4);
     }}
     
     .card-title {{
@@ -857,7 +878,7 @@ def apply_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
-    /* Skill Tags - Golden with Rotate on Hover */
+    /* ============ SKILL TAGS - WITH HOVER ============ */
     .skill-tag {{
         display: inline-block;
         background: linear-gradient(135deg, #ffd700 0%, #f093fb 100%);
@@ -879,7 +900,7 @@ def apply_css():
         box-shadow: 0 8px 35px rgba(255,215,0,0.5);
     }}
     
-    /* What I Do - Golden Animation */
+    /* ============ WHAT I DO - WITH HOVER ============ */
     .what-i-do-item {{
         text-align: center;
         padding: 1.5rem 1rem;
@@ -952,7 +973,7 @@ def apply_css():
         max-width: 90%;
     }}
     
-    /* Profile Image - Golden Border */
+    /* ============ PROFILE IMAGE - WITH HOVER ============ */
     .profile-image-container {{
         width: 150px;
         height: 150px;
@@ -1010,7 +1031,7 @@ def apply_css():
         object-fit: cover;
     }}
     
-    /* Profile Card - Golden */
+    /* ============ PROFILE CARD ============ */
     .profile-card {{
         text-align: center;
         background: linear-gradient(135deg, #1a0533 0%, #2d1b69 30%, #4a2c8a 60%, #ffd700 100%) !important;
@@ -1019,7 +1040,7 @@ def apply_css():
         color: white !important;
         border: 1px solid rgba(255,215,0,0.3) !important;
         box-shadow: 0 15px 50px rgba(255,215,0,0.3) !important;
-        transition: all 0.3s ease !important;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
         position: relative;
         overflow: hidden;
         animation: slideInRight 0.6s ease, profileCardGlow 4s ease-in-out infinite;
@@ -1028,6 +1049,11 @@ def apply_css():
     @keyframes profileCardGlow {{
         0%, 100% {{ box-shadow: 0 15px 50px rgba(255,215,0,0.3); }}
         50% {{ box-shadow: 0 25px 80px rgba(255,215,0,0.5); }}
+    }}
+    
+    .profile-card:hover {{
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 25px 80px rgba(255,215,0,0.5);
     }}
     
     .profile-card::before {{
@@ -1058,17 +1084,17 @@ def apply_css():
         padding: 0.3rem 0.8rem !important;
         font-size: 0.8rem !important;
         font-weight: 500 !important;
-        transition: all 0.3s ease !important;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
         width: 100% !important;
     }}
     
     .profile-card .stButton button:hover {{
         background: rgba(255,255,255,0.35) !important;
-        transform: scale(1.05);
+        transform: scale(1.05) rotate(2deg) !important;
         box-shadow: 0 0 30px rgba(255,255,255,0.1);
     }}
     
-    /* Download Button - Golden */
+    /* ============ DOWNLOAD BUTTON - WITH HOVER ============ */
     .download-btn {{
         display: block;
         text-align: center;
@@ -1094,7 +1120,7 @@ def apply_css():
         color: white !important;
     }}
     
-    /* Date/Time/Weather Widget - Golden */
+    /* ============ DATE/TIME/WIDGET ============ */
     .datetime-widget {{
         display: flex;
         justify-content: space-between;
@@ -1132,7 +1158,130 @@ def apply_css():
         animation: textGoldenGlow 3s ease-in-out infinite;
     }}
     
-    /* Contact Form */
+    /* ============ STATS - WITH HOVER ============ */
+    .stat-box {{
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(255,215,0,0.05);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,215,0,0.1);
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        animation: slideInUp 0.6s ease, statGlow 4s ease-in-out infinite;
+    }}
+    
+    @keyframes statGlow {{
+        0%, 100% {{ border-color: rgba(255,215,0,0.1); }}
+        50% {{ border-color: rgba(255,215,0,0.3); }}
+    }}
+    
+    .stat-box:hover {{
+        transform: scale(1.08) translateY(-5px) rotate(2deg);
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 10px 40px rgba(255,215,0,0.15);
+    }}
+    
+    .stat-number {{
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ffd700, #f093fb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: pulse 2s infinite;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }}
+    
+    .stat-label {{
+        color: rgba(255,255,255,0.6) !important;
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }}
+    
+    /* ============ PROJECT CARD - WITH HOVER ============ */
+    .project-card {{
+        background: rgba(255,215,0,0.05);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        height: 100%;
+        border: 1px solid rgba(255,215,0,0.1);
+        animation: slideInUp 0.6s ease, cardGlow 4s ease-in-out infinite;
+    }}
+    
+    .project-card:hover {{
+        transform: translateY(-10px) scale(1.02) rotate(1deg);
+        box-shadow: 0 15px 50px rgba(255,215,0,0.2);
+        border-color: rgba(255,215,0,0.3);
+    }}
+    
+    .project-content {{ padding: 1.5rem; }}
+    .project-title {{
+        font-weight: 600;
+        color: #ffd700 !important;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }}
+    .project-description {{
+        color: rgba(255,255,255,0.7) !important;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }}
+    .project-tech {{ margin-top: 1rem; }}
+    .project-content a {{ color: #f093fb !important; transition: all 0.3s ease; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
+    .project-content a:hover {{ color: #ffd700 !important; transform: scale(1.05) rotate(2deg); display: inline-block; }}
+    
+    /* ============ SOCIAL LINK - WITH HOVER ============ */
+    .social-link {{
+        display: inline-block;
+        color: white;
+        background: rgba(255,215,0,0.1);
+        padding: 0.5rem 1.2rem;
+        border-radius: 25px;
+        margin: 0.3rem;
+        text-decoration: none;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        backdrop-filter: blur(10px);
+        animation: float 3s ease-in-out infinite;
+        border: 1px solid rgba(255,215,0,0.1);
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }}
+    
+    .social-link:hover {{
+        background: rgba(255,215,0,0.2);
+        transform: scale(1.15) translateY(-5px) rotate(5deg) !important;
+        color: #ffd700;
+        border-color: rgba(255,215,0,0.3);
+        box-shadow: 0 0 30px rgba(255,215,0,0.1);
+    }}
+    
+    /* ============ UPLOAD SECTION ============ */
+    .upload-section {{
+        background: rgba(255,215,0,0.05);
+        backdrop-filter: blur(20px);
+        padding: 1rem;
+        border-radius: 20px;
+        border: 1px solid rgba(255,215,0,0.1);
+        margin-top: 1rem;
+        animation: cardGlow 4s ease-in-out infinite;
+        transition: all 0.3s ease;
+    }}
+    
+    .upload-section:hover {{
+        border-color: rgba(255,215,0,0.3);
+        transform: scale(1.01);
+    }}
+    
+    .upload-section h4 {{ color: #ffd700 !important; font-size: 1rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
+    .upload-section p {{ color: rgba(255,255,255,0.5) !important; font-size: 0.8rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
+    
+    /* ============ CONTACT FORM ============ */
     .contact-form-card {{
         background: rgba(255,215,0,0.05);
         backdrop-filter: blur(20px);
@@ -1192,31 +1341,50 @@ def apply_css():
         box-shadow: 0 8px 35px rgba(255,215,0,0.3) !important;
     }}
     
-    /* Copy Container */
-    .copy-container {{
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin: 0.3rem 0;
+    /* ============ TIMELINE ============ */
+    .timeline-item {{
+        border-left: 3px solid #ffd700;
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        animation: slideInRight 0.6s ease;
     }}
     
-    .copy-text {{
-        flex: 1;
-        padding: 0.3rem 0.5rem;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        word-break: break-all;
+    .timeline-item::before {{
+        content: "●";
+        position: absolute;
+        left: -0.7rem;
+        color: #ffd700;
+        font-size: 1.2rem;
+        animation: pulse 2s infinite;
+    }}
+    
+    .timeline-title {{
+        font-weight: 600;
+        color: #ffd700 !important;
+        font-size: 1.1rem;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-        background: rgba(255,255,255,0.05);
-        transition: all 0.3s ease;
     }}
     
-    .copy-text:hover {{
-        transform: scale(1.02);
-        border-color: rgba(255,215,0,0.3);
+    .timeline-subtitle {{
+        color: #f093fb !important;
+        font-weight: 500;
+        margin: 0.2rem 0;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
-    /* Auth */
+    .timeline-date {{
+        color: rgba(255,255,255,0.5) !important;
+        font-size: 0.9rem;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }}
+    
+    .timeline-item div {{
+        color: rgba(255,255,255,0.8) !important;
+        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+    }}
+    
+    /* ============ AUTH ============ */
     .auth-container {{
         max-width: 420px;
         margin: 50px auto;
@@ -1255,14 +1423,14 @@ def apply_css():
         padding: 0.7rem;
         border-radius: 15px;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         animation: pulse 2s infinite;
         box-shadow: 0 4px 25px rgba(255,215,0,0.2);
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
     .auth-container .stButton button:hover {{
-        transform: scale(1.02);
+        transform: scale(1.03) rotate(2deg) !important;
         box-shadow: 0 8px 35px rgba(255,215,0,0.3);
     }}
     
@@ -1320,7 +1488,7 @@ def apply_css():
         animation: float 3s ease-in-out infinite;
     }}
     
-    /* Settings */
+    /* ============ SETTINGS ============ */
     .settings-card {{
         background: rgba(255,215,0,0.05);
         backdrop-filter: blur(30px);
@@ -1344,13 +1512,13 @@ def apply_css():
         padding: 0.6rem;
         border-radius: 15px;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         box-shadow: 0 4px 25px rgba(255,215,0,0.2);
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
     .settings-card .stButton button:hover {{
-        transform: scale(1.02);
+        transform: scale(1.03) rotate(2deg) !important;
         box-shadow: 0 8px 35px rgba(255,215,0,0.3);
     }}
     
@@ -1402,296 +1570,39 @@ def apply_css():
         transform: scale(1.02);
     }}
     
-    /* Timeline */
-    .timeline-item {{
-        border-left: 3px solid #ffd700;
-        padding-left: 1.5rem;
-        margin-bottom: 1.5rem;
-        position: relative;
-        animation: slideInRight 0.6s ease;
+    /* ============ COPY CONTAINER ============ */
+    .copy-container {{
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.3rem 0;
     }}
     
-    .timeline-item::before {{
-        content: "●";
-        position: absolute;
-        left: -0.7rem;
-        color: #ffd700;
-        font-size: 1.2rem;
-        animation: pulse 2s infinite;
-    }}
-    
-    .timeline-title {{
-        font-weight: 600;
-        color: #ffd700 !important;
-        font-size: 1.1rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .timeline-subtitle {{
-        color: #f093fb !important;
-        font-weight: 500;
-        margin: 0.2rem 0;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .timeline-date {{
-        color: rgba(255,255,255,0.5) !important;
+    .copy-text {{
+        flex: 1;
+        padding: 0.3rem 0.5rem;
+        border-radius: 8px;
         font-size: 0.9rem;
+        word-break: break-all;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .timeline-item div {{
-        color: rgba(255,255,255,0.8) !important;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    /* Project Card */
-    .project-card {{
-        background: rgba(255,215,0,0.05);
-        backdrop-filter: blur(20px);
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        height: 100%;
-        border: 1px solid rgba(255,215,0,0.1);
-        animation: slideInUp 0.6s ease, cardGlow 4s ease-in-out infinite;
-    }}
-    
-    .project-card:hover {{
-        transform: translateY(-10px) scale(1.02) rotate(1deg);
-        box-shadow: 0 15px 50px rgba(255,215,0,0.2);
-        border-color: rgba(255,215,0,0.3);
-    }}
-    
-    .project-content {{ padding: 1.5rem; }}
-    .project-title {{
-        font-weight: 600;
-        color: #ffd700 !important;
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    .project-description {{
-        color: rgba(255,255,255,0.7) !important;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    .project-tech {{ margin-top: 1rem; }}
-    .project-content a {{ color: #f093fb !important; transition: all 0.3s ease; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
-    .project-content a:hover {{ color: #ffd700 !important; transform: scale(1.05) rotate(2deg); display: inline-block; }}
-    
-    /* Upload Section */
-    .upload-section {{
-        background: rgba(255,215,0,0.05);
-        backdrop-filter: blur(20px);
-        padding: 1rem;
-        border-radius: 20px;
-        border: 1px solid rgba(255,215,0,0.1);
-        margin-top: 1rem;
-        animation: cardGlow 4s ease-in-out infinite;
+        background: rgba(255,255,255,0.05);
         transition: all 0.3s ease;
     }}
     
-    .upload-section:hover {{
-        border-color: rgba(255,215,0,0.3);
-        transform: scale(1.01);
-    }}
-    
-    .upload-section h4 {{ color: #ffd700 !important; font-size: 1rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
-    .upload-section p {{ color: rgba(255,255,255,0.5) !important; font-size: 0.8rem; font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important; }}
-    
-    /* Stats */
-    .stat-box {{
-        text-align: center;
-        padding: 1.5rem;
-        background: rgba(255,215,0,0.05);
-        backdrop-filter: blur(20px);
-        border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        border: 1px solid rgba(255,215,0,0.1);
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        animation: slideInUp 0.6s ease, statGlow 4s ease-in-out infinite;
-    }}
-    
-    @keyframes statGlow {{
-        0%, 100% {{ border-color: rgba(255,215,0,0.1); }}
-        50% {{ border-color: rgba(255,215,0,0.3); }}
-    }}
-    
-    .stat-box:hover {{
-        transform: scale(1.08) translateY(-5px) rotate(2deg);
-        border-color: rgba(255,215,0,0.3);
-        box-shadow: 0 10px 40px rgba(255,215,0,0.15);
-    }}
-    
-    .stat-number {{
-        font-size: 2.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #ffd700, #f093fb);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        animation: pulse 2s infinite;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .stat-label {{
-        color: rgba(255,255,255,0.6) !important;
-        font-size: 0.9rem;
-        margin-top: 0.3rem;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .about-text {{
-        font-size: 1.05rem;
-        line-height: 1.8;
-        color: {text_color} !important;
-        white-space: pre-wrap;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .social-link {{
-        display: inline-block;
-        color: white;
-        background: rgba(255,215,0,0.1);
-        padding: 0.5rem 1.2rem;
-        border-radius: 25px;
-        margin: 0.3rem;
-        text-decoration: none;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        backdrop-filter: blur(10px);
-        animation: float 3s ease-in-out infinite;
-        border: 1px solid rgba(255,215,0,0.1);
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .social-link:hover {{
-        background: rgba(255,215,0,0.2);
-        transform: scale(1.15) translateY(-5px) rotate(5deg) !important;
-        color: #ffd700;
-        border-color: rgba(255,215,0,0.3);
-        box-shadow: 0 0 30px rgba(255,215,0,0.1);
-    }}
-    
-    .success-message {{
-        background: rgba(46, 213, 115, 0.2);
-        backdrop-filter: blur(20px);
-        color: #2ed573;
-        padding: 1rem;
-        border-radius: 15px;
-        border: 1px solid rgba(46, 213, 115, 0.2);
-        margin-top: 1rem;
-        text-align: center;
-        animation: fadeInUp 0.5s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .error-message {{
-        background: rgba(255, 50, 50, 0.2);
-        backdrop-filter: blur(20px);
-        color: #ff6b6b;
-        padding: 1rem;
-        border-radius: 15px;
-        border: 1px solid rgba(255, 50, 50, 0.2);
-        margin-top: 1rem;
-        text-align: center;
-        animation: fadeInUp 0.5s ease;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .profile-social-icons {{
-        display: flex;
-        justify-content: center;
-        gap: 0.8rem;
-        margin-top: 0.5rem;
-        flex-wrap: wrap;
-    }}
-    
-    .profile-social-icons a {{
-        color: white !important;
-        font-size: 1.5rem;
-        text-decoration: none;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        display: inline-block;
-        background: rgba(255,255,255,0.1);
-        padding: 0.3rem 0.6rem;
-        border-radius: 10px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.05);
-        animation: float 3s ease-in-out infinite;
-        font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
-    }}
-    
-    .profile-social-icons a:hover {{
-        transform: scale(1.4) rotate(-15deg) translateY(-8px) !important;
-        background: rgba(255,215,0,0.25);
-        box-shadow: 0 0 40px rgba(255,215,0,0.2);
+    .copy-text:hover {{
+        transform: scale(1.02);
         border-color: rgba(255,215,0,0.3);
     }}
     
-    /* ============ HOME PAGE SPECIFIC HOVER ANIMATIONS ============ */
-    /* These animations will ONLY work on home page */
-    .home-page .card:hover {{
-        transform: translateY(-8px) scale(1.01) rotate(1deg);
-        box-shadow: 0 15px 50px rgba(255,215,0,0.2);
-        border-color: rgba(255,215,0,0.4);
-    }}
-    
-    .home-page .skill-tag:hover {{
-        transform: scale(1.15) rotate(-5deg) !important;
-        box-shadow: 0 8px 35px rgba(255,215,0,0.5);
-    }}
-    
-    .home-page .download-btn:hover {{
-        transform: scale(1.05) rotate(2deg) !important;
-        box-shadow: 0 8px 40px rgba(255,215,0,0.4);
-        color: white !important;
-    }}
-    
-    .home-page .what-i-do-item:hover {{
-        transform: translateY(-10px) scale(1.03) rotate(2deg);
-        border-color: rgba(255,215,0,0.4);
-        box-shadow: 0 10px 40px rgba(255,215,0,0.2);
-        background: rgba(255,215,0,0.1);
-    }}
-    
-    .home-page .profile-image-container:hover {{
-        transform: scale(1.12) rotate(8deg) !important;
-        border-color: #ffd700;
-        box-shadow: 0 0 80px rgba(255,215,0,0.5);
-    }}
-    
-    .home-page .stat-box:hover {{
-        transform: scale(1.08) translateY(-5px) rotate(2deg);
-        border-color: rgba(255,215,0,0.3);
-        box-shadow: 0 10px 40px rgba(255,215,0,0.15);
-    }}
-    
-    .home-page .project-card:hover {{
-        transform: translateY(-10px) scale(1.02) rotate(1deg);
-        box-shadow: 0 15px 50px rgba(255,215,0,0.2);
-        border-color: rgba(255,215,0,0.3);
-    }}
-    
-    .home-page .social-link:hover {{
-        background: rgba(255,215,0,0.2);
-        transform: scale(1.15) translateY(-5px) rotate(5deg) !important;
-        color: #ffd700;
-        border-color: rgba(255,215,0,0.3);
-        box-shadow: 0 0 30px rgba(255,215,0,0.1);
-    }}
-    /* ============ END HOME PAGE SPECIFIC HOVER ANIMATIONS ============ */
-    
-    /* Scrollbar */
+    /* ============ SCROLLBAR ============ */
     ::-webkit-scrollbar {{ width: 8px; height: 8px; }}
     ::-webkit-scrollbar-track {{ background: #1a1a2e; border-radius: 10px; }}
     ::-webkit-scrollbar-thumb {{ background: linear-gradient(135deg, #ffd700, #f093fb); border-radius: 10px; }}
     ::-webkit-scrollbar-thumb:hover {{ background: linear-gradient(135deg, #f093fb, #ffd700); }}
     
+    /* ============ RESPONSIVE ============ */
     @media (max-width: 768px) {{
-        .hero-title {{ font-size: 2.2rem !important; }}
+        .hero-title {{ font-size: 2.5rem !important; }}
         .hero-subtitle {{ font-size: 1rem; }}
         .copy-container {{ flex-wrap: wrap; }}
         .what-i-do-item {{ padding: 1rem; }}
@@ -1892,22 +1803,20 @@ def show_settings():
         </div>
     """.format(username=st.session_state.username), unsafe_allow_html=True)
 
-# ============ SIDEBAR - FIXED: Only Arrow, No Text ============
+# ============ SIDEBAR ============
 
 def show_sidebar():
-    # Filled Golden Arrow Button - Only Arrow, No Text
+    # Filled Golden Arrow Button
     st.markdown("""
         <div class="sidebar-arrow-wrapper" onclick="document.querySelector('[data-testid=\"stButton\"] button').click()">
             <span class="arrow-icon">▶</span>
         </div>
     """, unsafe_allow_html=True)
     
-    # Hidden button for functionality - EMPTY STRING for NO TEXT
     if st.button("", key="sidebar_arrow", help="Toggle Sidebar"):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
     
-    # Sidebar content - Auto closes when navigation item is clicked
     if st.session_state.sidebar_open:
         with st.sidebar:
             st.markdown("""
@@ -1975,7 +1884,6 @@ def show_sidebar():
 # ============ HOME PAGE ============
 
 def show_home_page():
-    # Add home-page class for hover animations (ONLY on home page)
     st.markdown('<div class="home-page">', unsafe_allow_html=True)
     
     show_datetime_widget()
@@ -2096,7 +2004,6 @@ def show_home_page():
                 st.success("✅ Image uploaded successfully!")
                 st.rerun()
     
-    # Close home-page div
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ============ ABOUT PAGE ============
@@ -2287,7 +2194,7 @@ def show_stats_page():
                     <div class="stat-number">{number}</div>
                     <div class="stat-label">{label}</div>
                 </div>
-            """, unsafe_allow_html=Tru)
+            """, unsafe_allow_html=True)
     
     st.markdown("---")
     st.markdown('<h3 style="color: #ffd700;">💪 Key Highlights</h3>', unsafe_allow_html=True)
@@ -2398,16 +2305,17 @@ def main():
         show_sidebar()
         
         page = st.session_state.page
+        
         st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #1a0533, #2d1b69, #4a2c8a, #ffd700); padding: 3rem 2rem; border-radius: 20px; margin-bottom: 2rem; text-align: center; box-shadow: 0 10px 50px rgba(255,215,0,0.3); border: 1px solid rgba(255,215,0,0.2);">
-                <h1 style="font-size: 5rem; font-weight: 800; color: #ffffff; margin-bottom: 0.5rem; text-shadow: 0 0 40px rgba(255,215,0,0.3);">👋 {PERSONAL_INFO['name']}</h1>
-                <h2 style="font-size: 1.8rem; color: rgba(255,255,255,0.95); font-weight: 300;">{PERSONAL_INFO['title']}</h2>
-                <p style="font-size: 1.2rem; color: rgba(255,255,255,0.9);">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</p>
+            <div class="hero-section">
+                <div class="hero-title"><span class="emoji-text">👋</span> {PERSONAL_INFO['name']}</div>
+                <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
+                <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
                 <div style="margin-top: 1.5rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">🐙 GitHub</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">🐦 Twitter</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">📸 Instagram</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">🎵 TikTok</a>
+                    <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-link">🐙 GitHub</a>
+                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-link">🐦 Twitter</a>
+                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-link">📸 Instagram</a>
+                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-link">🎵 TikTok</a>
                 </div>
             </div>
         """, unsafe_allow_html=True)
