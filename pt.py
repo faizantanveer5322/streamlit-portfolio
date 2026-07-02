@@ -513,7 +513,7 @@ def apply_css():
         transition: all 0.3s ease;
     }}
     
-    /* Sidebar Arrow Button - Filled with Golden Gradient - FIXED: No Text, No Space */
+    /* Sidebar Arrow Button - FIXED: No Text, Golden Gradient */
     .sidebar-arrow-wrapper {{
         position: fixed;
         top: 20px;
@@ -637,7 +637,7 @@ def apply_css():
         animation: fadeInUp 0.8s ease;
     }}
     
-    /* Sidebar Navigation - Golden with Rotate Animation on Hover */
+    /* Sidebar Navigation */
     .sidebar-nav .stButton button {{
         width: 100%;
         background: rgba(255,215,0,0.05) !important;
@@ -827,7 +827,7 @@ def apply_css():
         100% {{ transform: scale(1); }}
     }}
     
-    /* Cards - Golden Border Animation - Rotate on Hover (Home Page Only) */
+    /* Cards */
     .card {{
         background: {card_bg};
         backdrop-filter: blur(20px);
@@ -866,7 +866,7 @@ def apply_css():
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
     }}
     
-    /* Skill Tags - Golden with Rotate on Hover */
+    /* Skill Tags */
     .skill-tag {{
         display: inline-block;
         background: linear-gradient(135deg, #ffd700 0%, #f093fb 100%);
@@ -888,7 +888,7 @@ def apply_css():
         box-shadow: 0 8px 35px rgba(255,215,0,0.5);
     }}
     
-    /* What I Do - Golden Animation */
+    /* What I Do */
     .what-i-do-item {{
         text-align: center;
         padding: 1.5rem 1rem;
@@ -961,7 +961,7 @@ def apply_css():
         max-width: 90%;
     }}
     
-    /* Profile Image - Golden Border */
+    /* Profile Image */
     .profile-image-container {{
         width: 150px;
         height: 150px;
@@ -1082,7 +1082,7 @@ def apply_css():
         box-shadow: 0 0 30px rgba(255,255,255,0.1);
     }}
     
-    /* Download Button - Golden */
+    /* Download Button */
     .download-btn {{
         display: block;
         text-align: center;
@@ -1108,7 +1108,7 @@ def apply_css():
         color: white !important;
     }}
     
-    /* Date/Time/Weather Widget - Golden */
+    /* Date/Time/Weather Widget */
     .datetime-widget {{
         display: flex;
         justify-content: space-between;
@@ -1645,7 +1645,7 @@ def apply_css():
         border-color: rgba(255,215,0,0.3);
     }}
     
-    /* Scrollbar - Golden */
+    /* Scrollbar */
     ::-webkit-scrollbar {{ width: 8px; height: 8px; }}
     ::-webkit-scrollbar-track {{ background: #1a1a2e; border-radius: 10px; }}
     ::-webkit-scrollbar-thumb {{ background: linear-gradient(135deg, #ffd700, #f093fb); border-radius: 10px; }}
@@ -1853,7 +1853,7 @@ def show_settings():
         </div>
     """.format(username=st.session_state.username), unsafe_allow_html=True)
 
-# ============ SIDEBAR - Filled Arrow Button (No Text, No Space) ============
+# ============ SIDEBAR - FIXED: Only Arrow, No Text ============
 
 def show_sidebar():
     # Filled Golden Arrow Button - Only Arrow, No Text
@@ -1863,7 +1863,7 @@ def show_sidebar():
         </div>
     """, unsafe_allow_html=True)
     
-    # Hidden button for functionality - Empty string for no text
+    # Hidden button for functionality - EMPTY STRING for NO TEXT
     if st.button("", key="sidebar_arrow", help="Toggle Sidebar"):
         st.session_state.sidebar_open = not st.session_state.sidebar_open
         st.rerun()
