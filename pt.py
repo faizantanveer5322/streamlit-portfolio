@@ -477,6 +477,24 @@ def apply_css():
     }
     font_size = font_size_map.get(st.session_state.font_size, '16px')
     
+    # Hero title size mapping - responsive to font size changes
+    hero_size_map = {
+        'small': '3.5rem',
+        'medium': '5.5rem',
+        'large': '7rem',
+        'xlarge': '9rem'
+    }
+    hero_size = hero_size_map.get(st.session_state.font_size, '7rem')
+    
+    # Subtitle size mapping
+    subtitle_size_map = {
+        'small': '1rem',
+        'medium': '1.3rem',
+        'large': '1.6rem',
+        'xlarge': '2rem'
+    }
+    subtitle_size = subtitle_size_map.get(st.session_state.font_size, '1.3rem')
+    
     if st.session_state.theme == 'dark':
         bg_gradient = "linear-gradient(135deg, #0f0c29, #302b63, #24243e)"
         card_bg = "rgba(255,255,255,0.08)"
@@ -751,8 +769,9 @@ def apply_css():
     
     .hero-section * {{ position: relative; z-index: 1; }}
     
+    /* HERO TITLE - NOW RESPONSIVE TO FONT SIZE SETTINGS */
     .hero-title {{
-        font-size: 7rem;
+        font-size: {hero_size} !important;
         font-weight: 700;
         margin-bottom: 0.5rem;
         text-shadow: 0 0 40px rgba(0,0,0,0.3);
@@ -762,9 +781,11 @@ def apply_css():
         -webkit-text-fill-color: transparent;
         background-clip: text;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
+        display: block;
+        line-height: 1.2;
     }}
     
-    /* Fallback */
+    /* Fallback for browsers that don't support background-clip */
     @supports not (background-clip: text) {{
         .hero-title {{
             background: none !important;
@@ -782,15 +803,19 @@ def apply_css():
         -webkit-text-fill-color: initial !important;
         color: #fff !important;
         background: none !important;
+        display: inline-block;
     }}
     
+    /* HERO SUBTITLE - NOW RESPONSIVE TO FONT SIZE SETTINGS */
     .hero-subtitle {{
-        font-size: 1.5rem;
+        font-size: {subtitle_size} !important;
         opacity: 0.95;
         font-weight: 300;
         animation: fadeInUp 1s ease;
         font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
         color: rgba(255,255,255,0.95) !important;
+        display: block;
+        line-height: 1.4;
     }}
     
     .hero-email {{
@@ -816,9 +841,19 @@ def apply_css():
         50% {{ transform: scale(1.05); }}
     }}
     
+    @keyframes slideInLeft {{
+        from {{ opacity: 0; transform: translateX(-30px); }}
+        to {{ opacity: 1; transform: translateX(0); }}
+    }}
+    
     @keyframes slideInRight {{
         from {{ opacity: 0; transform: translateX(30px); }}
         to {{ opacity: 1; transform: translateX(0); }}
+    }}
+    
+    @keyframes slideInUp {{
+        from {{ opacity: 0; transform: translateY(30px); }}
+        to {{ opacity: 1; transform: translateY(0); }}
     }}
     
     @keyframes float {{
@@ -1596,8 +1631,15 @@ def apply_css():
     
     /* ============ RESPONSIVE ============ */
     @media (max-width: 768px) {{
-        .hero-title {{ font-size: 2.5rem !important; }}
-        .hero-subtitle {{ font-size: 1rem; }}
+        .hero-title {{
+            font-size: {float(hero_size.replace('rem', '')) * 0.6}rem !important;
+        }}
+        .hero-subtitle {{
+            font-size: {float(subtitle_size.replace('rem', '')) * 0.7}rem !important;
+        }}
+        .hero-email {{
+            font-size: 0.9rem !important;
+        }}
         .copy-container {{ flex-wrap: wrap; }}
         .what-i-do-item {{ padding: 1rem; }}
         .sidebar-arrow-wrapper {{ width: 40px; height: 40px; top: 15px; left: 15px; }}
