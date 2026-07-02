@@ -2401,17 +2401,16 @@ def main():
         show_sidebar()
         
         page = st.session_state.page
-        
         st.markdown(f"""
-            <div class="hero-section">
-                <div class="hero-title"><span class="emoji-text">👋</span> {PERSONAL_INFO['name']}</div>
-                <div class="hero-subtitle">{PERSONAL_INFO['title']}</div>
-                <div class="hero-email">📧 {PERSONAL_INFO['email']} | 📱 {PERSONAL_INFO['phone']} | 📍 {PERSONAL_INFO['location']}</div>
+            <div style="background: linear-gradient(135deg, #1a0533, #2d1b69, #4a2c8a, #ffd700); padding: 3rem 2rem; border-radius: 20px; margin-bottom: 2rem; text-align: center; box-shadow: 0 10px 50px rgba(255,215,0,0.3); border: 1px solid rgba(255,215,0,0.2);">
+                <h1 style="font-size: 4rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; text-shadow: 0 0 30px rgba(255,215,0,0.3);">👋 Faizan Tanveer</h1>
+                <h2 style="font-size: 1.5rem; color: rgba(255,255,255,0.95); font-weight: 300;">Student | Python Developer</h2>
+                <p style="font-size: 1.1rem; color: rgba(255,255,255,0.9);">📧 faizan75601@gmail.com | 📱 +92 300 1234567 | 📍 Pakistan</p>
                 <div style="margin-top: 1.5rem;">
-                    <a href="{PERSONAL_INFO['github']}" target="_blank" class="social-link">🐙 GitHub</a>
-                    <a href="{PERSONAL_INFO['twitter']}" target="_blank" class="social-link">🐦 Twitter</a>
-                    <a href="{PERSONAL_INFO['instagram']}" target="_blank" class="social-link">📸 Instagram</a>
-                    <a href="{PERSONAL_INFO['tiktok']}" target="_blank" class="social-link">🎵 TikTok</a>
+                    <a href="https://github.com/faizan" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">🐙 GitHub</a>
+                    <a href="https://x.com/" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">🐦 Twitter</a>
+                    <a href="https://www.instagram.com/?hl=en" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">📸 Instagram</a>
+                    <a href="https://www.tiktok.com/en/" target="_blank" style="display: inline-block; color: white; background: rgba(255,255,255,0.1); padding: 0.5rem 1.2rem; border-radius: 25px; margin: 0.3rem; text-decoration: none; border: 1px solid rgba(255,215,0,0.1);">🎵 TikTok</a>
                 </div>
             </div>
         """, unsafe_allow_html=True)
